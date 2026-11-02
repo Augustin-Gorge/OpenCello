@@ -1,0 +1,16002 @@
+[
+{
+"word": "major",
+"count": 2348
+},
+{
+"word": "sonata",
+"count": 2205
+},
+{
+"word": "piano",
+"count": 1688
+},
+{
+"word": "concerto",
+"count": 1234
+},
+{
+"word": "string",
+"count": 1061
+},
+{
+"word": "symphony",
+"count": 1027
+},
+{
+"word": "minor",
+"count": 968
+},
+{
+"word": "cello",
+"count": 962
+},
+{
+"word": "violin",
+"count": 954
+},
+{
+"word": "fugue",
+"count": 827
+},
+{
+"word": "trumpet",
+"count": 741
+},
+{
+"word": "canon",
+"count": 732
+},
+{
+"word": "valse",
+"count": 717
+},
+{
+"word": "organ",
+"count": 628
+},
+{
+"word": "harpsichord",
+"count": 622
+},
+{
+"word": "sonatas",
+"count": 609
+},
+{
+"word": "flat",
+"count": 562
+},
+{
+"word": "souvenir",
+"count": 554
+},
+{
+"word": "quintet",
+"count": 529
+},
+{
+"word": "viola",
+"count": 478
+},
+{
+"word": "pieces",
+"count": 467
+},
+{
+"word": "psalm",
+"count": 467
+},
+{
+"word": "etude",
+"count": 419
+},
+{
+"word": "fantasie",
+"count": 407
+},
+{
+"word": "clarinet",
+"count": 388
+},
+{
+"word": "solo",
+"count": 380
+},
+{
+"word": "trio",
+"count": 380
+},
+{
+"word": "magnificat",
+"count": 374
+},
+{
+"word": "lieder",
+"count": 367
+},
+{
+"word": "flute",
+"count": 344
+},
+{
+"word": "serenade",
+"count": 339
+},
+{
+"word": "potpourri",
+"count": 338
+},
+{
+"word": "little",
+"count": 334
+},
+{
+"word": "quartet",
+"count": 329
+},
+{
+"word": "domine",
+"count": 328
+},
+{
+"word": "jesu",
+"count": 325
+},
+{
+"word": "adagio",
+"count": 309
+},
+{
+"word": "gott",
+"count": 293
+},
+{
+"word": "etudes",
+"count": 291
+},
+{
+"word": "god",
+"count": 276
+},
+{
+"word": "pastorale",
+"count": 276
+},
+{
+"word": "duos",
+"count": 273
+},
+{
+"word": "love",
+"count": 272
+},
+{
+"word": "songs",
+"count": 270
+},
+{
+"word": "gloria",
+"count": 266
+},
+{
+"word": "ach",
+"count": 264
+},
+{
+"word": "fantasy",
+"count": 252
+},
+{
+"word": "toccata",
+"count": 251
+},
+{
+"word": "reverie",
+"count": 250
+},
+{
+"word": "bassoon",
+"count": 239
+},
+{
+"word": "requiem",
+"count": 234
+},
+{
+"word": "tono",
+"count": 234
+},
+{
+"word": "herr",
+"count": 226
+},
+{
+"word": "toni",
+"count": 225
+},
+{
+"word": "menuet",
+"count": 221
+},
+{
+"word": "old",
+"count": 219
+},
+{
+"word": "fantasia",
+"count": 216
+},
+{
+"word": "polka",
+"count": 210
+},
+{
+"word": "tiento",
+"count": 209
+},
+{
+"word": "march",
+"count": 203
+},
+{
+"word": "tma",
+"count": 201
+},
+{
+"word": "jesus",
+"count": 196
+},
+{
+"word": "duets",
+"count": 193
+},
+{
+"word": "poui",
+"count": 192
+},
+{
+"word": "fur",
+"count": 190
+},
+{
+"word": "kyrie",
+"count": 189
+},
+{
+"word": "song",
+"count": 188
+},
+{
+"word": "rag",
+"count": 184
+},
+{
+"word": "divertissement",
+"count": 184
+},
+{
+"word": "melodies",
+"count": 177
+},
+{
+"word": "wind",
+"count": 171
+},
+{
+"word": "music",
+"count": 168
+},
+{
+"word": "concert",
+"count": 168
+},
+{
+"word": "guitar",
+"count": 161
+},
+{
+"word": "courante",
+"count": 160
+},
+{
+"word": "pdpwv",
+"count": 159
+},
+{
+"word": "waltz",
+"count": 156
+},
+{
+"word": "ecce",
+"count": 156
+},
+{
+"word": "morceaux",
+"count": 155
+},
+{
+"word": "concertino",
+"count": 153
+},
+{
+"word": "meine",
+"count": 152
+},
+{
+"word": "souvenirs",
+"count": 152
+},
+{
+"word": "variations",
+"count": 151
+},
+{
+"word": "suite",
+"count": 150
+},
+{
+"word": "keyboard",
+"count": 149
+},
+{
+"word": "credo",
+"count": 144
+},
+{
+"word": "hornpipe",
+"count": 140
+},
+{
+"word": "preludes",
+"count": 139
+},
+{
+"word": "prelude",
+"count": 138
+},
+{
+"word": "uber",
+"count": 138
+},
+{
+"word": "lord",
+"count": 136
+},
+{
+"word": "psaume",
+"count": 133
+},
+{
+"word": "gesange",
+"count": 131
+},
+{
+"word": "american",
+"count": 130
+},
+{
+"word": "vom",
+"count": 126
+},
+{
+"word": "adieu",
+"count": 120
+},
+{
+"word": "che",
+"count": 119
+},
+{
+"word": "dominus",
+"count": 118
+},
+{
+"word": "himmel",
+"count": 117
+},
+{
+"word": "quartets",
+"count": 116
+},
+{
+"word": "amour",
+"count": 115
+},
+{
+"word": "heart",
+"count": 113
+},
+{
+"word": "del",
+"count": 113
+},
+{
+"word": "easy",
+"count": 112
+},
+{
+"word": "estudio",
+"count": 112
+},
+{
+"word": "collection",
+"count": 110
+},
+{
+"word": "new",
+"count": 108
+},
+{
+"word": "marginalia",
+"count": 106
+},
+{
+"word": "book",
+"count": 104
+},
+{
+"word": "wsc",
+"count": 104
+},
+{
+"word": "trios",
+"count": 103
+},
+{
+"word": "dance",
+"count": 102
+},
+{
+"word": "night",
+"count": 102
+},
+{
+"word": "pater",
+"count": 102
+},
+{
+"word": "like",
+"count": 100
+},
+{
+"word": "opera",
+"count": 100
+},
+{
+"word": "melody",
+"count": 100
+},
+{
+"word": "fvb",
+"count": 97
+},
+{
+"word": "sei",
+"count": 97
+},
+{
+"word": "dixit",
+"count": 97
+},
+{
+"word": "sacred",
+"count": 96
+},
+{
+"word": "sonatina",
+"count": 96
+},
+{
+"word": "airs",
+"count": 95
+},
+{
+"word": "orchestra",
+"count": 95
+},
+{
+"word": "nocturnes",
+"count": 94
+},
+{
+"word": "grand",
+"count": 93
+},
+{
+"word": "waltzes",
+"count": 92
+},
+{
+"word": "musical",
+"count": 92
+},
+{
+"word": "cnw",
+"count": 92
+},
+{
+"word": "noster",
+"count": 92
+},
+{
+"word": "nomine",
+"count": 92
+},
+{
+"word": "vals",
+"count": 91
+},
+{
+"word": "pot",
+"count": 91
+},
+{
+"word": "winter",
+"count": 89
+},
+{
+"word": "maria",
+"count": 89
+},
+{
+"word": "petit",
+"count": 88
+},
+{
+"word": "brillante",
+"count": 88
+},
+{
+"word": "amor",
+"count": 88
+},
+{
+"word": "pavane",
+"count": 88
+},
+{
+"word": "man",
+"count": 86
+},
+{
+"word": "walzer",
+"count": 85
+},
+{
+"word": "chansons",
+"count": 85
+},
+{
+"word": "reve",
+"count": 85
+},
+{
+"word": "concertos",
+"count": 84
+},
+{
+"word": "uns",
+"count": 84
+},
+{
+"word": "beatus",
+"count": 84
+},
+{
+"word": "bass",
+"count": 83
+},
+{
+"word": "aubade",
+"count": 83
+},
+{
+"word": "time",
+"count": 82
+},
+{
+"word": "anh",
+"count": 82
+},
+{
+"word": "klavierstucke",
+"count": 81
+},
+{
+"word": "mazurkas",
+"count": 81
+},
+{
+"word": "salon",
+"count": 81
+},
+{
+"word": "melodie",
+"count": 81
+},
+{
+"word": "jeg",
+"count": 81
+},
+{
+"word": "rose",
+"count": 80
+},
+{
+"word": "girl",
+"count": 80
+},
+{
+"word": "give",
+"count": 80
+},
+{
+"word": "beautiful",
+"count": 80
+},
+{
+"word": "pourri",
+"count": 79
+},
+{
+"word": "voluntary",
+"count": 78
+},
+{
+"word": "litaniae",
+"count": 78
+},
+{
+"word": "memoriam",
+"count": 77
+},
+{
+"word": "mus",
+"count": 76
+},
+{
+"word": "sextet",
+"count": 76
+},
+{
+"word": "viols",
+"count": 76
+},
+{
+"word": "home",
+"count": 75
+},
+{
+"word": "studies",
+"count": 75
+},
+{
+"word": "para",
+"count": 75
+},
+{
+"word": "pavana",
+"count": 74
+},
+{
+"word": "beata",
+"count": 73
+},
+{
+"word": "pavan",
+"count": 73
+},
+{
+"word": "mia",
+"count": 72
+},
+{
+"word": "light",
+"count": 72
+},
+{
+"word": "til",
+"count": 72
+},
+{
+"word": "galop",
+"count": 72
+},
+{
+"word": "amore",
+"count": 71
+},
+{
+"word": "dieu",
+"count": 71
+},
+{
+"word": "orchestral",
+"count": 71
+},
+{
+"word": "fantasias",
+"count": 69
+},
+{
+"word": "mot",
+"count": 69
+},
+{
+"word": "ego",
+"count": 69
+},
+{
+"word": "alto",
+"count": 69
+},
+{
+"word": "postlude",
+"count": 69
+},
+{
+"word": "opp",
+"count": 68
+},
+{
+"word": "dances",
+"count": 68
+},
+{
+"word": "harp",
+"count": 67
+},
+{
+"word": "life",
+"count": 67
+},
+{
+"word": "mio",
+"count": 66
+},
+{
+"word": "vir",
+"count": 66
+},
+{
+"word": "album",
+"count": 65
+},
+{
+"word": "roi",
+"count": 65
+},
+{
+"word": "reminiscences",
+"count": 65
+},
+{
+"word": "dolce",
+"count": 64
+},
+{
+"word": "deus",
+"count": 64
+},
+{
+"word": "konzertstuck",
+"count": 64
+},
+{
+"word": "four",
+"count": 62
+},
+{
+"word": "salutaris",
+"count": 62
+},
+{
+"word": "marsch",
+"count": 62
+},
+{
+"word": "fille",
+"count": 62
+},
+{
+"word": "retour",
+"count": 62
+},
+{
+"word": "belle",
+"count": 61
+},
+{
+"word": "deutsche",
+"count": 61
+},
+{
+"word": "trombone",
+"count": 61
+},
+{
+"word": "seele",
+"count": 61
+},
+{
+"word": "dir",
+"count": 61
+},
+{
+"word": "euch",
+"count": 61
+},
+{
+"word": "etuden",
+"count": 60
+},
+{
+"word": "hat",
+"count": 60
+},
+{
+"word": "bye",
+"count": 60
+},
+{
+"word": "nel",
+"count": 60
+},
+{
+"word": "come",
+"count": 60
+},
+{
+"word": "want",
+"count": 60
+},
+{
+"word": "con",
+"count": 59
+},
+{
+"word": "selected",
+"count": 59
+},
+{
+"word": "nao",
+"count": 59
+},
+{
+"word": "our",
+"count": 59
+},
+{
+"word": "moderato",
+"count": 59
+},
+{
+"word": "don",
+"count": 58
+},
+{
+"word": "horn",
+"count": 58
+},
+{
+"word": "hoch",
+"count": 58
+},
+{
+"word": "national",
+"count": 57
+},
+{
+"word": "spanish",
+"count": 57
+},
+{
+"word": "strings",
+"count": 57
+},
+{
+"word": "sol",
+"count": 57
+},
+{
+"word": "eyes",
+"count": 56
+},
+{
+"word": "quadrille",
+"count": 56
+},
+{
+"word": "nun",
+"count": 56
+},
+{
+"word": "gedichte",
+"count": 56
+},
+{
+"word": "gli",
+"count": 56
+},
+{
+"word": "caprice",
+"count": 56
+},
+{
+"word": "melodia",
+"count": 56
+},
+{
+"word": "peace",
+"count": 55
+},
+{
+"word": "works",
+"count": 55
+},
+{
+"word": "heiland",
+"count": 55
+},
+{
+"word": "gottes",
+"count": 55
+},
+{
+"word": "battle",
+"count": 55
+},
+{
+"word": "valsa",
+"count": 55
+},
+{
+"word": "beethoven",
+"count": 54
+},
+{
+"word": "sobre",
+"count": 54
+},
+{
+"word": "modern",
+"count": 54
+},
+{
+"word": "call",
+"count": 54
+},
+{
+"word": "cradle",
+"count": 54
+},
+{
+"word": "caprices",
+"count": 53
+},
+{
+"word": "hymn",
+"count": 53
+},
+{
+"word": "unser",
+"count": 53
+},
+{
+"word": "freude",
+"count": 53
+},
+{
+"word": "memories",
+"count": 53
+},
+{
+"word": "lleno",
+"count": 53
+},
+{
+"word": "mine",
+"count": 52
+},
+{
+"word": "land",
+"count": 52
+},
+{
+"word": "iii",
+"count": 52
+},
+{
+"word": "liebe",
+"count": 52
+},
+{
+"word": "printemps",
+"count": 52
+},
+{
+"word": "ecco",
+"count": 52
+},
+{
+"word": "would",
+"count": 52
+},
+{
+"word": "day",
+"count": 51
+},
+{
+"word": "choral",
+"count": 51
+},
+{
+"word": "sopra",
+"count": 51
+},
+{
+"word": "harmony",
+"count": 51
+},
+{
+"word": "domini",
+"count": 51
+},
+{
+"word": "monsieur",
+"count": 51
+},
+{
+"word": "dream",
+"count": 50
+},
+{
+"word": "art",
+"count": 50
+},
+{
+"word": "komm",
+"count": 50
+},
+{
+"word": "boy",
+"count": 50
+},
+{
+"word": "christus",
+"count": 50
+},
+{
+"word": "sum",
+"count": 50
+},
+{
+"word": "primer",
+"count": 50
+},
+{
+"word": "vor",
+"count": 49
+},
+{
+"word": "nacht",
+"count": 49
+},
+{
+"word": "garden",
+"count": 49
+},
+{
+"word": "por",
+"count": 49
+},
+{
+"word": "jerusalem",
+"count": 49
+},
+{
+"word": "john",
+"count": 49
+},
+{
+"word": "world",
+"count": 48
+},
+{
+"word": "long",
+"count": 48
+},
+{
+"word": "compositions",
+"count": 48
+},
+{
+"word": "fantaisies",
+"count": 48
+},
+{
+"word": "livre",
+"count": 48
+},
+{
+"word": "della",
+"count": 48
+},
+{
+"word": "engk",
+"count": 48
+},
+{
+"word": "welt",
+"count": 48
+},
+{
+"word": "coeur",
+"count": 48
+},
+{
+"word": "jeune",
+"count": 48
+},
+{
+"word": "mother",
+"count": 47
+},
+{
+"word": "leben",
+"count": 47
+},
+{
+"word": "sea",
+"count": 47
+},
+{
+"word": "herrn",
+"count": 47
+},
+{
+"word": "fra",
+"count": 47
+},
+{
+"word": "dulci",
+"count": 47
+},
+{
+"word": "america",
+"count": 46
+},
+{
+"word": "roses",
+"count": 46
+},
+{
+"word": "sharp",
+"count": 46
+},
+{
+"word": "band",
+"count": 46
+},
+{
+"word": "country",
+"count": 46
+},
+{
+"word": "soir",
+"count": 46
+},
+{
+"word": "jubilo",
+"count": 46
+},
+{
+"word": "hear",
+"count": 46
+},
+{
+"word": "hands",
+"count": 45
+},
+{
+"word": "before",
+"count": 45
+},
+{
+"word": "folk",
+"count": 45
+},
+{
+"word": "air",
+"count": 45
+},
+{
+"word": "vdgs",
+"count": 45
+},
+{
+"word": "dei",
+"count": 45
+},
+{
+"word": "lune",
+"count": 45
+},
+{
+"word": "puer",
+"count": 45
+},
+{
+"word": "hand",
+"count": 44
+},
+{
+"word": "kleine",
+"count": 44
+},
+{
+"word": "woodwind",
+"count": 44
+},
+{
+"word": "soll",
+"count": 44
+},
+{
+"word": "mai",
+"count": 44
+},
+{
+"word": "mano",
+"count": 44
+},
+{
+"word": "septet",
+"count": 44
+},
+{
+"word": "till",
+"count": 43
+},
+{
+"word": "pianoforte",
+"count": 43
+},
+{
+"word": "musicales",
+"count": 43
+},
+{
+"word": "seid",
+"count": 43
+},
+{
+"word": "cor",
+"count": 43
+},
+{
+"word": "baby",
+"count": 43
+},
+{
+"word": "sing",
+"count": 43
+},
+{
+"word": "beati",
+"count": 43
+},
+{
+"word": "konig",
+"count": 43
+},
+{
+"word": "waiting",
+"count": 43
+},
+{
+"word": "eleison",
+"count": 43
+},
+{
+"word": "fugues",
+"count": 42
+},
+{
+"word": "zwv",
+"count": 42
+},
+{
+"word": "blues",
+"count": 42
+},
+{
+"word": "echoes",
+"count": 42
+},
+{
+"word": "moon",
+"count": 42
+},
+{
+"word": "mentre",
+"count": 42
+},
+{
+"word": "morning",
+"count": 41
+},
+{
+"word": "know",
+"count": 41
+},
+{
+"word": "valses",
+"count": 41
+},
+{
+"word": "marches",
+"count": 41
+},
+{
+"word": "violins",
+"count": 41
+},
+{
+"word": "mandolin",
+"count": 41
+},
+{
+"word": "bells",
+"count": 41
+},
+{
+"word": "mir",
+"count": 41
+},
+{
+"word": "wohl",
+"count": 41
+},
+{
+"word": "buxwv",
+"count": 41
+},
+{
+"word": "selection",
+"count": 41
+},
+{
+"word": "clori",
+"count": 41
+},
+{
+"word": "remember",
+"count": 41
+},
+{
+"word": "sacerdos",
+"count": 41
+},
+{
+"word": "natus",
+"count": 41
+},
+{
+"word": "merry",
+"count": 40
+},
+{
+"word": "easter",
+"count": 40
+},
+{
+"word": "village",
+"count": 40
+},
+{
+"word": "swv",
+"count": 40
+},
+{
+"word": "dominum",
+"count": 40
+},
+{
+"word": "alte",
+"count": 40
+},
+{
+"word": "unto",
+"count": 40
+},
+{
+"word": "volte",
+"count": 40
+},
+{
+"word": "salvum",
+"count": 40
+},
+{
+"word": "bagatelles",
+"count": 39
+},
+{
+"word": "melodien",
+"count": 39
+},
+{
+"word": "caracteristiques",
+"count": 39
+},
+{
+"word": "favorite",
+"count": 39
+},
+{
+"word": "theme",
+"count": 39
+},
+{
+"word": "villanelle",
+"count": 39
+},
+{
+"word": "clavier",
+"count": 39
+},
+{
+"word": "meus",
+"count": 39
+},
+{
+"word": "echo",
+"count": 39
+},
+{
+"word": "virgo",
+"count": 39
+},
+{
+"word": "gia",
+"count": 39
+},
+{
+"word": "early",
+"count": 39
+},
+{
+"word": "cortege",
+"count": 39
+},
+{
+"word": "deo",
+"count": 39
+},
+{
+"word": "dell",
+"count": 39
+},
+{
+"word": "bella",
+"count": 38
+},
+{
+"word": "tanze",
+"count": 38
+},
+{
+"word": "quinto",
+"count": 38
+},
+{
+"word": "jour",
+"count": 38
+},
+{
+"word": "christ",
+"count": 38
+},
+{
+"word": "dreams",
+"count": 38
+},
+{
+"word": "now",
+"count": 38
+},
+{
+"word": "pvm",
+"count": 38
+},
+{
+"word": "bien",
+"count": 38
+},
+{
+"word": "primi",
+"count": 38
+},
+{
+"word": "octavi",
+"count": 38
+},
+{
+"word": "tis",
+"count": 37
+},
+{
+"word": "children",
+"count": 37
+},
+{
+"word": "stucke",
+"count": 37
+},
+{
+"word": "alone",
+"count": 37
+},
+{
+"word": "popular",
+"count": 37
+},
+{
+"word": "libro",
+"count": 37
+},
+{
+"word": "dixie",
+"count": 37
+},
+{
+"word": "good",
+"count": 37
+},
+{
+"word": "tod",
+"count": 37
+},
+{
+"word": "gamba",
+"count": 37
+},
+{
+"word": "panis",
+"count": 37
+},
+{
+"word": "king",
+"count": 36
+},
+{
+"word": "free",
+"count": 36
+},
+{
+"word": "moments",
+"count": 36
+},
+{
+"word": "see",
+"count": 36
+},
+{
+"word": "english",
+"count": 36
+},
+{
+"word": "musique",
+"count": 36
+},
+{
+"word": "christmas",
+"count": 36
+},
+{
+"word": "deine",
+"count": 36
+},
+{
+"word": "monte",
+"count": 36
+},
+{
+"word": "virginis",
+"count": 36
+},
+{
+"word": "bord",
+"count": 36
+},
+{
+"word": "mariae",
+"count": 36
+},
+{
+"word": "alle",
+"count": 36
+},
+{
+"word": "cadenza",
+"count": 36
+},
+{
+"word": "terra",
+"count": 36
+},
+{
+"word": "petites",
+"count": 35
+},
+{
+"word": "more",
+"count": 35
+},
+{
+"word": "mazurka",
+"count": 35
+},
+{
+"word": "divertissements",
+"count": 35
+},
+{
+"word": "rest",
+"count": 35
+},
+{
+"word": "overture",
+"count": 35
+},
+{
+"word": "behold",
+"count": 35
+},
+{
+"word": "wachet",
+"count": 35
+},
+{
+"word": "southern",
+"count": 35
+},
+{
+"word": "solitude",
+"count": 35
+},
+{
+"word": "poems",
+"count": 34
+},
+{
+"word": "concerti",
+"count": 34
+},
+{
+"word": "faciles",
+"count": 34
+},
+{
+"word": "set",
+"count": 34
+},
+{
+"word": "repertoire",
+"count": 34
+},
+{
+"word": "temps",
+"count": 34
+},
+{
+"word": "geistliche",
+"count": 34
+},
+{
+"word": "themes",
+"count": 34
+},
+{
+"word": "fantasiestucke",
+"count": 34
+},
+{
+"word": "vater",
+"count": 34
+},
+{
+"word": "moment",
+"count": 34
+},
+{
+"word": "praise",
+"count": 34
+},
+{
+"word": "days",
+"count": 34
+},
+{
+"word": "freud",
+"count": 34
+},
+{
+"word": "sexti",
+"count": 34
+},
+{
+"word": "selig",
+"count": 34
+},
+{
+"word": "sweet",
+"count": 33
+},
+{
+"word": "style",
+"count": 33
+},
+{
+"word": "soirees",
+"count": 33
+},
+{
+"word": "stwv",
+"count": 33
+},
+{
+"word": "sexto",
+"count": 33
+},
+{
+"word": "saxophone",
+"count": 33
+},
+{
+"word": "trois",
+"count": 33
+},
+{
+"word": "dos",
+"count": 33
+},
+{
+"word": "beauty",
+"count": 33
+},
+{
+"word": "clair",
+"count": 33
+},
+{
+"word": "nobis",
+"count": 33
+},
+{
+"word": "back",
+"count": 33
+},
+{
+"word": "corona",
+"count": 33
+},
+{
+"word": "fragment",
+"count": 33
+},
+{
+"word": "rondo",
+"count": 32
+},
+{
+"word": "charakterstucke",
+"count": 32
+},
+{
+"word": "church",
+"count": 32
+},
+{
+"word": "romances",
+"count": 32
+},
+{
+"word": "hin",
+"count": 32
+},
+{
+"word": "omnes",
+"count": 32
+},
+{
+"word": "always",
+"count": 32
+},
+{
+"word": "over",
+"count": 32
+},
+{
+"word": "mad",
+"count": 32
+},
+{
+"word": "glauben",
+"count": 32
+},
+{
+"word": "partido",
+"count": 32
+},
+{
+"word": "down",
+"count": 31
+},
+{
+"word": "hymns",
+"count": 31
+},
+{
+"word": "parts",
+"count": 31
+},
+{
+"word": "voice",
+"count": 31
+},
+{
+"word": "menuets",
+"count": 31
+},
+{
+"word": "franz",
+"count": 31
+},
+{
+"word": "grands",
+"count": 31
+},
+{
+"word": "cavatine",
+"count": 31
+},
+{
+"word": "paul",
+"count": 31
+},
+{
+"word": "israel",
+"count": 31
+},
+{
+"word": "mode",
+"count": 31
+},
+{
+"word": "amours",
+"count": 31
+},
+{
+"word": "sempre",
+"count": 31
+},
+{
+"word": "asperges",
+"count": 31
+},
+{
+"word": "still",
+"count": 31
+},
+{
+"word": "christe",
+"count": 31
+},
+{
+"word": "magnus",
+"count": 31
+},
+{
+"word": "wonder",
+"count": 31
+},
+{
+"word": "memento",
+"count": 31
+},
+{
+"word": "melodiques",
+"count": 30
+},
+{
+"word": "voluntaries",
+"count": 30
+},
+{
+"word": "minuets",
+"count": 30
+},
+{
+"word": "mer",
+"count": 30
+},
+{
+"word": "bach",
+"count": 30
+},
+{
+"word": "magyar",
+"count": 30
+},
+{
+"word": "sehr",
+"count": 30
+},
+{
+"word": "blue",
+"count": 30
+},
+{
+"word": "sieh",
+"count": 30
+},
+{
+"word": "marie",
+"count": 30
+},
+{
+"word": "meum",
+"count": 30
+},
+{
+"word": "joseph",
+"count": 30
+},
+{
+"word": "ehre",
+"count": 30
+},
+{
+"word": "again",
+"count": 30
+},
+{
+"word": "moi",
+"count": 30
+},
+{
+"word": "poor",
+"count": 30
+},
+{
+"word": "fete",
+"count": 30
+},
+{
+"word": "fantasiestuck",
+"count": 30
+},
+{
+"word": "lauretanae",
+"count": 30
+},
+{
+"word": "secundi",
+"count": 30
+},
+{
+"word": "regrets",
+"count": 30
+},
+{
+"word": "mozart",
+"count": 29
+},
+{
+"word": "mei",
+"count": 29
+},
+{
+"word": "flutes",
+"count": 29
+},
+{
+"word": "recorder",
+"count": 29
+},
+{
+"word": "after",
+"count": 29
+},
+{
+"word": "voci",
+"count": 29
+},
+{
+"word": "french",
+"count": 29
+},
+{
+"word": "jwwv",
+"count": 29
+},
+{
+"word": "krebs",
+"count": 29
+},
+{
+"word": "sunder",
+"count": 29
+},
+{
+"word": "morte",
+"count": 29
+},
+{
+"word": "work",
+"count": 29
+},
+{
+"word": "premier",
+"count": 29
+},
+{
+"word": "wait",
+"count": 29
+},
+{
+"word": "mensch",
+"count": 29
+},
+{
+"word": "segundo",
+"count": 29
+},
+{
+"word": "puis",
+"count": 29
+},
+{
+"word": "trost",
+"count": 29
+},
+{
+"word": "excelsis",
+"count": 29
+},
+{
+"word": "wish",
+"count": 29
+},
+{
+"word": "speravi",
+"count": 29
+},
+{
+"word": "jenny",
+"count": 29
+},
+{
+"word": "puisque",
+"count": 29
+},
+{
+"word": "natale",
+"count": 28
+},
+{
+"word": "voices",
+"count": 28
+},
+{
+"word": "spring",
+"count": 28
+},
+{
+"word": "memory",
+"count": 28
+},
+{
+"word": "never",
+"count": 28
+},
+{
+"word": "oboe",
+"count": 28
+},
+{
+"word": "duet",
+"count": 28
+},
+{
+"word": "petits",
+"count": 28
+},
+{
+"word": "psalms",
+"count": 28
+},
+{
+"word": "sonate",
+"count": 28
+},
+{
+"word": "bird",
+"count": 28
+},
+{
+"word": "select",
+"count": 28
+},
+{
+"word": "got",
+"count": 28
+},
+{
+"word": "far",
+"count": 28
+},
+{
+"word": "christi",
+"count": 28
+},
+{
+"word": "dear",
+"count": 28
+},
+{
+"word": "abend",
+"count": 28
+},
+{
+"word": "loved",
+"count": 28
+},
+{
+"word": "stars",
+"count": 28
+},
+{
+"word": "bunte",
+"count": 28
+},
+{
+"word": "seigneur",
+"count": 28
+},
+{
+"word": "soiree",
+"count": 28
+},
+{
+"word": "los",
+"count": 27
+},
+{
+"word": "let",
+"count": 27
+},
+{
+"word": "south",
+"count": 27
+},
+{
+"word": "chorale",
+"count": 27
+},
+{
+"word": "leichte",
+"count": 27
+},
+{
+"word": "tunes",
+"count": 27
+},
+{
+"word": "david",
+"count": 27
+},
+{
+"word": "motets",
+"count": 27
+},
+{
+"word": "pays",
+"count": 27
+},
+{
+"word": "musicale",
+"count": 27
+},
+{
+"word": "domino",
+"count": 27
+},
+{
+"word": "also",
+"count": 27
+},
+{
+"word": "bel",
+"count": 27
+},
+{
+"word": "lancers",
+"count": 27
+},
+{
+"word": "schottisch",
+"count": 27
+},
+{
+"word": "amo",
+"count": 27
+},
+{
+"word": "fair",
+"count": 27
+},
+{
+"word": "jeunesse",
+"count": 27
+},
+{
+"word": "lente",
+"count": 27
+},
+{
+"word": "mort",
+"count": 27
+},
+{
+"word": "chanson",
+"count": 27
+},
+{
+"word": "reves",
+"count": 27
+},
+{
+"word": "septimi",
+"count": 27
+},
+{
+"word": "voyage",
+"count": 27
+},
+{
+"word": "postludium",
+"count": 27
+},
+{
+"word": "way",
+"count": 26
+},
+{
+"word": "sonatinas",
+"count": 26
+},
+{
+"word": "anthems",
+"count": 26
+},
+{
+"word": "klavier",
+"count": 26
+},
+{
+"word": "away",
+"count": 26
+},
+{
+"word": "fragments",
+"count": 26
+},
+{
+"word": "schubert",
+"count": 26
+},
+{
+"word": "faust",
+"count": 26
+},
+{
+"word": "worte",
+"count": 26
+},
+{
+"word": "save",
+"count": 26
+},
+{
+"word": "hab",
+"count": 26
+},
+{
+"word": "step",
+"count": 26
+},
+{
+"word": "beau",
+"count": 26
+},
+{
+"word": "hohe",
+"count": 26
+},
+{
+"word": "could",
+"count": 26
+},
+{
+"word": "herren",
+"count": 26
+},
+{
+"word": "burlesque",
+"count": 26
+},
+{
+"word": "lesson",
+"count": 26
+},
+{
+"word": "coleccion",
+"count": 26
+},
+{
+"word": "babe",
+"count": 26
+},
+{
+"word": "vieille",
+"count": 26
+},
+{
+"word": "first",
+"count": 25
+},
+{
+"word": "gone",
+"count": 25
+},
+{
+"word": "lied",
+"count": 25
+},
+{
+"word": "organo",
+"count": 25
+},
+{
+"word": "orgue",
+"count": 25
+},
+{
+"word": "woodland",
+"count": 25
+},
+{
+"word": "irish",
+"count": 25
+},
+{
+"word": "impromptus",
+"count": 25
+},
+{
+"word": "liszt",
+"count": 25
+},
+{
+"word": "vii",
+"count": 25
+},
+{
+"word": "saint",
+"count": 25
+},
+{
+"word": "cantiones",
+"count": 25
+},
+{
+"word": "almain",
+"count": 25
+},
+{
+"word": "make",
+"count": 25
+},
+{
+"word": "mass",
+"count": 25
+},
+{
+"word": "tirsi",
+"count": 25
+},
+{
+"word": "bal",
+"count": 25
+},
+{
+"word": "lac",
+"count": 25
+},
+{
+"word": "soleil",
+"count": 25
+},
+{
+"word": "heaven",
+"count": 25
+},
+{
+"word": "remembrance",
+"count": 25
+},
+{
+"word": "sacri",
+"count": 25
+},
+{
+"word": "fiancee",
+"count": 25
+},
+{
+"word": "glory",
+"count": 25
+},
+{
+"word": "luvs",
+"count": 25
+},
+{
+"word": "konzert",
+"count": 25
+},
+{
+"word": "concours",
+"count": 25
+},
+{
+"word": "tocata",
+"count": 25
+},
+{
+"word": "were",
+"count": 24
+},
+{
+"word": "miniatures",
+"count": 24
+},
+{
+"word": "chant",
+"count": 24
+},
+{
+"word": "recreations",
+"count": 24
+},
+{
+"word": "part",
+"count": 24
+},
+{
+"word": "tell",
+"count": 24
+},
+{
+"word": "duo",
+"count": 24
+},
+{
+"word": "choruses",
+"count": 24
+},
+{
+"word": "lieben",
+"count": 24
+},
+{
+"word": "noel",
+"count": 24
+},
+{
+"word": "due",
+"count": 24
+},
+{
+"word": "geist",
+"count": 24
+},
+{
+"word": "valley",
+"count": 24
+},
+{
+"word": "allegro",
+"count": 24
+},
+{
+"word": "bis",
+"count": 24
+},
+{
+"word": "graunwv",
+"count": 24
+},
+{
+"word": "school",
+"count": 24
+},
+{
+"word": "ball",
+"count": 24
+},
+{
+"word": "jardin",
+"count": 24
+},
+{
+"word": "moulin",
+"count": 24
+},
+{
+"word": "impromptu",
+"count": 24
+},
+{
+"word": "xxxia",
+"count": 24
+},
+{
+"word": "people",
+"count": 24
+},
+{
+"word": "darling",
+"count": 24
+},
+{
+"word": "because",
+"count": 24
+},
+{
+"word": "divine",
+"count": 24
+},
+{
+"word": "mariage",
+"count": 24
+},
+{
+"word": "vierge",
+"count": 24
+},
+{
+"word": "medio",
+"count": 24
+},
+{
+"word": "hostia",
+"count": 24
+},
+{
+"word": "quarti",
+"count": 24
+},
+{
+"word": "name",
+"count": 23
+},
+{
+"word": "angel",
+"count": 23
+},
+{
+"word": "star",
+"count": 23
+},
+{
+"word": "vortragsstucke",
+"count": 23
+},
+{
+"word": "russian",
+"count": 23
+},
+{
+"word": "exercises",
+"count": 23
+},
+{
+"word": "gluck",
+"count": 23
+},
+{
+"word": "tbp",
+"count": 23
+},
+{
+"word": "motifs",
+"count": 23
+},
+{
+"word": "quintets",
+"count": 23
+},
+{
+"word": "opern",
+"count": 23
+},
+{
+"word": "snow",
+"count": 23
+},
+{
+"word": "allen",
+"count": 23
+},
+{
+"word": "howv",
+"count": 23
+},
+{
+"word": "cadenzas",
+"count": 23
+},
+{
+"word": "prayer",
+"count": 23
+},
+{
+"word": "sacra",
+"count": 23
+},
+{
+"word": "piu",
+"count": 23
+},
+{
+"word": "stimme",
+"count": 23
+},
+{
+"word": "een",
+"count": 23
+},
+{
+"word": "cristo",
+"count": 23
+},
+{
+"word": "zion",
+"count": 23
+},
+{
+"word": "paris",
+"count": 23
+},
+{
+"word": "alman",
+"count": 23
+},
+{
+"word": "true",
+"count": 23
+},
+{
+"word": "nella",
+"count": 23
+},
+{
+"word": "joli",
+"count": 23
+},
+{
+"word": "california",
+"count": 23
+},
+{
+"word": "beatae",
+"count": 23
+},
+{
+"word": "cosi",
+"count": 23
+},
+{
+"word": "litanies",
+"count": 23
+},
+{
+"word": "lassen",
+"count": 23
+},
+{
+"word": "dobrado",
+"count": 23
+},
+{
+"word": "melancolique",
+"count": 23
+},
+{
+"word": "venus",
+"count": 23
+},
+{
+"word": "misterioso",
+"count": 23
+},
+{
+"word": "vieni",
+"count": 23
+},
+{
+"word": "viens",
+"count": 23
+},
+{
+"word": "vox",
+"count": 23
+},
+{
+"word": "fantaisie",
+"count": 22
+},
+{
+"word": "senza",
+"count": 22
+},
+{
+"word": "words",
+"count": 22
+},
+{
+"word": "water",
+"count": 22
+},
+{
+"word": "coda",
+"count": 22
+},
+{
+"word": "harpe",
+"count": 22
+},
+{
+"word": "sketches",
+"count": 22
+},
+{
+"word": "operas",
+"count": 22
+},
+{
+"word": "verdi",
+"count": 22
+},
+{
+"word": "una",
+"count": 22
+},
+{
+"word": "alla",
+"count": 22
+},
+{
+"word": "sacrae",
+"count": 22
+},
+{
+"word": "vorspiel",
+"count": 22
+},
+{
+"word": "galopp",
+"count": 22
+},
+{
+"word": "jesum",
+"count": 22
+},
+{
+"word": "oratorio",
+"count": 22
+},
+{
+"word": "grace",
+"count": 22
+},
+{
+"word": "vos",
+"count": 22
+},
+{
+"word": "ben",
+"count": 22
+},
+{
+"word": "brown",
+"count": 22
+},
+{
+"word": "post",
+"count": 22
+},
+{
+"word": "suis",
+"count": 22
+},
+{
+"word": "yeux",
+"count": 22
+},
+{
+"word": "river",
+"count": 22
+},
+{
+"word": "vostre",
+"count": 22
+},
+{
+"word": "trop",
+"count": 22
+},
+{
+"word": "bell",
+"count": 22
+},
+{
+"word": "cpm",
+"count": 22
+},
+{
+"word": "fantastique",
+"count": 22
+},
+{
+"word": "nell",
+"count": 22
+},
+{
+"word": "romantique",
+"count": 22
+},
+{
+"word": "momento",
+"count": 22
+},
+{
+"word": "maid",
+"count": 22
+},
+{
+"word": "thanks",
+"count": 22
+},
+{
+"word": "virginum",
+"count": 22
+},
+{
+"word": "memoria",
+"count": 22
+},
+{
+"word": "jeanne",
+"count": 22
+},
+{
+"word": "portrait",
+"count": 22
+},
+{
+"word": "bethlehem",
+"count": 22
+},
+{
+"word": "psalmus",
+"count": 22
+},
+{
+"word": "wud",
+"count": 22
+},
+{
+"word": "think",
+"count": 21
+},
+{
+"word": "great",
+"count": 21
+},
+{
+"word": "flower",
+"count": 21
+},
+{
+"word": "waters",
+"count": 21
+},
+{
+"word": "intermezzi",
+"count": 21
+},
+{
+"word": "melodische",
+"count": 21
+},
+{
+"word": "original",
+"count": 21
+},
+{
+"word": "pezzi",
+"count": 21
+},
+{
+"word": "grande",
+"count": 21
+},
+{
+"word": "guitare",
+"count": 21
+},
+{
+"word": "forme",
+"count": 21
+},
+{
+"word": "bois",
+"count": 21
+},
+{
+"word": "fleurs",
+"count": 21
+},
+{
+"word": "automne",
+"count": 21
+},
+{
+"word": "moderne",
+"count": 21
+},
+{
+"word": "violon",
+"count": 21
+},
+{
+"word": "semiramide",
+"count": 21
+},
+{
+"word": "darein",
+"count": 21
+},
+{
+"word": "rhein",
+"count": 21
+},
+{
+"word": "levavi",
+"count": 21
+},
+{
+"word": "nje",
+"count": 21
+},
+{
+"word": "open",
+"count": 21
+},
+{
+"word": "meister",
+"count": 21
+},
+{
+"word": "wege",
+"count": 21
+},
+{
+"word": "amanti",
+"count": 21
+},
+{
+"word": "triumphal",
+"count": 21
+},
+{
+"word": "ask",
+"count": 21
+},
+{
+"word": "assumpta",
+"count": 21
+},
+{
+"word": "dulcis",
+"count": 21
+},
+{
+"word": "schottische",
+"count": 21
+},
+{
+"word": "bag",
+"count": 21
+},
+{
+"word": "notte",
+"count": 21
+},
+{
+"word": "sad",
+"count": 21
+},
+{
+"word": "town",
+"count": 21
+},
+{
+"word": "minstrel",
+"count": 21
+},
+{
+"word": "zuversicht",
+"count": 21
+},
+{
+"word": "egyptian",
+"count": 21
+},
+{
+"word": "mountain",
+"count": 21
+},
+{
+"word": "resignation",
+"count": 21
+},
+{
+"word": "freu",
+"count": 21
+},
+{
+"word": "exitu",
+"count": 21
+},
+{
+"word": "erhebt",
+"count": 21
+},
+{
+"word": "jeux",
+"count": 21
+},
+{
+"word": "soliloquy",
+"count": 21
+},
+{
+"word": "registro",
+"count": 21
+},
+{
+"word": "psalmodia",
+"count": 21
+},
+{
+"word": "derecha",
+"count": 21
+},
+{
+"word": "marche",
+"count": 20
+},
+{
+"word": "moonlight",
+"count": 20
+},
+{
+"word": "young",
+"count": 20
+},
+{
+"word": "ccw",
+"count": 20
+},
+{
+"word": "piece",
+"count": 20
+},
+{
+"word": "danses",
+"count": 20
+},
+{
+"word": "characteristic",
+"count": 20
+},
+{
+"word": "double",
+"count": 20
+},
+{
+"word": "german",
+"count": 20
+},
+{
+"word": "italian",
+"count": 20
+},
+{
+"word": "meditations",
+"count": 20
+},
+{
+"word": "volume",
+"count": 20
+},
+{
+"word": "guitarre",
+"count": 20
+},
+{
+"word": "jkb",
+"count": 20
+},
+{
+"word": "forte",
+"count": 20
+},
+{
+"word": "creator",
+"count": 20
+},
+{
+"word": "parties",
+"count": 20
+},
+{
+"word": "death",
+"count": 20
+},
+{
+"word": "reine",
+"count": 20
+},
+{
+"word": "dame",
+"count": 20
+},
+{
+"word": "solfege",
+"count": 20
+},
+{
+"word": "divertimentos",
+"count": 20
+},
+{
+"word": "herz",
+"count": 20
+},
+{
+"word": "bist",
+"count": 20
+},
+{
+"word": "ami",
+"count": 20
+},
+{
+"word": "meinen",
+"count": 20
+},
+{
+"word": "tag",
+"count": 20
+},
+{
+"word": "musik",
+"count": 20
+},
+{
+"word": "quel",
+"count": 20
+},
+{
+"word": "tua",
+"count": 20
+},
+{
+"word": "mammy",
+"count": 20
+},
+{
+"word": "soldier",
+"count": 20
+},
+{
+"word": "france",
+"count": 20
+},
+{
+"word": "pauvre",
+"count": 20
+},
+{
+"word": "trot",
+"count": 20
+},
+{
+"word": "rossignol",
+"count": 20
+},
+{
+"word": "licht",
+"count": 20
+},
+{
+"word": "out",
+"count": 20
+},
+{
+"word": "beauties",
+"count": 20
+},
+{
+"word": "tuo",
+"count": 20
+},
+{
+"word": "cours",
+"count": 20
+},
+{
+"word": "forget",
+"count": 20
+},
+{
+"word": "miss",
+"count": 20
+},
+{
+"word": "dom",
+"count": 20
+},
+{
+"word": "triumph",
+"count": 20
+},
+{
+"word": "happy",
+"count": 20
+},
+{
+"word": "sacrum",
+"count": 20
+},
+{
+"word": "globules",
+"count": 20
+},
+{
+"word": "awareness",
+"count": 20
+},
+{
+"word": "foaming",
+"count": 20
+},
+{
+"word": "nightingale",
+"count": 20
+},
+{
+"word": "nearer",
+"count": 20
+},
+{
+"word": "lift",
+"count": 20
+},
+{
+"word": "pearl",
+"count": 20
+},
+{
+"word": "litanie",
+"count": 20
+},
+{
+"word": "partita",
+"count": 20
+},
+{
+"word": "sole",
+"count": 19
+},
+{
+"word": "summer",
+"count": 19
+},
+{
+"word": "divertimenti",
+"count": 19
+},
+{
+"word": "studien",
+"count": 19
+},
+{
+"word": "nuit",
+"count": 19
+},
+{
+"word": "cantatas",
+"count": 19
+},
+{
+"word": "kurze",
+"count": 19
+},
+{
+"word": "regina",
+"count": 19
+},
+{
+"word": "guitars",
+"count": 19
+},
+{
+"word": "alt",
+"count": 19
+},
+{
+"word": "last",
+"count": 19
+},
+{
+"word": "doch",
+"count": 19
+},
+{
+"word": "addio",
+"count": 19
+},
+{
+"word": "omnium",
+"count": 19
+},
+{
+"word": "quickstep",
+"count": 19
+},
+{
+"word": "mary",
+"count": 19
+},
+{
+"word": "amen",
+"count": 19
+},
+{
+"word": "pur",
+"count": 19
+},
+{
+"word": "quick",
+"count": 19
+},
+{
+"word": "twilight",
+"count": 19
+},
+{
+"word": "popule",
+"count": 19
+},
+{
+"word": "mea",
+"count": 19
+},
+{
+"word": "sola",
+"count": 19
+},
+{
+"word": "queen",
+"count": 19
+},
+{
+"word": "engel",
+"count": 19
+},
+{
+"word": "upon",
+"count": 19
+},
+{
+"word": "listen",
+"count": 19
+},
+{
+"word": "lullaby",
+"count": 19
+},
+{
+"word": "toi",
+"count": 19
+},
+{
+"word": "galliard",
+"count": 19
+},
+{
+"word": "coronation",
+"count": 19
+},
+{
+"word": "organist",
+"count": 19
+},
+{
+"word": "fried",
+"count": 19
+},
+{
+"word": "meinem",
+"count": 19
+},
+{
+"word": "dies",
+"count": 19
+},
+{
+"word": "patri",
+"count": 19
+},
+{
+"word": "cannot",
+"count": 19
+},
+{
+"word": "most",
+"count": 19
+},
+{
+"word": "papillon",
+"count": 19
+},
+{
+"word": "fee",
+"count": 19
+},
+{
+"word": "gracieuse",
+"count": 19
+},
+{
+"word": "orange",
+"count": 19
+},
+{
+"word": "nar",
+"count": 19
+},
+{
+"word": "septimo",
+"count": 19
+},
+{
+"word": "mare",
+"count": 18
+},
+{
+"word": "fideles",
+"count": 18
+},
+{
+"word": "bellini",
+"count": 18
+},
+{
+"word": "fields",
+"count": 18
+},
+{
+"word": "cotton",
+"count": 18
+},
+{
+"word": "core",
+"count": 18
+},
+{
+"word": "van",
+"count": 18
+},
+{
+"word": "canons",
+"count": 18
+},
+{
+"word": "quatre",
+"count": 18
+},
+{
+"word": "estudios",
+"count": 18
+},
+{
+"word": "voor",
+"count": 18
+},
+{
+"word": "tune",
+"count": 18
+},
+{
+"word": "orgelstucke",
+"count": 18
+},
+{
+"word": "veni",
+"count": 18
+},
+{
+"word": "negro",
+"count": 18
+},
+{
+"word": "fantasien",
+"count": 18
+},
+{
+"word": "oper",
+"count": 18
+},
+{
+"word": "canto",
+"count": 18
+},
+{
+"word": "concertants",
+"count": 18
+},
+{
+"word": "ballet",
+"count": 18
+},
+{
+"word": "las",
+"count": 18
+},
+{
+"word": "gavotte",
+"count": 18
+},
+{
+"word": "adelaide",
+"count": 18
+},
+{
+"word": "guitarra",
+"count": 18
+},
+{
+"word": "alma",
+"count": 18
+},
+{
+"word": "nos",
+"count": 18
+},
+{
+"word": "dio",
+"count": 18
+},
+{
+"word": "mar",
+"count": 18
+},
+{
+"word": "flowers",
+"count": 18
+},
+{
+"word": "psyche",
+"count": 18
+},
+{
+"word": "parting",
+"count": 18
+},
+{
+"word": "eau",
+"count": 18
+},
+{
+"word": "matin",
+"count": 18
+},
+{
+"word": "vol",
+"count": 18
+},
+{
+"word": "fox",
+"count": 18
+},
+{
+"word": "there",
+"count": 18
+},
+{
+"word": "sang",
+"count": 18
+},
+{
+"word": "haus",
+"count": 18
+},
+{
+"word": "musica",
+"count": 18
+},
+{
+"word": "vorrei",
+"count": 18
+},
+{
+"word": "redemptor",
+"count": 18
+},
+{
+"word": "friede",
+"count": 18
+},
+{
+"word": "responsoria",
+"count": 18
+},
+{
+"word": "pax",
+"count": 18
+},
+{
+"word": "ruft",
+"count": 18
+},
+{
+"word": "bless",
+"count": 18
+},
+{
+"word": "dat",
+"count": 18
+},
+{
+"word": "islands",
+"count": 18
+},
+{
+"word": "won",
+"count": 18
+},
+{
+"word": "holy",
+"count": 18
+},
+{
+"word": "ewigkeit",
+"count": 18
+},
+{
+"word": "reminiscence",
+"count": 18
+},
+{
+"word": "tremuit",
+"count": 18
+},
+{
+"word": "kommt",
+"count": 17
+},
+{
+"word": "adeste",
+"count": 17
+},
+{
+"word": "evening",
+"count": 17
+},
+{
+"word": "kiss",
+"count": 17
+},
+{
+"word": "shore",
+"count": 17
+},
+{
+"word": "take",
+"count": 17
+},
+{
+"word": "care",
+"count": 17
+},
+{
+"word": "chants",
+"count": 17
+},
+{
+"word": "improvisations",
+"count": 17
+},
+{
+"word": "grandes",
+"count": 17
+},
+{
+"word": "fuge",
+"count": 17
+},
+{
+"word": "carols",
+"count": 17
+},
+{
+"word": "variationen",
+"count": 17
+},
+{
+"word": "passion",
+"count": 17
+},
+{
+"word": "green",
+"count": 17
+},
+{
+"word": "balladen",
+"count": 17
+},
+{
+"word": "classical",
+"count": 17
+},
+{
+"word": "anthem",
+"count": 17
+},
+{
+"word": "ved",
+"count": 17
+},
+{
+"word": "high",
+"count": 17
+},
+{
+"word": "sohn",
+"count": 17
+},
+{
+"word": "ain",
+"count": 17
+},
+{
+"word": "lieb",
+"count": 17
+},
+{
+"word": "achille",
+"count": 17
+},
+{
+"word": "bon",
+"count": 17
+},
+{
+"word": "alme",
+"count": 17
+},
+{
+"word": "rhapsody",
+"count": 17
+},
+{
+"word": "near",
+"count": 17
+},
+{
+"word": "freedom",
+"count": 17
+},
+{
+"word": "medley",
+"count": 17
+},
+{
+"word": "walk",
+"count": 17
+},
+{
+"word": "signore",
+"count": 17
+},
+{
+"word": "wedding",
+"count": 17
+},
+{
+"word": "house",
+"count": 17
+},
+{
+"word": "fortune",
+"count": 17
+},
+{
+"word": "jolly",
+"count": 17
+},
+{
+"word": "molly",
+"count": 17
+},
+{
+"word": "earth",
+"count": 17
+},
+{
+"word": "befiehl",
+"count": 17
+},
+{
+"word": "blossoms",
+"count": 17
+},
+{
+"word": "mam",
+"count": 17
+},
+{
+"word": "golden",
+"count": 17
+},
+{
+"word": "daughter",
+"count": 17
+},
+{
+"word": "collected",
+"count": 17
+},
+{
+"word": "best",
+"count": 17
+},
+{
+"word": "johann",
+"count": 17
+},
+{
+"word": "demofoonte",
+"count": 17
+},
+{
+"word": "har",
+"count": 17
+},
+{
+"word": "lille",
+"count": 17
+},
+{
+"word": "gibt",
+"count": 17
+},
+{
+"word": "hirt",
+"count": 17
+},
+{
+"word": "enfant",
+"count": 17
+},
+{
+"word": "fac",
+"count": 17
+},
+{
+"word": "sen",
+"count": 17
+},
+{
+"word": "nunc",
+"count": 17
+},
+{
+"word": "eternal",
+"count": 17
+},
+{
+"word": "send",
+"count": 17
+},
+{
+"word": "min",
+"count": 17
+},
+{
+"word": "ricp",
+"count": 17
+},
+{
+"word": "message",
+"count": 17
+},
+{
+"word": "naar",
+"count": 17
+},
+{
+"word": "yer",
+"count": 17
+},
+{
+"word": "dahin",
+"count": 17
+},
+{
+"word": "krakowiak",
+"count": 17
+},
+{
+"word": "paysage",
+"count": 17
+},
+{
+"word": "sento",
+"count": 17
+},
+{
+"word": "izquierda",
+"count": 17
+},
+{
+"word": "spaghetti",
+"count": 17
+},
+{
+"word": "terzetto",
+"count": 17
+},
+{
+"word": "octavo",
+"count": 17
+},
+{
+"word": "lily",
+"count": 16
+},
+{
+"word": "mamma",
+"count": 16
+},
+{
+"word": "mercy",
+"count": 16
+},
+{
+"word": "ammore",
+"count": 16
+},
+{
+"word": "hawaiian",
+"count": 16
+},
+{
+"word": "tree",
+"count": 16
+},
+{
+"word": "sin",
+"count": 16
+},
+{
+"word": "met",
+"count": 16
+},
+{
+"word": "midnight",
+"count": 16
+},
+{
+"word": "solos",
+"count": 16
+},
+{
+"word": "deux",
+"count": 16
+},
+{
+"word": "stella",
+"count": 16
+},
+{
+"word": "san",
+"count": 16
+},
+{
+"word": "fuga",
+"count": 16
+},
+{
+"word": "tres",
+"count": 16
+},
+{
+"word": "haydn",
+"count": 16
+},
+{
+"word": "ballad",
+"count": 16
+},
+{
+"word": "psalmen",
+"count": 16
+},
+{
+"word": "york",
+"count": 16
+},
+{
+"word": "leiden",
+"count": 16
+},
+{
+"word": "fahr",
+"count": 16
+},
+{
+"word": "viel",
+"count": 16
+},
+{
+"word": "bleib",
+"count": 16
+},
+{
+"word": "christen",
+"count": 16
+},
+{
+"word": "mal",
+"count": 16
+},
+{
+"word": "occhi",
+"count": 16
+},
+{
+"word": "across",
+"count": 16
+},
+{
+"word": "napoli",
+"count": 16
+},
+{
+"word": "hast",
+"count": 16
+},
+{
+"word": "along",
+"count": 16
+},
+{
+"word": "close",
+"count": 16
+},
+{
+"word": "soul",
+"count": 16
+},
+{
+"word": "white",
+"count": 16
+},
+{
+"word": "mig",
+"count": 16
+},
+{
+"word": "feu",
+"count": 16
+},
+{
+"word": "cloches",
+"count": 16
+},
+{
+"word": "moy",
+"count": 16
+},
+{
+"word": "nature",
+"count": 16
+},
+{
+"word": "igp",
+"count": 16
+},
+{
+"word": "johannes",
+"count": 16
+},
+{
+"word": "bataille",
+"count": 16
+},
+{
+"word": "linda",
+"count": 16
+},
+{
+"word": "sweetheart",
+"count": 16
+},
+{
+"word": "mater",
+"count": 16
+},
+{
+"word": "lady",
+"count": 16
+},
+{
+"word": "rendez",
+"count": 16
+},
+{
+"word": "ris",
+"count": 16
+},
+{
+"word": "igd",
+"count": 16
+},
+{
+"word": "saa",
+"count": 16
+},
+{
+"word": "lebens",
+"count": 16
+},
+{
+"word": "pastorella",
+"count": 16
+},
+{
+"word": "rex",
+"count": 16
+},
+{
+"word": "vivus",
+"count": 16
+},
+{
+"word": "memorial",
+"count": 16
+},
+{
+"word": "miller",
+"count": 16
+},
+{
+"word": "johnny",
+"count": 16
+},
+{
+"word": "get",
+"count": 16
+},
+{
+"word": "helene",
+"count": 16
+},
+{
+"word": "mondnacht",
+"count": 16
+},
+{
+"word": "quinti",
+"count": 16
+},
+{
+"word": "tertii",
+"count": 16
+},
+{
+"word": "haben",
+"count": 16
+},
+{
+"word": "longepou",
+"count": 16
+},
+{
+"word": "lamm",
+"count": 16
+},
+{
+"word": "patience",
+"count": 16
+},
+{
+"word": "pueri",
+"count": 16
+},
+{
+"word": "unga",
+"count": 16
+},
+{
+"word": "wots",
+"count": 16
+},
+{
+"word": "flava",
+"count": 16
+},
+{
+"word": "consciousness",
+"count": 16
+},
+{
+"word": "wspomnienie",
+"count": 16
+},
+{
+"word": "ora",
+"count": 15
+},
+{
+"word": "donna",
+"count": 15
+},
+{
+"word": "only",
+"count": 15
+},
+{
+"word": "left",
+"count": 15
+},
+{
+"word": "schon",
+"count": 15
+},
+{
+"word": "angelus",
+"count": 15
+},
+{
+"word": "point",
+"count": 15
+},
+{
+"word": "canciones",
+"count": 15
+},
+{
+"word": "populaires",
+"count": 15
+},
+{
+"word": "fantasies",
+"count": 15
+},
+{
+"word": "folksongs",
+"count": 15
+},
+{
+"word": "jazz",
+"count": 15
+},
+{
+"word": "three",
+"count": 15
+},
+{
+"word": "ave",
+"count": 15
+},
+{
+"word": "maiden",
+"count": 15
+},
+{
+"word": "modal",
+"count": 15
+},
+{
+"word": "vie",
+"count": 15
+},
+{
+"word": "petite",
+"count": 15
+},
+{
+"word": "lucia",
+"count": 15
+},
+{
+"word": "romance",
+"count": 15
+},
+{
+"word": "cornet",
+"count": 15
+},
+{
+"word": "dal",
+"count": 15
+},
+{
+"word": "singen",
+"count": 15
+},
+{
+"word": "ariette",
+"count": 15
+},
+{
+"word": "seul",
+"count": 15
+},
+{
+"word": "aller",
+"count": 15
+},
+{
+"word": "seelen",
+"count": 15
+},
+{
+"word": "wort",
+"count": 15
+},
+{
+"word": "zeit",
+"count": 15
+},
+{
+"word": "voi",
+"count": 15
+},
+{
+"word": "honorem",
+"count": 15
+},
+{
+"word": "revoir",
+"count": 15
+},
+{
+"word": "dub",
+"count": 15
+},
+{
+"word": "pace",
+"count": 15
+},
+{
+"word": "father",
+"count": 15
+},
+{
+"word": "audi",
+"count": 15
+},
+{
+"word": "xiii",
+"count": 15
+},
+{
+"word": "beatrice",
+"count": 15
+},
+{
+"word": "bebe",
+"count": 15
+},
+{
+"word": "butterfly",
+"count": 15
+},
+{
+"word": "mere",
+"count": 15
+},
+{
+"word": "villa",
+"count": 15
+},
+{
+"word": "convivium",
+"count": 15
+},
+{
+"word": "cleopatra",
+"count": 15
+},
+{
+"word": "black",
+"count": 15
+},
+{
+"word": "singing",
+"count": 15
+},
+{
+"word": "cantionum",
+"count": 15
+},
+{
+"word": "sacrarum",
+"count": 15
+},
+{
+"word": "morir",
+"count": 15
+},
+{
+"word": "morgen",
+"count": 15
+},
+{
+"word": "halt",
+"count": 15
+},
+{
+"word": "quam",
+"count": 15
+},
+{
+"word": "vienne",
+"count": 15
+},
+{
+"word": "voll",
+"count": 15
+},
+{
+"word": "menor",
+"count": 15
+},
+{
+"word": "estudo",
+"count": 15
+},
+{
+"word": "playing",
+"count": 15
+},
+{
+"word": "harvest",
+"count": 15
+},
+{
+"word": "glass",
+"count": 15
+},
+{
+"word": "sacris",
+"count": 15
+},
+{
+"word": "sleep",
+"count": 15
+},
+{
+"word": "own",
+"count": 15
+},
+{
+"word": "oliveti",
+"count": 15
+},
+{
+"word": "jetzt",
+"count": 15
+},
+{
+"word": "gabriel",
+"count": 15
+},
+{
+"word": "fleur",
+"count": 15
+},
+{
+"word": "mocking",
+"count": 15
+},
+{
+"word": "liber",
+"count": 15
+},
+{
+"word": "magnum",
+"count": 15
+},
+{
+"word": "thanksgiving",
+"count": 15
+},
+{
+"word": "softly",
+"count": 15
+},
+{
+"word": "postludio",
+"count": 15
+},
+{
+"word": "vestern",
+"count": 15
+},
+{
+"word": "tiple",
+"count": 15
+},
+{
+"word": "wiv",
+"count": 15
+},
+{
+"word": "self",
+"count": 14
+},
+{
+"word": "arranged",
+"count": 14
+},
+{
+"word": "anima",
+"count": 14
+},
+{
+"word": "wonderful",
+"count": 14
+},
+{
+"word": "end",
+"count": 14
+},
+{
+"word": "east",
+"count": 14
+},
+{
+"word": "well",
+"count": 14
+},
+{
+"word": "varies",
+"count": 14
+},
+{
+"word": "harmonium",
+"count": 14
+},
+{
+"word": "exercices",
+"count": 14
+},
+{
+"word": "voix",
+"count": 14
+},
+{
+"word": "notes",
+"count": 14
+},
+{
+"word": "nouvelles",
+"count": 14
+},
+{
+"word": "alsace",
+"count": 14
+},
+{
+"word": "jewish",
+"count": 14
+},
+{
+"word": "col",
+"count": 14
+},
+{
+"word": "special",
+"count": 14
+},
+{
+"word": "without",
+"count": 14
+},
+{
+"word": "soprano",
+"count": 14
+},
+{
+"word": "andante",
+"count": 14
+},
+{
+"word": "operatic",
+"count": 14
+},
+{
+"word": "rimini",
+"count": 14
+},
+{
+"word": "concertante",
+"count": 14
+},
+{
+"word": "robert",
+"count": 14
+},
+{
+"word": "gipsy",
+"count": 14
+},
+{
+"word": "dolorosa",
+"count": 14
+},
+{
+"word": "harfe",
+"count": 14
+},
+{
+"word": "weisen",
+"count": 14
+},
+{
+"word": "street",
+"count": 14
+},
+{
+"word": "calling",
+"count": 14
+},
+{
+"word": "movement",
+"count": 14
+},
+{
+"word": "child",
+"count": 14
+},
+{
+"word": "quadrilles",
+"count": 14
+},
+{
+"word": "herzeleid",
+"count": 14
+},
+{
+"word": "hirte",
+"count": 14
+},
+{
+"word": "herre",
+"count": 14
+},
+{
+"word": "meines",
+"count": 14
+},
+{
+"word": "freuden",
+"count": 14
+},
+{
+"word": "agni",
+"count": 14
+},
+{
+"word": "scherzo",
+"count": 14
+},
+{
+"word": "city",
+"count": 14
+},
+{
+"word": "blumen",
+"count": 14
+},
+{
+"word": "abe",
+"count": 14
+},
+{
+"word": "banjo",
+"count": 14
+},
+{
+"word": "youth",
+"count": 14
+},
+{
+"word": "among",
+"count": 14
+},
+{
+"word": "ascendit",
+"count": 14
+},
+{
+"word": "door",
+"count": 14
+},
+{
+"word": "window",
+"count": 14
+},
+{
+"word": "angels",
+"count": 14
+},
+{
+"word": "cake",
+"count": 14
+},
+{
+"word": "sous",
+"count": 14
+},
+{
+"word": "violette",
+"count": 14
+},
+{
+"word": "monde",
+"count": 14
+},
+{
+"word": "fait",
+"count": 14
+},
+{
+"word": "jeunes",
+"count": 14
+},
+{
+"word": "ete",
+"count": 14
+},
+{
+"word": "flag",
+"count": 14
+},
+{
+"word": "var",
+"count": 14
+},
+{
+"word": "rejoice",
+"count": 14
+},
+{
+"word": "viscera",
+"count": 14
+},
+{
+"word": "timent",
+"count": 14
+},
+{
+"word": "rei",
+"count": 14
+},
+{
+"word": "they",
+"count": 14
+},
+{
+"word": "gro",
+"count": 14
+},
+{
+"word": "dawn",
+"count": 14
+},
+{
+"word": "clouds",
+"count": 14
+},
+{
+"word": "sun",
+"count": 14
+},
+{
+"word": "grant",
+"count": 14
+},
+{
+"word": "sainte",
+"count": 14
+},
+{
+"word": "melancholy",
+"count": 14
+},
+{
+"word": "clara",
+"count": 14
+},
+{
+"word": "cold",
+"count": 14
+},
+{
+"word": "degli",
+"count": 14
+},
+{
+"word": "clover",
+"count": 14
+},
+{
+"word": "courrant",
+"count": 14
+},
+{
+"word": "crazy",
+"count": 14
+},
+{
+"word": "denn",
+"count": 14
+},
+{
+"word": "geben",
+"count": 14
+},
+{
+"word": "just",
+"count": 14
+},
+{
+"word": "malinconia",
+"count": 14
+},
+{
+"word": "adjuvandum",
+"count": 14
+},
+{
+"word": "nostra",
+"count": 14
+},
+{
+"word": "mandoline",
+"count": 14
+},
+{
+"word": "blut",
+"count": 14
+},
+{
+"word": "ecole",
+"count": 14
+},
+{
+"word": "esther",
+"count": 14
+},
+{
+"word": "sus",
+"count": 14
+},
+{
+"word": "nozze",
+"count": 14
+},
+{
+"word": "gehoffet",
+"count": 14
+},
+{
+"word": "francesca",
+"count": 14
+},
+{
+"word": "frau",
+"count": 14
+},
+{
+"word": "jolie",
+"count": 14
+},
+{
+"word": "orfeo",
+"count": 14
+},
+{
+"word": "legende",
+"count": 14
+},
+{
+"word": "naissance",
+"count": 14
+},
+{
+"word": "reveil",
+"count": 14
+},
+{
+"word": "mill",
+"count": 14
+},
+{
+"word": "modlitwa",
+"count": 14
+},
+{
+"word": "unschuldig",
+"count": 14
+},
+{
+"word": "selections",
+"count": 14
+},
+{
+"word": "gaillarde",
+"count": 14
+},
+{
+"word": "owl",
+"count": 14
+},
+{
+"word": "henestrosa",
+"count": 14
+},
+{
+"word": "vaghi",
+"count": 14
+},
+{
+"word": "short",
+"count": 13
+},
+{
+"word": "study",
+"count": 13
+},
+{
+"word": "fuck",
+"count": 13
+},
+{
+"word": "donizetti",
+"count": 13
+},
+{
+"word": "honey",
+"count": 13
+},
+{
+"word": "resurrection",
+"count": 13
+},
+{
+"word": "orgel",
+"count": 13
+},
+{
+"word": "brass",
+"count": 13
+},
+{
+"word": "cellos",
+"count": 13
+},
+{
+"word": "chopin",
+"count": 13
+},
+{
+"word": "volkslieder",
+"count": 13
+},
+{
+"word": "thema",
+"count": 13
+},
+{
+"word": "guerre",
+"count": 13
+},
+{
+"word": "main",
+"count": 13
+},
+{
+"word": "ulb",
+"count": 13
+},
+{
+"word": "allemandes",
+"count": 13
+},
+{
+"word": "fontaine",
+"count": 13
+},
+{
+"word": "wagner",
+"count": 13
+},
+{
+"word": "allein",
+"count": 13
+},
+{
+"word": "vierstimmige",
+"count": 13
+},
+{
+"word": "tenor",
+"count": 13
+},
+{
+"word": "duette",
+"count": 13
+},
+{
+"word": "viii",
+"count": 13
+},
+{
+"word": "canzonette",
+"count": 13
+},
+{
+"word": "counterpoint",
+"count": 13
+},
+{
+"word": "chorus",
+"count": 13
+},
+{
+"word": "alpen",
+"count": 13
+},
+{
+"word": "general",
+"count": 13
+},
+{
+"word": "red",
+"count": 13
+},
+{
+"word": "soft",
+"count": 13
+},
+{
+"word": "vago",
+"count": 13
+},
+{
+"word": "lass",
+"count": 13
+},
+{
+"word": "armen",
+"count": 13
+},
+{
+"word": "meam",
+"count": 13
+},
+{
+"word": "polonaise",
+"count": 13
+},
+{
+"word": "madame",
+"count": 13
+},
+{
+"word": "mignonne",
+"count": 13
+},
+{
+"word": "prince",
+"count": 13
+},
+{
+"word": "alpine",
+"count": 13
+},
+{
+"word": "som",
+"count": 13
+},
+{
+"word": "grabe",
+"count": 13
+},
+{
+"word": "segen",
+"count": 13
+},
+{
+"word": "gloire",
+"count": 13
+},
+{
+"word": "dulcissime",
+"count": 13
+},
+{
+"word": "west",
+"count": 13
+},
+{
+"word": "head",
+"count": 13
+},
+{
+"word": "winds",
+"count": 13
+},
+{
+"word": "nocturne",
+"count": 13
+},
+{
+"word": "bonheur",
+"count": 13
+},
+{
+"word": "loves",
+"count": 13
+},
+{
+"word": "friend",
+"count": 13
+},
+{
+"word": "mountains",
+"count": 13
+},
+{
+"word": "service",
+"count": 13
+},
+{
+"word": "mendelssohn",
+"count": 13
+},
+{
+"word": "gesang",
+"count": 13
+},
+{
+"word": "arc",
+"count": 13
+},
+{
+"word": "plaisir",
+"count": 13
+},
+{
+"word": "valet",
+"count": 13
+},
+{
+"word": "ciel",
+"count": 13
+},
+{
+"word": "range",
+"count": 13
+},
+{
+"word": "editions",
+"count": 13
+},
+{
+"word": "bone",
+"count": 13
+},
+{
+"word": "doctor",
+"count": 13
+},
+{
+"word": "nahe",
+"count": 13
+},
+{
+"word": "mysterium",
+"count": 13
+},
+{
+"word": "viol",
+"count": 13
+},
+{
+"word": "quis",
+"count": 13
+},
+{
+"word": "lost",
+"count": 13
+},
+{
+"word": "benedicite",
+"count": 13
+},
+{
+"word": "angelorum",
+"count": 13
+},
+{
+"word": "quomodo",
+"count": 13
+},
+{
+"word": "lux",
+"count": 13
+},
+{
+"word": "nights",
+"count": 13
+},
+{
+"word": "wunden",
+"count": 13
+},
+{
+"word": "friendship",
+"count": 13
+},
+{
+"word": "laus",
+"count": 13
+},
+{
+"word": "knew",
+"count": 13
+},
+{
+"word": "malaguena",
+"count": 13
+},
+{
+"word": "orphan",
+"count": 13
+},
+{
+"word": "baritone",
+"count": 13
+},
+{
+"word": "souvenance",
+"count": 13
+},
+{
+"word": "nachklange",
+"count": 13
+},
+{
+"word": "aeternam",
+"count": 13
+},
+{
+"word": "toada",
+"count": 13
+},
+{
+"word": "voglein",
+"count": 13
+},
+{
+"word": "here",
+"count": 12
+},
+{
+"word": "twas",
+"count": 12
+},
+{
+"word": "year",
+"count": 12
+},
+{
+"word": "troppo",
+"count": 12
+},
+{
+"word": "used",
+"count": 12
+},
+{
+"word": "brillantes",
+"count": 12
+},
+{
+"word": "concertans",
+"count": 12
+},
+{
+"word": "recueil",
+"count": 12
+},
+{
+"word": "scenes",
+"count": 12
+},
+{
+"word": "basso",
+"count": 12
+},
+{
+"word": "progressives",
+"count": 12
+},
+{
+"word": "cantata",
+"count": 12
+},
+{
+"word": "suites",
+"count": 12
+},
+{
+"word": "weber",
+"count": 12
+},
+{
+"word": "vocal",
+"count": 12
+},
+{
+"word": "lyrics",
+"count": 12
+},
+{
+"word": "deest",
+"count": 12
+},
+{
+"word": "brillant",
+"count": 12
+},
+{
+"word": "motive",
+"count": 12
+},
+{
+"word": "eichendorff",
+"count": 12
+},
+{
+"word": "orchester",
+"count": 12
+},
+{
+"word": "vignettes",
+"count": 12
+},
+{
+"word": "xii",
+"count": 12
+},
+{
+"word": "teil",
+"count": 12
+},
+{
+"word": "arien",
+"count": 12
+},
+{
+"word": "canzoni",
+"count": 12
+},
+{
+"word": "baroque",
+"count": 12
+},
+{
+"word": "other",
+"count": 12
+},
+{
+"word": "canti",
+"count": 12
+},
+{
+"word": "instruments",
+"count": 12
+},
+{
+"word": "creole",
+"count": 12
+},
+{
+"word": "quattro",
+"count": 12
+},
+{
+"word": "ejg",
+"count": 12
+},
+{
+"word": "deiner",
+"count": 12
+},
+{
+"word": "machen",
+"count": 12
+},
+{
+"word": "fluchtig",
+"count": 12
+},
+{
+"word": "nichtig",
+"count": 12
+},
+{
+"word": "jahr",
+"count": 12
+},
+{
+"word": "stille",
+"count": 12
+},
+{
+"word": "canticum",
+"count": 12
+},
+{
+"word": "luce",
+"count": 12
+},
+{
+"word": "religioso",
+"count": 12
+},
+{
+"word": "voce",
+"count": 12
+},
+{
+"word": "tango",
+"count": 12
+},
+{
+"word": "aime",
+"count": 12
+},
+{
+"word": "patrie",
+"count": 12
+},
+{
+"word": "iah",
+"count": 12
+},
+{
+"word": "rock",
+"count": 12
+},
+{
+"word": "came",
+"count": 12
+},
+{
+"word": "right",
+"count": 12
+},
+{
+"word": "road",
+"count": 12
+},
+{
+"word": "filli",
+"count": 12
+},
+{
+"word": "tage",
+"count": 12
+},
+{
+"word": "schule",
+"count": 12
+},
+{
+"word": "glad",
+"count": 12
+},
+{
+"word": "show",
+"count": 12
+},
+{
+"word": "santo",
+"count": 12
+},
+{
+"word": "amazing",
+"count": 12
+},
+{
+"word": "ame",
+"count": 12
+},
+{
+"word": "did",
+"count": 12
+},
+{
+"word": "spirit",
+"count": 12
+},
+{
+"word": "aspiration",
+"count": 12
+},
+{
+"word": "gate",
+"count": 12
+},
+{
+"word": "mois",
+"count": 12
+},
+{
+"word": "jeu",
+"count": 12
+},
+{
+"word": "pied",
+"count": 12
+},
+{
+"word": "passe",
+"count": 12
+},
+{
+"word": "method",
+"count": 12
+},
+{
+"word": "bugle",
+"count": 12
+},
+{
+"word": "dog",
+"count": 12
+},
+{
+"word": "lina",
+"count": 12
+},
+{
+"word": "zelle",
+"count": 12
+},
+{
+"word": "dit",
+"count": 12
+},
+{
+"word": "foret",
+"count": 12
+},
+{
+"word": "woods",
+"count": 12
+},
+{
+"word": "sparkling",
+"count": 12
+},
+{
+"word": "sois",
+"count": 12
+},
+{
+"word": "ejercicios",
+"count": 12
+},
+{
+"word": "coro",
+"count": 12
+},
+{
+"word": "cottage",
+"count": 12
+},
+{
+"word": "credidi",
+"count": 12
+},
+{
+"word": "haupt",
+"count": 12
+},
+{
+"word": "abschied",
+"count": 12
+},
+{
+"word": "gleich",
+"count": 12
+},
+{
+"word": "divertimento",
+"count": 12
+},
+{
+"word": "divisions",
+"count": 12
+},
+{
+"word": "ever",
+"count": 12
+},
+{
+"word": "dolci",
+"count": 12
+},
+{
+"word": "bitch",
+"count": 12
+},
+{
+"word": "quando",
+"count": 12
+},
+{
+"word": "regem",
+"count": 12
+},
+{
+"word": "moritur",
+"count": 12
+},
+{
+"word": "north",
+"count": 12
+},
+{
+"word": "ecos",
+"count": 12
+},
+{
+"word": "kommen",
+"count": 12
+},
+{
+"word": "violets",
+"count": 12
+},
+{
+"word": "spanische",
+"count": 12
+},
+{
+"word": "venise",
+"count": 12
+},
+{
+"word": "nativity",
+"count": 12
+},
+{
+"word": "freuet",
+"count": 12
+},
+{
+"word": "gitana",
+"count": 12
+},
+{
+"word": "perfect",
+"count": 12
+},
+{
+"word": "england",
+"count": 12
+},
+{
+"word": "heard",
+"count": 12
+},
+{
+"word": "saw",
+"count": 12
+},
+{
+"word": "grove",
+"count": 12
+},
+{
+"word": "tempore",
+"count": 12
+},
+{
+"word": "questa",
+"count": 12
+},
+{
+"word": "vieux",
+"count": 12
+},
+{
+"word": "job",
+"count": 12
+},
+{
+"word": "kujawiak",
+"count": 12
+},
+{
+"word": "kve",
+"count": 12
+},
+{
+"word": "lecon",
+"count": 12
+},
+{
+"word": "charmant",
+"count": 12
+},
+{
+"word": "teu",
+"count": 12
+},
+{
+"word": "nachtlied",
+"count": 12
+},
+{
+"word": "patria",
+"count": 12
+},
+{
+"word": "beggar",
+"count": 12
+},
+{
+"word": "potpourris",
+"count": 12
+},
+{
+"word": "solemn",
+"count": 12
+},
+{
+"word": "resonet",
+"count": 12
+},
+{
+"word": "laudibus",
+"count": 12
+},
+{
+"word": "recit",
+"count": 12
+},
+{
+"word": "reponse",
+"count": 12
+},
+{
+"word": "tiples",
+"count": 12
+},
+{
+"word": "vort",
+"count": 12
+},
+{
+"word": "festa",
+"count": 11
+},
+{
+"word": "vita",
+"count": 11
+},
+{
+"word": "norma",
+"count": 11
+},
+{
+"word": "line",
+"count": 11
+},
+{
+"word": "tre",
+"count": 11
+},
+{
+"word": "fin",
+"count": 11
+},
+{
+"word": "neath",
+"count": 11
+},
+{
+"word": "glorious",
+"count": 11
+},
+{
+"word": "ecossaises",
+"count": 11
+},
+{
+"word": "landler",
+"count": 11
+},
+{
+"word": "enfants",
+"count": 11
+},
+{
+"word": "bin",
+"count": 11
+},
+{
+"word": "lyre",
+"count": 11
+},
+{
+"word": "parade",
+"count": 11
+},
+{
+"word": "favoris",
+"count": 11
+},
+{
+"word": "ballads",
+"count": 11
+},
+{
+"word": "brillants",
+"count": 11
+},
+{
+"word": "rossini",
+"count": 11
+},
+{
+"word": "richard",
+"count": 11
+},
+{
+"word": "pavans",
+"count": 11
+},
+{
+"word": "lammermoor",
+"count": 11
+},
+{
+"word": "fantastic",
+"count": 11
+},
+{
+"word": "indian",
+"count": 11
+},
+{
+"word": "variazioni",
+"count": 11
+},
+{
+"word": "portraits",
+"count": 11
+},
+{
+"word": "leaves",
+"count": 11
+},
+{
+"word": "grave",
+"count": 11
+},
+{
+"word": "corrente",
+"count": 11
+},
+{
+"word": "estilo",
+"count": 11
+},
+{
+"word": "med",
+"count": 11
+},
+{
+"word": "seule",
+"count": 11
+},
+{
+"word": "solfeggi",
+"count": 11
+},
+{
+"word": "lake",
+"count": 11
+},
+{
+"word": "psalmi",
+"count": 11
+},
+{
+"word": "alter",
+"count": 11
+},
+{
+"word": "aria",
+"count": 11
+},
+{
+"word": "frommen",
+"count": 11
+},
+{
+"word": "sswv",
+"count": 11
+},
+{
+"word": "herzen",
+"count": 11
+},
+{
+"word": "jesulein",
+"count": 11
+},
+{
+"word": "tochter",
+"count": 11
+},
+{
+"word": "lwv",
+"count": 11
+},
+{
+"word": "speak",
+"count": 11
+},
+{
+"word": "providi",
+"count": 11
+},
+{
+"word": "sentimental",
+"count": 11
+},
+{
+"word": "meo",
+"count": 11
+},
+{
+"word": "beloved",
+"count": 11
+},
+{
+"word": "side",
+"count": 11
+},
+{
+"word": "eternel",
+"count": 11
+},
+{
+"word": "alpha",
+"count": 11
+},
+{
+"word": "club",
+"count": 11
+},
+{
+"word": "barn",
+"count": 11
+},
+{
+"word": "geliebet",
+"count": 11
+},
+{
+"word": "between",
+"count": 11
+},
+{
+"word": "quid",
+"count": 11
+},
+{
+"word": "jwv",
+"count": 11
+},
+{
+"word": "fede",
+"count": 11
+},
+{
+"word": "ode",
+"count": 11
+},
+{
+"word": "ashes",
+"count": 11
+},
+{
+"word": "soldiers",
+"count": 11
+},
+{
+"word": "morn",
+"count": 11
+},
+{
+"word": "round",
+"count": 11
+},
+{
+"word": "isle",
+"count": 11
+},
+{
+"word": "soldat",
+"count": 11
+},
+{
+"word": "sieg",
+"count": 11
+},
+{
+"word": "aurora",
+"count": 11
+},
+{
+"word": "cry",
+"count": 11
+},
+{
+"word": "republic",
+"count": 11
+},
+{
+"word": "bee",
+"count": 11
+},
+{
+"word": "genitrix",
+"count": 11
+},
+{
+"word": "mari",
+"count": 11
+},
+{
+"word": "say",
+"count": 11
+},
+{
+"word": "lit",
+"count": 11
+},
+{
+"word": "hill",
+"count": 11
+},
+{
+"word": "men",
+"count": 11
+},
+{
+"word": "return",
+"count": 11
+},
+{
+"word": "buy",
+"count": 11
+},
+{
+"word": "neige",
+"count": 11
+},
+{
+"word": "tant",
+"count": 11
+},
+{
+"word": "femme",
+"count": 11
+},
+{
+"word": "gloriosa",
+"count": 11
+},
+{
+"word": "cecilia",
+"count": 11
+},
+{
+"word": "celestial",
+"count": 11
+},
+{
+"word": "oder",
+"count": 11
+},
+{
+"word": "opere",
+"count": 11
+},
+{
+"word": "super",
+"count": 11
+},
+{
+"word": "solfeggio",
+"count": 11
+},
+{
+"word": "cotillon",
+"count": 11
+},
+{
+"word": "him",
+"count": 11
+},
+{
+"word": "apres",
+"count": 11
+},
+{
+"word": "tears",
+"count": 11
+},
+{
+"word": "gang",
+"count": 11
+},
+{
+"word": "dig",
+"count": 11
+},
+{
+"word": "gute",
+"count": 11
+},
+{
+"word": "seinen",
+"count": 11
+},
+{
+"word": "jungling",
+"count": 11
+},
+{
+"word": "doll",
+"count": 11
+},
+{
+"word": "dolly",
+"count": 11
+},
+{
+"word": "dolore",
+"count": 11
+},
+{
+"word": "furore",
+"count": 11
+},
+{
+"word": "secundum",
+"count": 11
+},
+{
+"word": "habitabit",
+"count": 11
+},
+{
+"word": "found",
+"count": 11
+},
+{
+"word": "omnia",
+"count": 11
+},
+{
+"word": "story",
+"count": 11
+},
+{
+"word": "burg",
+"count": 11
+},
+{
+"word": "steht",
+"count": 11
+},
+{
+"word": "mayor",
+"count": 11
+},
+{
+"word": "postillon",
+"count": 11
+},
+{
+"word": "giovanni",
+"count": 11
+},
+{
+"word": "augen",
+"count": 11
+},
+{
+"word": "motivos",
+"count": 11
+},
+{
+"word": "thousand",
+"count": 11
+},
+{
+"word": "tomba",
+"count": 11
+},
+{
+"word": "trinitas",
+"count": 11
+},
+{
+"word": "risen",
+"count": 11
+},
+{
+"word": "kong",
+"count": 11
+},
+{
+"word": "dove",
+"count": 11
+},
+{
+"word": "convertendo",
+"count": 11
+},
+{
+"word": "illo",
+"count": 11
+},
+{
+"word": "jeannette",
+"count": 11
+},
+{
+"word": "frommer",
+"count": 11
+},
+{
+"word": "jezus",
+"count": 11
+},
+{
+"word": "nad",
+"count": 11
+},
+{
+"word": "jig",
+"count": 11
+},
+{
+"word": "tit",
+"count": 11
+},
+{
+"word": "manon",
+"count": 11
+},
+{
+"word": "maitre",
+"count": 11
+},
+{
+"word": "marquise",
+"count": 11
+},
+{
+"word": "miracle",
+"count": 11
+},
+{
+"word": "parangon",
+"count": 11
+},
+{
+"word": "mister",
+"count": 11
+},
+{
+"word": "mistress",
+"count": 11
+},
+{
+"word": "mitten",
+"count": 11
+},
+{
+"word": "vray",
+"count": 11
+},
+{
+"word": "naples",
+"count": 11
+},
+{
+"word": "banks",
+"count": 11
+},
+{
+"word": "danken",
+"count": 11
+},
+{
+"word": "paysages",
+"count": 11
+},
+{
+"word": "mikado",
+"count": 11
+},
+{
+"word": "merki",
+"count": 11
+},
+{
+"word": "sailing",
+"count": 11
+},
+{
+"word": "solfeges",
+"count": 11
+},
+{
+"word": "terpsichore",
+"count": 11
+},
+{
+"word": "vulnerasti",
+"count": 11
+},
+{
+"word": "fliehen",
+"count": 11
+},
+{
+"word": "quarto",
+"count": 10
+},
+{
+"word": "wings",
+"count": 10
+},
+{
+"word": "past",
+"count": 10
+},
+{
+"word": "sunset",
+"count": 10
+},
+{
+"word": "under",
+"count": 10
+},
+{
+"word": "delight",
+"count": 10
+},
+{
+"word": "ancient",
+"count": 10
+},
+{
+"word": "canzonets",
+"count": 10
+},
+{
+"word": "tonstucke",
+"count": 10
+},
+{
+"word": "choralvorspiele",
+"count": 10
+},
+{
+"word": "esquisses",
+"count": 10
+},
+{
+"word": "fest",
+"count": 10
+},
+{
+"word": "mannerchor",
+"count": 10
+},
+{
+"word": "impressions",
+"count": 10
+},
+{
+"word": "inventions",
+"count": 10
+},
+{
+"word": "manuscript",
+"count": 10
+},
+{
+"word": "jugend",
+"count": 10
+},
+{
+"word": "friends",
+"count": 10
+},
+{
+"word": "lyric",
+"count": 10
+},
+{
+"word": "melodic",
+"count": 10
+},
+{
+"word": "form",
+"count": 10
+},
+{
+"word": "modulation",
+"count": 10
+},
+{
+"word": "italiennes",
+"count": 10
+},
+{
+"word": "noels",
+"count": 10
+},
+{
+"word": "shakespeare",
+"count": 10
+},
+{
+"word": "continuo",
+"count": 10
+},
+{
+"word": "maris",
+"count": 10
+},
+{
+"word": "gentil",
+"count": 10
+},
+{
+"word": "mignon",
+"count": 10
+},
+{
+"word": "mannerchore",
+"count": 10
+},
+{
+"word": "marsche",
+"count": 10
+},
+{
+"word": "garde",
+"count": 10
+},
+{
+"word": "basse",
+"count": 10
+},
+{
+"word": "clock",
+"count": 10
+},
+{
+"word": "lion",
+"count": 10
+},
+{
+"word": "finale",
+"count": 10
+},
+{
+"word": "seville",
+"count": 10
+},
+{
+"word": "chorales",
+"count": 10
+},
+{
+"word": "interludes",
+"count": 10
+},
+{
+"word": "images",
+"count": 10
+},
+{
+"word": "frauen",
+"count": 10
+},
+{
+"word": "kinder",
+"count": 10
+},
+{
+"word": "sanctus",
+"count": 10
+},
+{
+"word": "francese",
+"count": 10
+},
+{
+"word": "progressive",
+"count": 10
+},
+{
+"word": "gitarre",
+"count": 10
+},
+{
+"word": "espagne",
+"count": 10
+},
+{
+"word": "rics",
+"count": 10
+},
+{
+"word": "renaissance",
+"count": 10
+},
+{
+"word": "rondeau",
+"count": 10
+},
+{
+"word": "leaf",
+"count": 10
+},
+{
+"word": "women",
+"count": 10
+},
+{
+"word": "violas",
+"count": 10
+},
+{
+"word": "pastoral",
+"count": 10
+},
+{
+"word": "ling",
+"count": 10
+},
+{
+"word": "kind",
+"count": 10
+},
+{
+"word": "reich",
+"count": 10
+},
+{
+"word": "meiner",
+"count": 10
+},
+{
+"word": "hort",
+"count": 10
+},
+{
+"word": "leid",
+"count": 10
+},
+{
+"word": "letzte",
+"count": 10
+},
+{
+"word": "moja",
+"count": 10
+},
+{
+"word": "sciro",
+"count": 10
+},
+{
+"word": "tribularer",
+"count": 10
+},
+{
+"word": "tuba",
+"count": 10
+},
+{
+"word": "adagietto",
+"count": 10
+},
+{
+"word": "pathetique",
+"count": 10
+},
+{
+"word": "celebre",
+"count": 10
+},
+{
+"word": "delle",
+"count": 10
+},
+{
+"word": "joie",
+"count": 10
+},
+{
+"word": "money",
+"count": 10
+},
+{
+"word": "pal",
+"count": 10
+},
+{
+"word": "lind",
+"count": 10
+},
+{
+"word": "vobis",
+"count": 10
+},
+{
+"word": "boat",
+"count": 10
+},
+{
+"word": "psalmody",
+"count": 10
+},
+{
+"word": "duc",
+"count": 10
+},
+{
+"word": "wife",
+"count": 10
+},
+{
+"word": "lane",
+"count": 10
+},
+{
+"word": "sacre",
+"count": 10
+},
+{
+"word": "etoiles",
+"count": 10
+},
+{
+"word": "boys",
+"count": 10
+},
+{
+"word": "lever",
+"count": 10
+},
+{
+"word": "pres",
+"count": 10
+},
+{
+"word": "espagnole",
+"count": 10
+},
+{
+"word": "conditor",
+"count": 10
+},
+{
+"word": "box",
+"count": 10
+},
+{
+"word": "lui",
+"count": 10
+},
+{
+"word": "bull",
+"count": 10
+},
+{
+"word": "chimes",
+"count": 10
+},
+{
+"word": "linger",
+"count": 10
+},
+{
+"word": "babylon",
+"count": 10
+},
+{
+"word": "ouverture",
+"count": 10
+},
+{
+"word": "fall",
+"count": 10
+},
+{
+"word": "wunsch",
+"count": 10
+},
+{
+"word": "behind",
+"count": 10
+},
+{
+"word": "every",
+"count": 10
+},
+{
+"word": "pere",
+"count": 10
+},
+{
+"word": "heads",
+"count": 10
+},
+{
+"word": "sunshine",
+"count": 10
+},
+{
+"word": "lonely",
+"count": 10
+},
+{
+"word": "blanc",
+"count": 10
+},
+{
+"word": "fiori",
+"count": 10
+},
+{
+"word": "choir",
+"count": 10
+},
+{
+"word": "celia",
+"count": 10
+},
+{
+"word": "victory",
+"count": 10
+},
+{
+"word": "monkey",
+"count": 10
+},
+{
+"word": "codex",
+"count": 10
+},
+{
+"word": "coeli",
+"count": 10
+},
+{
+"word": "sem",
+"count": 10
+},
+{
+"word": "gagliarda",
+"count": 10
+},
+{
+"word": "into",
+"count": 10
+},
+{
+"word": "allemande",
+"count": 10
+},
+{
+"word": "folle",
+"count": 10
+},
+{
+"word": "santa",
+"count": 10
+},
+{
+"word": "ijd",
+"count": 10
+},
+{
+"word": "terre",
+"count": 10
+},
+{
+"word": "menschen",
+"count": 10
+},
+{
+"word": "gut",
+"count": 10
+},
+{
+"word": "denen",
+"count": 10
+},
+{
+"word": "frohsinn",
+"count": 10
+},
+{
+"word": "gerechte",
+"count": 10
+},
+{
+"word": "jezu",
+"count": 10
+},
+{
+"word": "does",
+"count": 10
+},
+{
+"word": "nelly",
+"count": 10
+},
+{
+"word": "pastor",
+"count": 10
+},
+{
+"word": "childhood",
+"count": 10
+},
+{
+"word": "bonum",
+"count": 10
+},
+{
+"word": "papa",
+"count": 10
+},
+{
+"word": "glide",
+"count": 10
+},
+{
+"word": "century",
+"count": 10
+},
+{
+"word": "estrella",
+"count": 10
+},
+{
+"word": "ethnics",
+"count": 10
+},
+{
+"word": "profit",
+"count": 10
+},
+{
+"word": "fourth",
+"count": 10
+},
+{
+"word": "messe",
+"count": 10
+},
+{
+"word": "freut",
+"count": 10
+},
+{
+"word": "frisch",
+"count": 10
+},
+{
+"word": "ireland",
+"count": 10
+},
+{
+"word": "mandy",
+"count": 10
+},
+{
+"word": "selve",
+"count": 10
+},
+{
+"word": "gud",
+"count": 10
+},
+{
+"word": "nellie",
+"count": 10
+},
+{
+"word": "hoffnung",
+"count": 10
+},
+{
+"word": "arms",
+"count": 10
+},
+{
+"word": "nancy",
+"count": 10
+},
+{
+"word": "goes",
+"count": 10
+},
+{
+"word": "vil",
+"count": 10
+},
+{
+"word": "mollie",
+"count": 10
+},
+{
+"word": "solen",
+"count": 10
+},
+{
+"word": "flanders",
+"count": 10
+},
+{
+"word": "paradisum",
+"count": 10
+},
+{
+"word": "passing",
+"count": 10
+},
+{
+"word": "sogno",
+"count": 10
+},
+{
+"word": "vain",
+"count": 10
+},
+{
+"word": "sancti",
+"count": 10
+},
+{
+"word": "lilac",
+"count": 10
+},
+{
+"word": "jewel",
+"count": 10
+},
+{
+"word": "jim",
+"count": 10
+},
+{
+"word": "ysanka",
+"count": 10
+},
+{
+"word": "ange",
+"count": 10
+},
+{
+"word": "oiseaux",
+"count": 10
+},
+{
+"word": "finta",
+"count": 10
+},
+{
+"word": "mitridate",
+"count": 10
+},
+{
+"word": "arch",
+"count": 10
+},
+{
+"word": "sacro",
+"count": 10
+},
+{
+"word": "venerabili",
+"count": 10
+},
+{
+"word": "sacramento",
+"count": 10
+},
+{
+"word": "wake",
+"count": 10
+},
+{
+"word": "memorare",
+"count": 10
+},
+{
+"word": "poetique",
+"count": 10
+},
+{
+"word": "petersbourg",
+"count": 10
+},
+{
+"word": "gunst",
+"count": 10
+},
+{
+"word": "nachtstuck",
+"count": 10
+},
+{
+"word": "onward",
+"count": 10
+},
+{
+"word": "ophelia",
+"count": 10
+},
+{
+"word": "virginie",
+"count": 10
+},
+{
+"word": "hebraeorum",
+"count": 10
+},
+{
+"word": "rythmes",
+"count": 10
+},
+{
+"word": "vostro",
+"count": 10
+},
+{
+"word": "sage",
+"count": 10
+},
+{
+"word": "toten",
+"count": 10
+},
+{
+"word": "sepulto",
+"count": 10
+},
+{
+"word": "spanisches",
+"count": 10
+},
+{
+"word": "seal",
+"count": 10
+},
+{
+"word": "tito",
+"count": 10
+},
+{
+"word": "trittico",
+"count": 10
+},
+{
+"word": "gms",
+"count": 10
+},
+{
+"word": "cavatina",
+"count": 9
+},
+{
+"word": "juan",
+"count": 9
+},
+{
+"word": "six",
+"count": 9
+},
+{
+"word": "five",
+"count": 9
+},
+{
+"word": "hour",
+"count": 9
+},
+{
+"word": "corner",
+"count": 9
+},
+{
+"word": "sange",
+"count": 9
+},
+{
+"word": "urs",
+"count": 9
+},
+{
+"word": "lessons",
+"count": 9
+},
+{
+"word": "finger",
+"count": 9
+},
+{
+"word": "zweistimmige",
+"count": 9
+},
+{
+"word": "phantasiestucke",
+"count": 9
+},
+{
+"word": "classic",
+"count": 9
+},
+{
+"word": "genre",
+"count": 9
+},
+{
+"word": "psaumes",
+"count": 9
+},
+{
+"word": "rattenfanger",
+"count": 9
+},
+{
+"word": "small",
+"count": 9
+},
+{
+"word": "wild",
+"count": 9
+},
+{
+"word": "transcriptions",
+"count": 9
+},
+{
+"word": "fingers",
+"count": 9
+},
+{
+"word": "nations",
+"count": 9
+},
+{
+"word": "lute",
+"count": 9
+},
+{
+"word": "military",
+"count": 9
+},
+{
+"word": "motetten",
+"count": 9
+},
+{
+"word": "neapolitan",
+"count": 9
+},
+{
+"word": "neue",
+"count": 9
+},
+{
+"word": "lingua",
+"count": 9
+},
+{
+"word": "pastorali",
+"count": 9
+},
+{
+"word": "piezas",
+"count": 9
+},
+{
+"word": "festival",
+"count": 9
+},
+{
+"word": "benediction",
+"count": 9
+},
+{
+"word": "nomines",
+"count": 9
+},
+{
+"word": "soli",
+"count": 9
+},
+{
+"word": "concierto",
+"count": 9
+},
+{
+"word": "wer",
+"count": 9
+},
+{
+"word": "versets",
+"count": 9
+},
+{
+"word": "filii",
+"count": 9
+},
+{
+"word": "lettre",
+"count": 9
+},
+{
+"word": "arrangements",
+"count": 9
+},
+{
+"word": "piesni",
+"count": 9
+},
+{
+"word": "years",
+"count": 9
+},
+{
+"word": "mecanisme",
+"count": 9
+},
+{
+"word": "novum",
+"count": 9
+},
+{
+"word": "bagatelle",
+"count": 9
+},
+{
+"word": "ballades",
+"count": 9
+},
+{
+"word": "play",
+"count": 9
+},
+{
+"word": "bohmische",
+"count": 9
+},
+{
+"word": "mixed",
+"count": 9
+},
+{
+"word": "carol",
+"count": 9
+},
+{
+"word": "estudos",
+"count": 9
+},
+{
+"word": "wissen",
+"count": 9
+},
+{
+"word": "manches",
+"count": 9
+},
+{
+"word": "pein",
+"count": 9
+},
+{
+"word": "sagt",
+"count": 9
+},
+{
+"word": "gold",
+"count": 9
+},
+{
+"word": "stets",
+"count": 9
+},
+{
+"word": "reigen",
+"count": 9
+},
+{
+"word": "hills",
+"count": 9
+},
+{
+"word": "ocean",
+"count": 9
+},
+{
+"word": "nam",
+"count": 9
+},
+{
+"word": "oculos",
+"count": 9
+},
+{
+"word": "tema",
+"count": 9
+},
+{
+"word": "favori",
+"count": 9
+},
+{
+"word": "miroir",
+"count": 9
+},
+{
+"word": "puisqu",
+"count": 9
+},
+{
+"word": "beate",
+"count": 9
+},
+{
+"word": "wood",
+"count": 9
+},
+{
+"word": "storm",
+"count": 9
+},
+{
+"word": "tanz",
+"count": 9
+},
+{
+"word": "alta",
+"count": 9
+},
+{
+"word": "jennie",
+"count": 9
+},
+{
+"word": "ready",
+"count": 9
+},
+{
+"word": "meer",
+"count": 9
+},
+{
+"word": "erstanden",
+"count": 9
+},
+{
+"word": "amalia",
+"count": 9
+},
+{
+"word": "dire",
+"count": 9
+},
+{
+"word": "amar",
+"count": 9
+},
+{
+"word": "word",
+"count": 9
+},
+{
+"word": "amitie",
+"count": 9
+},
+{
+"word": "onde",
+"count": 9
+},
+{
+"word": "herey",
+"count": 9
+},
+{
+"word": "aspice",
+"count": 9
+},
+{
+"word": "caelum",
+"count": 9
+},
+{
+"word": "tom",
+"count": 9
+},
+{
+"word": "virginia",
+"count": 9
+},
+{
+"word": "ragtime",
+"count": 9
+},
+{
+"word": "lamb",
+"count": 9
+},
+{
+"word": "atlantic",
+"count": 9
+},
+{
+"word": "pena",
+"count": 9
+},
+{
+"word": "paradis",
+"count": 9
+},
+{
+"word": "benigne",
+"count": 9
+},
+{
+"word": "batalla",
+"count": 9
+},
+{
+"word": "sky",
+"count": 9
+},
+{
+"word": "natural",
+"count": 9
+},
+{
+"word": "beatitudes",
+"count": 9
+},
+{
+"word": "beato",
+"count": 9
+},
+{
+"word": "lee",
+"count": 9
+},
+{
+"word": "swwv",
+"count": 9
+},
+{
+"word": "doux",
+"count": 9
+},
+{
+"word": "live",
+"count": 9
+},
+{
+"word": "nine",
+"count": 9
+},
+{
+"word": "course",
+"count": 9
+},
+{
+"word": "getreuer",
+"count": 9
+},
+{
+"word": "louis",
+"count": 9
+},
+{
+"word": "deum",
+"count": 9
+},
+{
+"word": "blatter",
+"count": 9
+},
+{
+"word": "wve",
+"count": 9
+},
+{
+"word": "sanctorum",
+"count": 9
+},
+{
+"word": "lindy",
+"count": 9
+},
+{
+"word": "some",
+"count": 9
+},
+{
+"word": "too",
+"count": 9
+},
+{
+"word": "donne",
+"count": 9
+},
+{
+"word": "bas",
+"count": 9
+},
+{
+"word": "clarines",
+"count": 9
+},
+{
+"word": "ubung",
+"count": 9
+},
+{
+"word": "amoureux",
+"count": 9
+},
+{
+"word": "cueur",
+"count": 9
+},
+{
+"word": "nobody",
+"count": 9
+},
+{
+"word": "pray",
+"count": 9
+},
+{
+"word": "cousin",
+"count": 9
+},
+{
+"word": "siderum",
+"count": 9
+},
+{
+"word": "ieg",
+"count": 9
+},
+{
+"word": "ilp",
+"count": 9
+},
+{
+"word": "kaye",
+"count": 9
+},
+{
+"word": "gamle",
+"count": 9
+},
+{
+"word": "gik",
+"count": 9
+},
+{
+"word": "lust",
+"count": 9
+},
+{
+"word": "fremde",
+"count": 9
+},
+{
+"word": "glaube",
+"count": 9
+},
+{
+"word": "freue",
+"count": 9
+},
+{
+"word": "spricht",
+"count": 9
+},
+{
+"word": "mond",
+"count": 9
+},
+{
+"word": "drei",
+"count": 9
+},
+{
+"word": "prophet",
+"count": 9
+},
+{
+"word": "nouveau",
+"count": 9
+},
+{
+"word": "once",
+"count": 9
+},
+{
+"word": "seen",
+"count": 9
+},
+{
+"word": "gentle",
+"count": 9
+},
+{
+"word": "dois",
+"count": 9
+},
+{
+"word": "flauto",
+"count": 9
+},
+{
+"word": "ear",
+"count": 9
+},
+{
+"word": "been",
+"count": 9
+},
+{
+"word": "honor",
+"count": 9
+},
+{
+"word": "tibi",
+"count": 9
+},
+{
+"word": "echos",
+"count": 9
+},
+{
+"word": "ecossaise",
+"count": 9
+},
+{
+"word": "noce",
+"count": 9
+},
+{
+"word": "mis",
+"count": 9
+},
+{
+"word": "teutsche",
+"count": 9
+},
+{
+"word": "feste",
+"count": 9
+},
+{
+"word": "soyez",
+"count": 9
+},
+{
+"word": "tuas",
+"count": 9
+},
+{
+"word": "treble",
+"count": 9
+},
+{
+"word": "trovatore",
+"count": 9
+},
+{
+"word": "portici",
+"count": 9
+},
+{
+"word": "francois",
+"count": 9
+},
+{
+"word": "hold",
+"count": 9
+},
+{
+"word": "fredmans",
+"count": 9
+},
+{
+"word": "mussen",
+"count": 9
+},
+{
+"word": "freund",
+"count": 9
+},
+{
+"word": "shepherd",
+"count": 9
+},
+{
+"word": "ride",
+"count": 9
+},
+{
+"word": "liederbuch",
+"count": 9
+},
+{
+"word": "lovely",
+"count": 9
+},
+{
+"word": "cat",
+"count": 9
+},
+{
+"word": "hausmusik",
+"count": 9
+},
+{
+"word": "wide",
+"count": 9
+},
+{
+"word": "said",
+"count": 9
+},
+{
+"word": "sailor",
+"count": 9
+},
+{
+"word": "leave",
+"count": 9
+},
+{
+"word": "list",
+"count": 9
+},
+{
+"word": "springtime",
+"count": 9
+},
+{
+"word": "musician",
+"count": 9
+},
+{
+"word": "smell",
+"count": 9
+},
+{
+"word": "hamsters",
+"count": 9
+},
+{
+"word": "festo",
+"count": 9
+},
+{
+"word": "trust",
+"count": 9
+},
+{
+"word": "auto",
+"count": 9
+},
+{
+"word": "singet",
+"count": 9
+},
+{
+"word": "oscura",
+"count": 9
+},
+{
+"word": "redemptio",
+"count": 9
+},
+{
+"word": "senhor",
+"count": 9
+},
+{
+"word": "etoile",
+"count": 9
+},
+{
+"word": "africaine",
+"count": 9
+},
+{
+"word": "famille",
+"count": 9
+},
+{
+"word": "joyeuse",
+"count": 9
+},
+{
+"word": "jota",
+"count": 9
+},
+{
+"word": "melancolia",
+"count": 9
+},
+{
+"word": "amerique",
+"count": 9
+},
+{
+"word": "regret",
+"count": 9
+},
+{
+"word": "litania",
+"count": 9
+},
+{
+"word": "naughty",
+"count": 9
+},
+{
+"word": "manuel",
+"count": 9
+},
+{
+"word": "missus",
+"count": 9
+},
+{
+"word": "within",
+"count": 9
+},
+{
+"word": "nachruf",
+"count": 9
+},
+{
+"word": "nachtgesang",
+"count": 9
+},
+{
+"word": "nana",
+"count": 9
+},
+{
+"word": "crux",
+"count": 9
+},
+{
+"word": "orchesterstudien",
+"count": 9
+},
+{
+"word": "aggregate",
+"count": 9
+},
+{
+"word": "aperture",
+"count": 9
+},
+{
+"word": "composed",
+"count": 9
+},
+{
+"word": "pauline",
+"count": 9
+},
+{
+"word": "galiarda",
+"count": 9
+},
+{
+"word": "porque",
+"count": 9
+},
+{
+"word": "society",
+"count": 9
+},
+{
+"word": "pues",
+"count": 9
+},
+{
+"word": "responsorium",
+"count": 9
+},
+{
+"word": "retraite",
+"count": 9
+},
+{
+"word": "reveries",
+"count": 9
+},
+{
+"word": "social",
+"count": 9
+},
+{
+"word": "riconosciuta",
+"count": 9
+},
+{
+"word": "sof",
+"count": 9
+},
+{
+"word": "soirs",
+"count": 9
+},
+{
+"word": "solfeggiamento",
+"count": 9
+},
+{
+"word": "italie",
+"count": 9
+},
+{
+"word": "titania",
+"count": 9
+},
+{
+"word": "tivoli",
+"count": 9
+},
+{
+"word": "violetta",
+"count": 9
+},
+{
+"word": "lincoln",
+"count": 8
+},
+{
+"word": "rosa",
+"count": 8
+},
+{
+"word": "cross",
+"count": 8
+},
+{
+"word": "version",
+"count": 8
+},
+{
+"word": "same",
+"count": 8
+},
+{
+"word": "then",
+"count": 8
+},
+{
+"word": "those",
+"count": 8
+},
+{
+"word": "better",
+"count": 8
+},
+{
+"word": "corpus",
+"count": 8
+},
+{
+"word": "mind",
+"count": 8
+},
+{
+"word": "arias",
+"count": 8
+},
+{
+"word": "bagatellen",
+"count": 8
+},
+{
+"word": "francais",
+"count": 8
+},
+{
+"word": "correnti",
+"count": 8
+},
+{
+"word": "sammlung",
+"count": 8
+},
+{
+"word": "eglogues",
+"count": 8
+},
+{
+"word": "mains",
+"count": 8
+},
+{
+"word": "fancy",
+"count": 8
+},
+{
+"word": "praludien",
+"count": 8
+},
+{
+"word": "pianos",
+"count": 8
+},
+{
+"word": "hwc",
+"count": 8
+},
+{
+"word": "liedern",
+"count": 8
+},
+{
+"word": "melodious",
+"count": 8
+},
+{
+"word": "vorspiele",
+"count": 8
+},
+{
+"word": "violine",
+"count": 8
+},
+{
+"word": "settings",
+"count": 8
+},
+{
+"word": "schone",
+"count": 8
+},
+{
+"word": "william",
+"count": 8
+},
+{
+"word": "musicaux",
+"count": 8
+},
+{
+"word": "movements",
+"count": 8
+},
+{
+"word": "prophete",
+"count": 8
+},
+{
+"word": "paraphrases",
+"count": 8
+},
+{
+"word": "beliebte",
+"count": 8
+},
+{
+"word": "pastorales",
+"count": 8
+},
+{
+"word": "their",
+"count": 8
+},
+{
+"word": "barbier",
+"count": 8
+},
+{
+"word": "composition",
+"count": 8
+},
+{
+"word": "melodique",
+"count": 8
+},
+{
+"word": "robin",
+"count": 8
+},
+{
+"word": "fugen",
+"count": 8
+},
+{
+"word": "tone",
+"count": 8
+},
+{
+"word": "goethe",
+"count": 8
+},
+{
+"word": "concertant",
+"count": 8
+},
+{
+"word": "wilhelm",
+"count": 8
+},
+{
+"word": "thought",
+"count": 8
+},
+{
+"word": "versos",
+"count": 8
+},
+{
+"word": "miserere",
+"count": 8
+},
+{
+"word": "elegies",
+"count": 8
+},
+{
+"word": "etc",
+"count": 8
+},
+{
+"word": "progressifs",
+"count": 8
+},
+{
+"word": "kunstler",
+"count": 8
+},
+{
+"word": "albumblatter",
+"count": 8
+},
+{
+"word": "chinese",
+"count": 8
+},
+{
+"word": "eve",
+"count": 8
+},
+{
+"word": "glees",
+"count": 8
+},
+{
+"word": "canzonettas",
+"count": 8
+},
+{
+"word": "xxvia",
+"count": 8
+},
+{
+"word": "serie",
+"count": 8
+},
+{
+"word": "gran",
+"count": 8
+},
+{
+"word": "partien",
+"count": 8
+},
+{
+"word": "paganini",
+"count": 8
+},
+{
+"word": "concerts",
+"count": 8
+},
+{
+"word": "danse",
+"count": 8
+},
+{
+"word": "sul",
+"count": 8
+},
+{
+"word": "eight",
+"count": 8
+},
+{
+"word": "heft",
+"count": 8
+},
+{
+"word": "tannhauser",
+"count": 8
+},
+{
+"word": "geht",
+"count": 8
+},
+{
+"word": "wacht",
+"count": 8
+},
+{
+"word": "hertz",
+"count": 8
+},
+{
+"word": "sunde",
+"count": 8
+},
+{
+"word": "find",
+"count": 8
+},
+{
+"word": "ihn",
+"count": 8
+},
+{
+"word": "acordologia",
+"count": 8
+},
+{
+"word": "desert",
+"count": 8
+},
+{
+"word": "than",
+"count": 8
+},
+{
+"word": "agitato",
+"count": 8
+},
+{
+"word": "adam",
+"count": 8
+},
+{
+"word": "fillette",
+"count": 8
+},
+{
+"word": "belles",
+"count": 8
+},
+{
+"word": "forever",
+"count": 8
+},
+{
+"word": "native",
+"count": 8
+},
+{
+"word": "almighty",
+"count": 8
+},
+{
+"word": "descant",
+"count": 8
+},
+{
+"word": "thoughts",
+"count": 8
+},
+{
+"word": "geliebt",
+"count": 8
+},
+{
+"word": "paa",
+"count": 8
+},
+{
+"word": "ogni",
+"count": 8
+},
+{
+"word": "fruhling",
+"count": 8
+},
+{
+"word": "heiligen",
+"count": 8
+},
+{
+"word": "amarilli",
+"count": 8
+},
+{
+"word": "patrol",
+"count": 8
+},
+{
+"word": "joy",
+"count": 8
+},
+{
+"word": "amicus",
+"count": 8
+},
+{
+"word": "assim",
+"count": 8
+},
+{
+"word": "ole",
+"count": 8
+},
+{
+"word": "forest",
+"count": 8
+},
+{
+"word": "mississippi",
+"count": 8
+},
+{
+"word": "picture",
+"count": 8
+},
+{
+"word": "etait",
+"count": 8
+},
+{
+"word": "nom",
+"count": 8
+},
+{
+"word": "rouet",
+"count": 8
+},
+{
+"word": "fees",
+"count": 8
+},
+{
+"word": "oiseau",
+"count": 8
+},
+{
+"word": "militaire",
+"count": 8
+},
+{
+"word": "kam",
+"count": 8
+},
+{
+"word": "populi",
+"count": 8
+},
+{
+"word": "reif",
+"count": 8
+},
+{
+"word": "fawv",
+"count": 8
+},
+{
+"word": "thing",
+"count": 8
+},
+{
+"word": "gently",
+"count": 8
+},
+{
+"word": "beaute",
+"count": 8
+},
+{
+"word": "beaux",
+"count": 8
+},
+{
+"word": "ung",
+"count": 8
+},
+{
+"word": "gray",
+"count": 8
+},
+{
+"word": "giorno",
+"count": 8
+},
+{
+"word": "burleske",
+"count": 8
+},
+{
+"word": "bury",
+"count": 8
+},
+{
+"word": "didn",
+"count": 8
+},
+{
+"word": "meet",
+"count": 8
+},
+{
+"word": "joan",
+"count": 8
+},
+{
+"word": "around",
+"count": 8
+},
+{
+"word": "perdu",
+"count": 8
+},
+{
+"word": "faire",
+"count": 8
+},
+{
+"word": "sorte",
+"count": 8
+},
+{
+"word": "caccia",
+"count": 8
+},
+{
+"word": "werken",
+"count": 8
+},
+{
+"word": "autumn",
+"count": 8
+},
+{
+"word": "russes",
+"count": 8
+},
+{
+"word": "cease",
+"count": 8
+},
+{
+"word": "cela",
+"count": 8
+},
+{
+"word": "fanfare",
+"count": 8
+},
+{
+"word": "musicali",
+"count": 8
+},
+{
+"word": "ijl",
+"count": 8
+},
+{
+"word": "blossom",
+"count": 8
+},
+{
+"word": "jane",
+"count": 8
+},
+{
+"word": "colinette",
+"count": 8
+},
+{
+"word": "complete",
+"count": 8
+},
+{
+"word": "harmonica",
+"count": 8
+},
+{
+"word": "corps",
+"count": 8
+},
+{
+"word": "italiana",
+"count": 8
+},
+{
+"word": "facile",
+"count": 8
+},
+{
+"word": "funebre",
+"count": 8
+},
+{
+"word": "trouble",
+"count": 8
+},
+{
+"word": "graf",
+"count": 8
+},
+{
+"word": "sarabande",
+"count": 8
+},
+{
+"word": "wagon",
+"count": 8
+},
+{
+"word": "ijb",
+"count": 8
+},
+{
+"word": "signor",
+"count": 8
+},
+{
+"word": "pige",
+"count": 8
+},
+{
+"word": "dag",
+"count": 8
+},
+{
+"word": "schnee",
+"count": 8
+},
+{
+"word": "hier",
+"count": 8
+},
+{
+"word": "macht",
+"count": 8
+},
+{
+"word": "schmerz",
+"count": 8
+},
+{
+"word": "choralfreund",
+"count": 8
+},
+{
+"word": "jahrgang",
+"count": 8
+},
+{
+"word": "ferne",
+"count": 8
+},
+{
+"word": "freischutz",
+"count": 8
+},
+{
+"word": "herzens",
+"count": 8
+},
+{
+"word": "gerechten",
+"count": 8
+},
+{
+"word": "gottlose",
+"count": 8
+},
+{
+"word": "seine",
+"count": 8
+},
+{
+"word": "volk",
+"count": 8
+},
+{
+"word": "pianist",
+"count": 8
+},
+{
+"word": "pilgrim",
+"count": 8
+},
+{
+"word": "ring",
+"count": 8
+},
+{
+"word": "berlin",
+"count": 8
+},
+{
+"word": "schonste",
+"count": 8
+},
+{
+"word": "operette",
+"count": 8
+},
+{
+"word": "rigoletto",
+"count": 8
+},
+{
+"word": "regiment",
+"count": 8
+},
+{
+"word": "caro",
+"count": 8
+},
+{
+"word": "dolor",
+"count": 8
+},
+{
+"word": "mecum",
+"count": 8
+},
+{
+"word": "questo",
+"count": 8
+},
+{
+"word": "dira",
+"count": 8
+},
+{
+"word": "grow",
+"count": 8
+},
+{
+"word": "tomus",
+"count": 8
+},
+{
+"word": "spain",
+"count": 8
+},
+{
+"word": "edith",
+"count": 8
+},
+{
+"word": "foxtrot",
+"count": 8
+},
+{
+"word": "dank",
+"count": 8
+},
+{
+"word": "sollt",
+"count": 8
+},
+{
+"word": "mihi",
+"count": 8
+},
+{
+"word": "orphee",
+"count": 8
+},
+{
+"word": "fileuse",
+"count": 8
+},
+{
+"word": "vai",
+"count": 8
+},
+{
+"word": "about",
+"count": 8
+},
+{
+"word": "euer",
+"count": 8
+},
+{
+"word": "melodier",
+"count": 8
+},
+{
+"word": "lohengrin",
+"count": 8
+},
+{
+"word": "carmen",
+"count": 8
+},
+{
+"word": "werke",
+"count": 8
+},
+{
+"word": "russie",
+"count": 8
+},
+{
+"word": "konigin",
+"count": 8
+},
+{
+"word": "fred",
+"count": 8
+},
+{
+"word": "place",
+"count": 8
+},
+{
+"word": "giunto",
+"count": 8
+},
+{
+"word": "loving",
+"count": 8
+},
+{
+"word": "smile",
+"count": 8
+},
+{
+"word": "june",
+"count": 8
+},
+{
+"word": "look",
+"count": 8
+},
+{
+"word": "solemniis",
+"count": 8
+},
+{
+"word": "lebt",
+"count": 8
+},
+{
+"word": "lou",
+"count": 8
+},
+{
+"word": "lovin",
+"count": 8
+},
+{
+"word": "arise",
+"count": 8
+},
+{
+"word": "need",
+"count": 8
+},
+{
+"word": "born",
+"count": 8
+},
+{
+"word": "faith",
+"count": 8
+},
+{
+"word": "manus",
+"count": 8
+},
+{
+"word": "missouri",
+"count": 8
+},
+{
+"word": "traurigkeit",
+"count": 8
+},
+{
+"word": "modo",
+"count": 8
+},
+{
+"word": "nec",
+"count": 8
+},
+{
+"word": "terram",
+"count": 8
+},
+{
+"word": "madonna",
+"count": 8
+},
+{
+"word": "surge",
+"count": 8
+},
+{
+"word": "antonio",
+"count": 8
+},
+{
+"word": "alten",
+"count": 8
+},
+{
+"word": "chasse",
+"count": 8
+},
+{
+"word": "feuille",
+"count": 8
+},
+{
+"word": "suisse",
+"count": 8
+},
+{
+"word": "tambour",
+"count": 8
+},
+{
+"word": "maison",
+"count": 8
+},
+{
+"word": "montagnarde",
+"count": 8
+},
+{
+"word": "melancholie",
+"count": 8
+},
+{
+"word": "fils",
+"count": 8
+},
+{
+"word": "desir",
+"count": 8
+},
+{
+"word": "nid",
+"count": 8
+},
+{
+"word": "renouveau",
+"count": 8
+},
+{
+"word": "musick",
+"count": 8
+},
+{
+"word": "litany",
+"count": 8
+},
+{
+"word": "magnolia",
+"count": 8
+},
+{
+"word": "mailied",
+"count": 8
+},
+{
+"word": "manhattan",
+"count": 8
+},
+{
+"word": "tui",
+"count": 8
+},
+{
+"word": "wilt",
+"count": 8
+},
+{
+"word": "misty",
+"count": 8
+},
+{
+"word": "nachspiel",
+"count": 8
+},
+{
+"word": "nanni",
+"count": 8
+},
+{
+"word": "nano",
+"count": 8
+},
+{
+"word": "nativitas",
+"count": 8
+},
+{
+"word": "bant",
+"count": 8
+},
+{
+"word": "oremus",
+"count": 8
+},
+{
+"word": "patrouille",
+"count": 8
+},
+{
+"word": "peasant",
+"count": 8
+},
+{
+"word": "pomp",
+"count": 8
+},
+{
+"word": "reveuse",
+"count": 8
+},
+{
+"word": "varsovie",
+"count": 8
+},
+{
+"word": "soleils",
+"count": 8
+},
+{
+"word": "couchants",
+"count": 8
+},
+{
+"word": "texas",
+"count": 8
+},
+{
+"word": "ash",
+"count": 8
+},
+{
+"word": "tin",
+"count": 8
+},
+{
+"word": "troisieme",
+"count": 8
+},
+{
+"word": "villancico",
+"count": 8
+},
+{
+"word": "voorspel",
+"count": 8
+},
+{
+"word": "wohin",
+"count": 8
+},
+{
+"word": "wahrlich",
+"count": 8
+},
+{
+"word": "christenleut",
+"count": 8
+},
+{
+"word": "awakening",
+"count": 7
+},
+{
+"word": "passione",
+"count": 7
+},
+{
+"word": "och",
+"count": 7
+},
+{
+"word": "forty",
+"count": 7
+},
+{
+"word": "liberty",
+"count": 7
+},
+{
+"word": "malho",
+"count": 7
+},
+{
+"word": "september",
+"count": 7
+},
+{
+"word": "bright",
+"count": 7
+},
+{
+"word": "gebet",
+"count": 7
+},
+{
+"word": "ver",
+"count": 7
+},
+{
+"word": "zwei",
+"count": 7
+},
+{
+"word": "det",
+"count": 7
+},
+{
+"word": "populares",
+"count": 7
+},
+{
+"word": "celebrated",
+"count": 7
+},
+{
+"word": "charakteristische",
+"count": 7
+},
+{
+"word": "classics",
+"count": 7
+},
+{
+"word": "communion",
+"count": 7
+},
+{
+"word": "grossi",
+"count": 7
+},
+{
+"word": "duetti",
+"count": 7
+},
+{
+"word": "camera",
+"count": 7
+},
+{
+"word": "grosse",
+"count": 7
+},
+{
+"word": "lyriques",
+"count": 7
+},
+{
+"word": "piccoli",
+"count": 7
+},
+{
+"word": "horns",
+"count": 7
+},
+{
+"word": "tons",
+"count": 7
+},
+{
+"word": "edward",
+"count": 7
+},
+{
+"word": "thomas",
+"count": 7
+},
+{
+"word": "capriccio",
+"count": 7
+},
+{
+"word": "sprach",
+"count": 7
+},
+{
+"word": "scheiden",
+"count": 7
+},
+{
+"word": "estate",
+"count": 7
+},
+{
+"word": "mazourkas",
+"count": 7
+},
+{
+"word": "miniature",
+"count": 7
+},
+{
+"word": "monologues",
+"count": 7
+},
+{
+"word": "poemes",
+"count": 7
+},
+{
+"word": "volkston",
+"count": 7
+},
+{
+"word": "scotch",
+"count": 7
+},
+{
+"word": "pange",
+"count": 7
+},
+{
+"word": "liv",
+"count": 7
+},
+{
+"word": "scales",
+"count": 7
+},
+{
+"word": "jean",
+"count": 7
+},
+{
+"word": "chore",
+"count": 7
+},
+{
+"word": "hungarian",
+"count": 7
+},
+{
+"word": "ariettas",
+"count": 7
+},
+{
+"word": "vier",
+"count": 7
+},
+{
+"word": "russe",
+"count": 7
+},
+{
+"word": "note",
+"count": 7
+},
+{
+"word": "orient",
+"count": 7
+},
+{
+"word": "ago",
+"count": 7
+},
+{
+"word": "schrank",
+"count": 7
+},
+{
+"word": "octaves",
+"count": 7
+},
+{
+"word": "oden",
+"count": 7
+},
+{
+"word": "arie",
+"count": 7
+},
+{
+"word": "low",
+"count": 7
+},
+{
+"word": "antiphons",
+"count": 7
+},
+{
+"word": "cantiques",
+"count": 7
+},
+{
+"word": "charles",
+"count": 7
+},
+{
+"word": "ernst",
+"count": 7
+},
+{
+"word": "series",
+"count": 7
+},
+{
+"word": "cadenzen",
+"count": 7
+},
+{
+"word": "moe",
+"count": 7
+},
+{
+"word": "siecle",
+"count": 7
+},
+{
+"word": "religieux",
+"count": 7
+},
+{
+"word": "funeral",
+"count": 7
+},
+{
+"word": "seven",
+"count": 7
+},
+{
+"word": "force",
+"count": 7
+},
+{
+"word": "nachlass",
+"count": 7
+},
+{
+"word": "pipe",
+"count": 7
+},
+{
+"word": "enfance",
+"count": 7
+},
+{
+"word": "madchen",
+"count": 7
+},
+{
+"word": "poetry",
+"count": 7
+},
+{
+"word": "willst",
+"count": 7
+},
+{
+"word": "lieber",
+"count": 7
+},
+{
+"word": "ordre",
+"count": 7
+},
+{
+"word": "ins",
+"count": 7
+},
+{
+"word": "hilf",
+"count": 7
+},
+{
+"word": "ding",
+"count": 7
+},
+{
+"word": "mutter",
+"count": 7
+},
+{
+"word": "ende",
+"count": 7
+},
+{
+"word": "hulfe",
+"count": 7
+},
+{
+"word": "horen",
+"count": 7
+},
+{
+"word": "grosser",
+"count": 7
+},
+{
+"word": "stand",
+"count": 7
+},
+{
+"word": "getrost",
+"count": 7
+},
+{
+"word": "weib",
+"count": 7
+},
+{
+"word": "altro",
+"count": 7
+},
+{
+"word": "animam",
+"count": 7
+},
+{
+"word": "meos",
+"count": 7
+},
+{
+"word": "dramatique",
+"count": 7
+},
+{
+"word": "nice",
+"count": 7
+},
+{
+"word": "ade",
+"count": 7
+},
+{
+"word": "adele",
+"count": 7
+},
+{
+"word": "gallop",
+"count": 7
+},
+{
+"word": "adeus",
+"count": 7
+},
+{
+"word": "montagne",
+"count": 7
+},
+{
+"word": "amaryllis",
+"count": 7
+},
+{
+"word": "hearts",
+"count": 7
+},
+{
+"word": "london",
+"count": 7
+},
+{
+"word": "rain",
+"count": 7
+},
+{
+"word": "rosen",
+"count": 7
+},
+{
+"word": "mezzo",
+"count": 7
+},
+{
+"word": "tropical",
+"count": 7
+},
+{
+"word": "wein",
+"count": 7
+},
+{
+"word": "uma",
+"count": 7
+},
+{
+"word": "pene",
+"count": 7
+},
+{
+"word": "plantation",
+"count": 7
+},
+{
+"word": "qual",
+"count": 7
+},
+{
+"word": "ascensions",
+"count": 7
+},
+{
+"word": "aschenbrodel",
+"count": 7
+},
+{
+"word": "deep",
+"count": 7
+},
+{
+"word": "swallow",
+"count": 7
+},
+{
+"word": "quero",
+"count": 7
+},
+{
+"word": "luna",
+"count": 7
+},
+{
+"word": "court",
+"count": 7
+},
+{
+"word": "mont",
+"count": 7
+},
+{
+"word": "comes",
+"count": 7
+},
+{
+"word": "coffee",
+"count": 7
+},
+{
+"word": "attende",
+"count": 7
+},
+{
+"word": "ruisseau",
+"count": 7
+},
+{
+"word": "crepuscule",
+"count": 7
+},
+{
+"word": "fil",
+"count": 7
+},
+{
+"word": "esperance",
+"count": 7
+},
+{
+"word": "triste",
+"count": 7
+},
+{
+"word": "temple",
+"count": 7
+},
+{
+"word": "gre",
+"count": 7
+},
+{
+"word": "joly",
+"count": 7
+},
+{
+"word": "espoir",
+"count": 7
+},
+{
+"word": "audite",
+"count": 7
+},
+{
+"word": "caeli",
+"count": 7
+},
+{
+"word": "wiedersehn",
+"count": 7
+},
+{
+"word": "nachtigall",
+"count": 7
+},
+{
+"word": "folks",
+"count": 7
+},
+{
+"word": "beat",
+"count": 7
+},
+{
+"word": "via",
+"count": 7
+},
+{
+"word": "girls",
+"count": 7
+},
+{
+"word": "wine",
+"count": 7
+},
+{
+"word": "believe",
+"count": 7
+},
+{
+"word": "bedouin",
+"count": 7
+},
+{
+"word": "beethovens",
+"count": 7
+},
+{
+"word": "master",
+"count": 7
+},
+{
+"word": "joyful",
+"count": 7
+},
+{
+"word": "bring",
+"count": 7
+},
+{
+"word": "flor",
+"count": 7
+},
+{
+"word": "bundeslied",
+"count": 7
+},
+{
+"word": "bunion",
+"count": 7
+},
+{
+"word": "bibs",
+"count": 7
+},
+{
+"word": "reihe",
+"count": 7
+},
+{
+"word": "kurzer",
+"count": 7
+},
+{
+"word": "burning",
+"count": 7
+},
+{
+"word": "fountain",
+"count": 7
+},
+{
+"word": "rio",
+"count": 7
+},
+{
+"word": "clear",
+"count": 7
+},
+{
+"word": "strength",
+"count": 7
+},
+{
+"word": "journal",
+"count": 7
+},
+{
+"word": "cache",
+"count": 7
+},
+{
+"word": "martyr",
+"count": 7
+},
+{
+"word": "cagliostro",
+"count": 7
+},
+{
+"word": "caio",
+"count": 7
+},
+{
+"word": "oculi",
+"count": 7
+},
+{
+"word": "pet",
+"count": 7
+},
+{
+"word": "diable",
+"count": 7
+},
+{
+"word": "celebration",
+"count": 7
+},
+{
+"word": "celle",
+"count": 7
+},
+{
+"word": "clap",
+"count": 7
+},
+{
+"word": "prima",
+"count": 7
+},
+{
+"word": "cleopatre",
+"count": 7
+},
+{
+"word": "coco",
+"count": 7
+},
+{
+"word": "tonight",
+"count": 7
+},
+{
+"word": "flores",
+"count": 7
+},
+{
+"word": "moda",
+"count": 7
+},
+{
+"word": "coon",
+"count": 7
+},
+{
+"word": "propter",
+"count": 7
+},
+{
+"word": "game",
+"count": 7
+},
+{
+"word": "gesu",
+"count": 7
+},
+{
+"word": "christo",
+"count": 7
+},
+{
+"word": "nat",
+"count": 7
+},
+{
+"word": "depuis",
+"count": 7
+},
+{
+"word": "wach",
+"count": 7
+},
+{
+"word": "gluckliche",
+"count": 7
+},
+{
+"word": "geboren",
+"count": 7
+},
+{
+"word": "lasset",
+"count": 7
+},
+{
+"word": "kraft",
+"count": 7
+},
+{
+"word": "mann",
+"count": 7
+},
+{
+"word": "hameln",
+"count": 7
+},
+{
+"word": "capriccioso",
+"count": 7
+},
+{
+"word": "going",
+"count": 7
+},
+{
+"word": "sera",
+"count": 7
+},
+{
+"word": "niente",
+"count": 7
+},
+{
+"word": "iesu",
+"count": 7
+},
+{
+"word": "adiuvandum",
+"count": 7
+},
+{
+"word": "respice",
+"count": 7
+},
+{
+"word": "cielo",
+"count": 7
+},
+{
+"word": "tra",
+"count": 7
+},
+{
+"word": "viene",
+"count": 7
+},
+{
+"word": "sequence",
+"count": 7
+},
+{
+"word": "folio",
+"count": 7
+},
+{
+"word": "salvator",
+"count": 7
+},
+{
+"word": "justus",
+"count": 7
+},
+{
+"word": "nomen",
+"count": 7
+},
+{
+"word": "emmanuel",
+"count": 7
+},
+{
+"word": "vocum",
+"count": 7
+},
+{
+"word": "vaga",
+"count": 7
+},
+{
+"word": "eclogue",
+"count": 7
+},
+{
+"word": "eco",
+"count": 7
+},
+{
+"word": "cuba",
+"count": 7
+},
+{
+"word": "edelweiss",
+"count": 7
+},
+{
+"word": "flos",
+"count": 7
+},
+{
+"word": "campi",
+"count": 7
+},
+{
+"word": "fili",
+"count": 7
+},
+{
+"word": "esse",
+"count": 7
+},
+{
+"word": "esto",
+"count": 7
+},
+{
+"word": "verbum",
+"count": 7
+},
+{
+"word": "through",
+"count": 7
+},
+{
+"word": "tannenbaum",
+"count": 7
+},
+{
+"word": "tercer",
+"count": 7
+},
+{
+"word": "hvor",
+"count": 7
+},
+{
+"word": "queste",
+"count": 7
+},
+{
+"word": "lyrique",
+"count": 7
+},
+{
+"word": "muette",
+"count": 7
+},
+{
+"word": "fram",
+"count": 7
+},
+{
+"word": "epistel",
+"count": 7
+},
+{
+"word": "brave",
+"count": 7
+},
+{
+"word": "kan",
+"count": 7
+},
+{
+"word": "nord",
+"count": 7
+},
+{
+"word": "stunden",
+"count": 7
+},
+{
+"word": "neuen",
+"count": 7
+},
+{
+"word": "girofla",
+"count": 7
+},
+{
+"word": "nostri",
+"count": 7
+},
+{
+"word": "moses",
+"count": 7
+},
+{
+"word": "orb",
+"count": 7
+},
+{
+"word": "cswv",
+"count": 7
+},
+{
+"word": "schw",
+"count": 7
+},
+{
+"word": "yet",
+"count": 7
+},
+{
+"word": "secret",
+"count": 7
+},
+{
+"word": "deinen",
+"count": 7
+},
+{
+"word": "help",
+"count": 7
+},
+{
+"word": "guess",
+"count": 7
+},
+{
+"word": "rendezvous",
+"count": 7
+},
+{
+"word": "canoe",
+"count": 7
+},
+{
+"word": "sogni",
+"count": 7
+},
+{
+"word": "them",
+"count": 7
+},
+{
+"word": "tiny",
+"count": 7
+},
+{
+"word": "george",
+"count": 7
+},
+{
+"word": "gondola",
+"count": 7
+},
+{
+"word": "nativitate",
+"count": 7
+},
+{
+"word": "walter",
+"count": 7
+},
+{
+"word": "omnem",
+"count": 7
+},
+{
+"word": "parte",
+"count": 7
+},
+{
+"word": "silenzio",
+"count": 7
+},
+{
+"word": "spes",
+"count": 7
+},
+{
+"word": "jessie",
+"count": 7
+},
+{
+"word": "tranen",
+"count": 7
+},
+{
+"word": "valentine",
+"count": 7
+},
+{
+"word": "answer",
+"count": 7
+},
+{
+"word": "sebastian",
+"count": 7
+},
+{
+"word": "kunst",
+"count": 7
+},
+{
+"word": "anderson",
+"count": 7
+},
+{
+"word": "kurz",
+"count": 7
+},
+{
+"word": "kvoldljo",
+"count": 7
+},
+{
+"word": "rouge",
+"count": 7
+},
+{
+"word": "forza",
+"count": 7
+},
+{
+"word": "lira",
+"count": 7
+},
+{
+"word": "malgre",
+"count": 7
+},
+{
+"word": "joueur",
+"count": 7
+},
+{
+"word": "progres",
+"count": 7
+},
+{
+"word": "gates",
+"count": 7
+},
+{
+"word": "mysterious",
+"count": 7
+},
+{
+"word": "lisa",
+"count": 7
+},
+{
+"word": "maiglockchen",
+"count": 7
+},
+{
+"word": "napoleon",
+"count": 7
+},
+{
+"word": "mama",
+"count": 7
+},
+{
+"word": "sagen",
+"count": 7
+},
+{
+"word": "mandolinata",
+"count": 7
+},
+{
+"word": "recreation",
+"count": 7
+},
+{
+"word": "momiji",
+"count": 7
+},
+{
+"word": "monologue",
+"count": 7
+},
+{
+"word": "nachts",
+"count": 7
+},
+{
+"word": "vori",
+"count": 7
+},
+{
+"word": "holiness",
+"count": 7
+},
+{
+"word": "oracion",
+"count": 7
+},
+{
+"word": "order",
+"count": 7
+},
+{
+"word": "circumstance",
+"count": 7
+},
+{
+"word": "office",
+"count": 7
+},
+{
+"word": "witch",
+"count": 7
+},
+{
+"word": "martha",
+"count": 7
+},
+{
+"word": "pseaume",
+"count": 7
+},
+{
+"word": "retrat",
+"count": 7
+},
+{
+"word": "stewart",
+"count": 7
+},
+{
+"word": "sacerdotes",
+"count": 7
+},
+{
+"word": "sadie",
+"count": 7
+},
+{
+"word": "saget",
+"count": 7
+},
+{
+"word": "barmherzig",
+"count": 7
+},
+{
+"word": "nuchtern",
+"count": 7
+},
+{
+"word": "betet",
+"count": 7
+},
+{
+"word": "senti",
+"count": 7
+},
+{
+"word": "serenada",
+"count": 7
+},
+{
+"word": "vieilles",
+"count": 7
+},
+{
+"word": "souviens",
+"count": 7
+},
+{
+"word": "violet",
+"count": 7
+},
+{
+"word": "tip",
+"count": 7
+},
+{
+"word": "volea",
+"count": 7
+},
+{
+"word": "manlio",
+"count": 7
+},
+{
+"word": "villanella",
+"count": 7
+},
+{
+"word": "vurria",
+"count": 7
+},
+{
+"word": "wonderland",
+"count": 7
+},
+{
+"word": "wisset",
+"count": 7
+},
+{
+"word": "handbag",
+"count": 7
+},
+{
+"word": "amicizia",
+"count": 6
+},
+{
+"word": "canzone",
+"count": 6
+},
+{
+"word": "minuet",
+"count": 6
+},
+{
+"word": "madrigal",
+"count": 6
+},
+{
+"word": "leven",
+"count": 6
+},
+{
+"word": "cafe",
+"count": 6
+},
+{
+"word": "oberon",
+"count": 6
+},
+{
+"word": "muse",
+"count": 6
+},
+{
+"word": "died",
+"count": 6
+},
+{
+"word": "samt",
+"count": 6
+},
+{
+"word": "brilliant",
+"count": 6
+},
+{
+"word": "octave",
+"count": 6
+},
+{
+"word": "espanolas",
+"count": 6
+},
+{
+"word": "eastern",
+"count": 6
+},
+{
+"word": "elizabethan",
+"count": 6
+},
+{
+"word": "concertantes",
+"count": 6
+},
+{
+"word": "ariettes",
+"count": 6
+},
+{
+"word": "handen",
+"count": 6
+},
+{
+"word": "klaverstykker",
+"count": 6
+},
+{
+"word": "posth",
+"count": 6
+},
+{
+"word": "overtures",
+"count": 6
+},
+{
+"word": "melodias",
+"count": 6
+},
+{
+"word": "favorites",
+"count": 6
+},
+{
+"word": "romeo",
+"count": 6
+},
+{
+"word": "italien",
+"count": 6
+},
+{
+"word": "alleluia",
+"count": 6
+},
+{
+"word": "traume",
+"count": 6
+},
+{
+"word": "muss",
+"count": 6
+},
+{
+"word": "very",
+"count": 6
+},
+{
+"word": "nachspiele",
+"count": 6
+},
+{
+"word": "walses",
+"count": 6
+},
+{
+"word": "danzas",
+"count": 6
+},
+{
+"word": "japan",
+"count": 6
+},
+{
+"word": "ensemble",
+"count": 6
+},
+{
+"word": "lyrische",
+"count": 6
+},
+{
+"word": "religiose",
+"count": 6
+},
+{
+"word": "mazury",
+"count": 6
+},
+{
+"word": "poetiques",
+"count": 6
+},
+{
+"word": "bretagne",
+"count": 6
+},
+{
+"word": "galliards",
+"count": 6
+},
+{
+"word": "pedal",
+"count": 6
+},
+{
+"word": "francoise",
+"count": 6
+},
+{
+"word": "pictures",
+"count": 6
+},
+{
+"word": "tales",
+"count": 6
+},
+{
+"word": "plusieurs",
+"count": 6
+},
+{
+"word": "percussion",
+"count": 6
+},
+{
+"word": "chorgesange",
+"count": 6
+},
+{
+"word": "hartw",
+"count": 6
+},
+{
+"word": "greek",
+"count": 6
+},
+{
+"word": "friedrich",
+"count": 6
+},
+{
+"word": "liturgy",
+"count": 6
+},
+{
+"word": "idylles",
+"count": 6
+},
+{
+"word": "sao",
+"count": 6
+},
+{
+"word": "jours",
+"count": 6
+},
+{
+"word": "keys",
+"count": 6
+},
+{
+"word": "symphonies",
+"count": 6
+},
+{
+"word": "agnus",
+"count": 6
+},
+{
+"word": "liederen",
+"count": 6
+},
+{
+"word": "sull",
+"count": 6
+},
+{
+"word": "sinfonia",
+"count": 6
+},
+{
+"word": "nyitany",
+"count": 6
+},
+{
+"word": "napolitana",
+"count": 6
+},
+{
+"word": "schumann",
+"count": 6
+},
+{
+"word": "universal",
+"count": 6
+},
+{
+"word": "ukrainian",
+"count": 6
+},
+{
+"word": "full",
+"count": 6
+},
+{
+"word": "opusculum",
+"count": 6
+},
+{
+"word": "known",
+"count": 6
+},
+{
+"word": "andantes",
+"count": 6
+},
+{
+"word": "enfantines",
+"count": 6
+},
+{
+"word": "virginem",
+"count": 6
+},
+{
+"word": "danze",
+"count": 6
+},
+{
+"word": "clavecin",
+"count": 6
+},
+{
+"word": "polyphonic",
+"count": 6
+},
+{
+"word": "duettinos",
+"count": 6
+},
+{
+"word": "beginner",
+"count": 6
+},
+{
+"word": "taste",
+"count": 6
+},
+{
+"word": "giovane",
+"count": 6
+},
+{
+"word": "danske",
+"count": 6
+},
+{
+"word": "amateurs",
+"count": 6
+},
+{
+"word": "viole",
+"count": 6
+},
+{
+"word": "dialogues",
+"count": 6
+},
+{
+"word": "violons",
+"count": 6
+},
+{
+"word": "etrennes",
+"count": 6
+},
+{
+"word": "wiener",
+"count": 6
+},
+{
+"word": "franzosische",
+"count": 6
+},
+{
+"word": "ages",
+"count": 6
+},
+{
+"word": "gedichten",
+"count": 6
+},
+{
+"word": "vien",
+"count": 6
+},
+{
+"word": "roy",
+"count": 6
+},
+{
+"word": "elend",
+"count": 6
+},
+{
+"word": "gar",
+"count": 6
+},
+{
+"word": "wenn",
+"count": 6
+},
+{
+"word": "het",
+"count": 6
+},
+{
+"word": "acque",
+"count": 6
+},
+{
+"word": "path",
+"count": 6
+},
+{
+"word": "bridge",
+"count": 6
+},
+{
+"word": "action",
+"count": 6
+},
+{
+"word": "acuarela",
+"count": 6
+},
+{
+"word": "clamavi",
+"count": 6
+},
+{
+"word": "beatam",
+"count": 6
+},
+{
+"word": "coenam",
+"count": 6
+},
+{
+"word": "unum",
+"count": 6
+},
+{
+"word": "ada",
+"count": 6
+},
+{
+"word": "ray",
+"count": 6
+},
+{
+"word": "cantabile",
+"count": 6
+},
+{
+"word": "molto",
+"count": 6
+},
+{
+"word": "lay",
+"count": 6
+},
+{
+"word": "adelina",
+"count": 6
+},
+{
+"word": "lili",
+"count": 6
+},
+{
+"word": "iaa",
+"count": 6
+},
+{
+"word": "banner",
+"count": 6
+},
+{
+"word": "ifc",
+"count": 6
+},
+{
+"word": "almaine",
+"count": 6
+},
+{
+"word": "almond",
+"count": 6
+},
+{
+"word": "seas",
+"count": 6
+},
+{
+"word": "etwas",
+"count": 6
+},
+{
+"word": "heilig",
+"count": 6
+},
+{
+"word": "wien",
+"count": 6
+},
+{
+"word": "porte",
+"count": 6
+},
+{
+"word": "autem",
+"count": 6
+},
+{
+"word": "daisy",
+"count": 6
+},
+{
+"word": "noite",
+"count": 6
+},
+{
+"word": "schonen",
+"count": 6
+},
+{
+"word": "ama",
+"count": 6
+},
+{
+"word": "chi",
+"count": 6
+},
+{
+"word": "ambient",
+"count": 6
+},
+{
+"word": "vero",
+"count": 6
+},
+{
+"word": "viva",
+"count": 6
+},
+{
+"word": "asleep",
+"count": 6
+},
+{
+"word": "island",
+"count": 6
+},
+{
+"word": "todos",
+"count": 6
+},
+{
+"word": "birth",
+"count": 6
+},
+{
+"word": "memorie",
+"count": 6
+},
+{
+"word": "top",
+"count": 6
+},
+{
+"word": "woman",
+"count": 6
+},
+{
+"word": "dancing",
+"count": 6
+},
+{
+"word": "devil",
+"count": 6
+},
+{
+"word": "hora",
+"count": 6
+},
+{
+"word": "beans",
+"count": 6
+},
+{
+"word": "carnaval",
+"count": 6
+},
+{
+"word": "chateau",
+"count": 6
+},
+{
+"word": "coin",
+"count": 6
+},
+{
+"word": "marguerite",
+"count": 6
+},
+{
+"word": "dames",
+"count": 6
+},
+{
+"word": "jamais",
+"count": 6
+},
+{
+"word": "baiser",
+"count": 6
+},
+{
+"word": "heureux",
+"count": 6
+},
+{
+"word": "printaniere",
+"count": 6
+},
+{
+"word": "vocem",
+"count": 6
+},
+{
+"word": "lande",
+"count": 6
+},
+{
+"word": "reise",
+"count": 6
+},
+{
+"word": "ostinato",
+"count": 6
+},
+{
+"word": "batalha",
+"count": 6
+},
+{
+"word": "indulo",
+"count": 6
+},
+{
+"word": "royal",
+"count": 6
+},
+{
+"word": "bay",
+"count": 6
+},
+{
+"word": "guide",
+"count": 6
+},
+{
+"word": "klage",
+"count": 6
+},
+{
+"word": "while",
+"count": 6
+},
+{
+"word": "bruit",
+"count": 6
+},
+{
+"word": "rien",
+"count": 6
+},
+{
+"word": "eggs",
+"count": 6
+},
+{
+"word": "nile",
+"count": 6
+},
+{
+"word": "stop",
+"count": 6
+},
+{
+"word": "psalter",
+"count": 6
+},
+{
+"word": "bees",
+"count": 6
+},
+{
+"word": "solemnis",
+"count": 6
+},
+{
+"word": "married",
+"count": 6
+},
+{
+"word": "lights",
+"count": 6
+},
+{
+"word": "boogie",
+"count": 6
+},
+{
+"word": "mighty",
+"count": 6
+},
+{
+"word": "mystery",
+"count": 6
+},
+{
+"word": "heil",
+"count": 6
+},
+{
+"word": "nebel",
+"count": 6
+},
+{
+"word": "virgin",
+"count": 6
+},
+{
+"word": "buena",
+"count": 6
+},
+{
+"word": "birdie",
+"count": 6
+},
+{
+"word": "burial",
+"count": 6
+},
+{
+"word": "butterflies",
+"count": 6
+},
+{
+"word": "off",
+"count": 6
+},
+{
+"word": "camp",
+"count": 6
+},
+{
+"word": "wishing",
+"count": 6
+},
+{
+"word": "bygone",
+"count": 6
+},
+{
+"word": "bog",
+"count": 6
+},
+{
+"word": "malheur",
+"count": 6
+},
+{
+"word": "folie",
+"count": 6
+},
+{
+"word": "avoir",
+"count": 6
+},
+{
+"word": "amer",
+"count": 6
+},
+{
+"word": "dur",
+"count": 6
+},
+{
+"word": "roll",
+"count": 6
+},
+{
+"word": "caecilia",
+"count": 6
+},
+{
+"word": "primo",
+"count": 6
+},
+{
+"word": "cairo",
+"count": 6
+},
+{
+"word": "caligaverunt",
+"count": 6
+},
+{
+"word": "cave",
+"count": 6
+},
+{
+"word": "blonde",
+"count": 6
+},
+{
+"word": "pauper",
+"count": 6
+},
+{
+"word": "magna",
+"count": 6
+},
+{
+"word": "fond",
+"count": 6
+},
+{
+"word": "iav",
+"count": 6
+},
+{
+"word": "leufsta",
+"count": 6
+},
+{
+"word": "class",
+"count": 6
+},
+{
+"word": "roman",
+"count": 6
+},
+{
+"word": "henry",
+"count": 6
+},
+{
+"word": "paine",
+"count": 6
+},
+{
+"word": "hero",
+"count": 6
+},
+{
+"word": "clockwork",
+"count": 6
+},
+{
+"word": "fidele",
+"count": 6
+},
+{
+"word": "colin",
+"count": 6
+},
+{
+"word": "kisses",
+"count": 6
+},
+{
+"word": "sacrorum",
+"count": 6
+},
+{
+"word": "francesco",
+"count": 6
+},
+{
+"word": "fairyland",
+"count": 6
+},
+{
+"word": "lament",
+"count": 6
+},
+{
+"word": "seno",
+"count": 6
+},
+{
+"word": "cosa",
+"count": 6
+},
+{
+"word": "methode",
+"count": 6
+},
+{
+"word": "cowboy",
+"count": 6
+},
+{
+"word": "empty",
+"count": 6
+},
+{
+"word": "porto",
+"count": 6
+},
+{
+"word": "michael",
+"count": 6
+},
+{
+"word": "ial",
+"count": 6
+},
+{
+"word": "pianto",
+"count": 6
+},
+{
+"word": "dieser",
+"count": 6
+},
+{
+"word": "gaar",
+"count": 6
+},
+{
+"word": "dagen",
+"count": 6
+},
+{
+"word": "ser",
+"count": 6
+},
+{
+"word": "gleichwie",
+"count": 6
+},
+{
+"word": "dennoch",
+"count": 6
+},
+{
+"word": "joyeux",
+"count": 6
+},
+{
+"word": "alpenjager",
+"count": 6
+},
+{
+"word": "sevilla",
+"count": 6
+},
+{
+"word": "singt",
+"count": 6
+},
+{
+"word": "frohe",
+"count": 6
+},
+{
+"word": "gutig",
+"count": 6
+},
+{
+"word": "trubsal",
+"count": 6
+},
+{
+"word": "jager",
+"count": 6
+},
+{
+"word": "champetre",
+"count": 6
+},
+{
+"word": "musette",
+"count": 6
+},
+{
+"word": "arco",
+"count": 6
+},
+{
+"word": "sonnambula",
+"count": 6
+},
+{
+"word": "accompaniment",
+"count": 6
+},
+{
+"word": "ground",
+"count": 6
+},
+{
+"word": "eterna",
+"count": 6
+},
+{
+"word": "its",
+"count": 6
+},
+{
+"word": "kwv",
+"count": 6
+},
+{
+"word": "adoro",
+"count": 6
+},
+{
+"word": "affetti",
+"count": 6
+},
+{
+"word": "felici",
+"count": 6
+},
+{
+"word": "dolente",
+"count": 6
+},
+{
+"word": "rags",
+"count": 6
+},
+{
+"word": "sebastien",
+"count": 6
+},
+{
+"word": "virtute",
+"count": 6
+},
+{
+"word": "exaltatum",
+"count": 6
+},
+{
+"word": "dignus",
+"count": 6
+},
+{
+"word": "probasti",
+"count": 6
+},
+{
+"word": "multiplicati",
+"count": 6
+},
+{
+"word": "ingrata",
+"count": 6
+},
+{
+"word": "gira",
+"count": 6
+},
+{
+"word": "angeli",
+"count": 6
+},
+{
+"word": "crucis",
+"count": 6
+},
+{
+"word": "trompette",
+"count": 6
+},
+{
+"word": "alhambra",
+"count": 6
+},
+{
+"word": "ecstasy",
+"count": 6
+},
+{
+"word": "hor",
+"count": 6
+},
+{
+"word": "eden",
+"count": 6
+},
+{
+"word": "repository",
+"count": 6
+},
+{
+"word": "party",
+"count": 6
+},
+{
+"word": "eglantine",
+"count": 6
+},
+{
+"word": "eglogue",
+"count": 6
+},
+{
+"word": "fui",
+"count": 6
+},
+{
+"word": "sion",
+"count": 6
+},
+{
+"word": "esta",
+"count": 6
+},
+{
+"word": "noche",
+"count": 6
+},
+{
+"word": "ester",
+"count": 6
+},
+{
+"word": "argentino",
+"count": 6
+},
+{
+"word": "facil",
+"count": 6
+},
+{
+"word": "manos",
+"count": 6
+},
+{
+"word": "traviata",
+"count": 6
+},
+{
+"word": "pan",
+"count": 6
+},
+{
+"word": "hope",
+"count": 6
+},
+{
+"word": "eternity",
+"count": 6
+},
+{
+"word": "tristesse",
+"count": 6
+},
+{
+"word": "mim",
+"count": 6
+},
+{
+"word": "vou",
+"count": 6
+},
+{
+"word": "euangelion",
+"count": 6
+},
+{
+"word": "dios",
+"count": 6
+},
+{
+"word": "eugene",
+"count": 6
+},
+{
+"word": "imitation",
+"count": 6
+},
+{
+"word": "begleitung",
+"count": 6
+},
+{
+"word": "napolitaine",
+"count": 6
+},
+{
+"word": "pre",
+"count": 6
+},
+{
+"word": "letzten",
+"count": 6
+},
+{
+"word": "puritani",
+"count": 6
+},
+{
+"word": "boheme",
+"count": 6
+},
+{
+"word": "diavolo",
+"count": 6
+},
+{
+"word": "borgia",
+"count": 6
+},
+{
+"word": "ballo",
+"count": 6
+},
+{
+"word": "maschera",
+"count": 6
+},
+{
+"word": "rct",
+"count": 6
+},
+{
+"word": "liete",
+"count": 6
+},
+{
+"word": "frage",
+"count": 6
+},
+{
+"word": "fragrant",
+"count": 6
+},
+{
+"word": "frammenti",
+"count": 6
+},
+{
+"word": "college",
+"count": 6
+},
+{
+"word": "face",
+"count": 6
+},
+{
+"word": "frische",
+"count": 6
+},
+{
+"word": "frohlich",
+"count": 6
+},
+{
+"word": "froh",
+"count": 6
+},
+{
+"word": "schar",
+"count": 6
+},
+{
+"word": "frolic",
+"count": 6
+},
+{
+"word": "adventures",
+"count": 6
+},
+{
+"word": "girofle",
+"count": 6
+},
+{
+"word": "giuditta",
+"count": 6
+},
+{
+"word": "change",
+"count": 6
+},
+{
+"word": "avvicina",
+"count": 6
+},
+{
+"word": "things",
+"count": 6
+},
+{
+"word": "merciful",
+"count": 6
+},
+{
+"word": "hath",
+"count": 6
+},
+{
+"word": "ladies",
+"count": 6
+},
+{
+"word": "spare",
+"count": 6
+},
+{
+"word": "haunted",
+"count": 6
+},
+{
+"word": "mas",
+"count": 6
+},
+{
+"word": "whole",
+"count": 6
+},
+{
+"word": "use",
+"count": 6
+},
+{
+"word": "much",
+"count": 6
+},
+{
+"word": "dreaming",
+"count": 6
+},
+{
+"word": "another",
+"count": 6
+},
+{
+"word": "feel",
+"count": 6
+},
+{
+"word": "tired",
+"count": 6
+},
+{
+"word": "hush",
+"count": 6
+},
+{
+"word": "gal",
+"count": 6
+},
+{
+"word": "tempo",
+"count": 6
+},
+{
+"word": "apple",
+"count": 6
+},
+{
+"word": "magnify",
+"count": 6
+},
+{
+"word": "worship",
+"count": 6
+},
+{
+"word": "testament",
+"count": 6
+},
+{
+"word": "regis",
+"count": 6
+},
+{
+"word": "winnie",
+"count": 6
+},
+{
+"word": "mobile",
+"count": 6
+},
+{
+"word": "sunny",
+"count": 6
+},
+{
+"word": "taten",
+"count": 6
+},
+{
+"word": "patris",
+"count": 6
+},
+{
+"word": "nativitatem",
+"count": 6
+},
+{
+"word": "lover",
+"count": 6
+},
+{
+"word": "zier",
+"count": 6
+},
+{
+"word": "wondrous",
+"count": 6
+},
+{
+"word": "wol",
+"count": 6
+},
+{
+"word": "big",
+"count": 6
+},
+{
+"word": "johannespassion",
+"count": 6
+},
+{
+"word": "bad",
+"count": 6
+},
+{
+"word": "kossuth",
+"count": 6
+},
+{
+"word": "maj",
+"count": 6
+},
+{
+"word": "anweisung",
+"count": 6
+},
+{
+"word": "vers",
+"count": 6
+},
+{
+"word": "narcisse",
+"count": 6
+},
+{
+"word": "cheveux",
+"count": 6
+},
+{
+"word": "femmes",
+"count": 6
+},
+{
+"word": "pastourelle",
+"count": 6
+},
+{
+"word": "journee",
+"count": 6
+},
+{
+"word": "mariee",
+"count": 6
+},
+{
+"word": "ophelie",
+"count": 6
+},
+{
+"word": "pauvres",
+"count": 6
+},
+{
+"word": "poete",
+"count": 6
+},
+{
+"word": "canta",
+"count": 6
+},
+{
+"word": "meditation",
+"count": 6
+},
+{
+"word": "vergine",
+"count": 6
+},
+{
+"word": "nave",
+"count": 6
+},
+{
+"word": "repos",
+"count": 6
+},
+{
+"word": "jugement",
+"count": 6
+},
+{
+"word": "musiche",
+"count": 6
+},
+{
+"word": "organiste",
+"count": 6
+},
+{
+"word": "renard",
+"count": 6
+},
+{
+"word": "tyrol",
+"count": 6
+},
+{
+"word": "champs",
+"count": 6
+},
+{
+"word": "lieto",
+"count": 6
+},
+{
+"word": "lilla",
+"count": 6
+},
+{
+"word": "lisbonne",
+"count": 6
+},
+{
+"word": "listening",
+"count": 6
+},
+{
+"word": "nemo",
+"count": 6
+},
+{
+"word": "nasce",
+"count": 6
+},
+{
+"word": "mala",
+"count": 6
+},
+{
+"word": "mamie",
+"count": 6
+},
+{
+"word": "mandatum",
+"count": 6
+},
+{
+"word": "gimo",
+"count": 6
+},
+{
+"word": "semper",
+"count": 6
+},
+{
+"word": "blumenlese",
+"count": 6
+},
+{
+"word": "pompadour",
+"count": 6
+},
+{
+"word": "mistletoe",
+"count": 6
+},
+{
+"word": "mitilde",
+"count": 6
+},
+{
+"word": "musicians",
+"count": 6
+},
+{
+"word": "vouloir",
+"count": 6
+},
+{
+"word": "nachtmusik",
+"count": 6
+},
+{
+"word": "messiah",
+"count": 6
+},
+{
+"word": "standchen",
+"count": 6
+},
+{
+"word": "nott",
+"count": 6
+},
+{
+"word": "donnerwort",
+"count": 6
+},
+{
+"word": "bewein",
+"count": 6
+},
+{
+"word": "han",
+"count": 6
+},
+{
+"word": "ontology",
+"count": 6
+},
+{
+"word": "soave",
+"count": 6
+},
+{
+"word": "cantando",
+"count": 6
+},
+{
+"word": "canonica",
+"count": 6
+},
+{
+"word": "lang",
+"count": 6
+},
+{
+"word": "orientale",
+"count": 6
+},
+{
+"word": "patterns",
+"count": 6
+},
+{
+"word": "revere",
+"count": 6
+},
+{
+"word": "paulinen",
+"count": 6
+},
+{
+"word": "pop",
+"count": 6
+},
+{
+"word": "vado",
+"count": 6
+},
+{
+"word": "pourris",
+"count": 6
+},
+{
+"word": "pseaumes",
+"count": 6
+},
+{
+"word": "nascitur",
+"count": 6
+},
+{
+"word": "plaist",
+"count": 6
+},
+{
+"word": "reisebilder",
+"count": 6
+},
+{
+"word": "reiterlied",
+"count": 6
+},
+{
+"word": "requiescat",
+"count": 6
+},
+{
+"word": "reveillez",
+"count": 6
+},
+{
+"word": "sentiments",
+"count": 6
+},
+{
+"word": "sentimentale",
+"count": 6
+},
+{
+"word": "roseligarte",
+"count": 6
+},
+{
+"word": "gmw",
+"count": 6
+},
+{
+"word": "gazon",
+"count": 6
+},
+{
+"word": "selva",
+"count": 6
+},
+{
+"word": "sacr",
+"count": 6
+},
+{
+"word": "gegru",
+"count": 6
+},
+{
+"word": "wieder",
+"count": 6
+},
+{
+"word": "soldaten",
+"count": 6
+},
+{
+"word": "solimano",
+"count": 6
+},
+{
+"word": "souvenez",
+"count": 6
+},
+{
+"word": "sov",
+"count": 6
+},
+{
+"word": "sovra",
+"count": 6
+},
+{
+"word": "spagnoletta",
+"count": 6
+},
+{
+"word": "capricieuse",
+"count": 6
+},
+{
+"word": "army",
+"count": 6
+},
+{
+"word": "bachelor",
+"count": 6
+},
+{
+"word": "mermaid",
+"count": 6
+},
+{
+"word": "mystic",
+"count": 6
+},
+{
+"word": "patriot",
+"count": 6
+},
+{
+"word": "piper",
+"count": 6
+},
+{
+"word": "tivolis",
+"count": 6
+},
+{
+"word": "troubadour",
+"count": 6
+},
+{
+"word": "lenta",
+"count": 6
+},
+{
+"word": "vorvisa",
+"count": 6
+},
+{
+"word": "furchtet",
+"count": 6
+},
+{
+"word": "serenata",
+"count": 5
+},
+{
+"word": "modes",
+"count": 5
+},
+{
+"word": "motif",
+"count": 5
+},
+{
+"word": "straniera",
+"count": 5
+},
+{
+"word": "surdato",
+"count": 5
+},
+{
+"word": "faded",
+"count": 5
+},
+{
+"word": "lone",
+"count": 5
+},
+{
+"word": "frieden",
+"count": 5
+},
+{
+"word": "technique",
+"count": 5
+},
+{
+"word": "mazur",
+"count": 5
+},
+{
+"word": "ausgewahlte",
+"count": 5
+},
+{
+"word": "rbv",
+"count": 5
+},
+{
+"word": "fantasistykker",
+"count": 5
+},
+{
+"word": "lorraine",
+"count": 5
+},
+{
+"word": "bauyn",
+"count": 5
+},
+{
+"word": "kinderlieder",
+"count": 5
+},
+{
+"word": "ten",
+"count": 5
+},
+{
+"word": "lustige",
+"count": 5
+},
+{
+"word": "violino",
+"count": 5
+},
+{
+"word": "reading",
+"count": 5
+},
+{
+"word": "morgenstern",
+"count": 5
+},
+{
+"word": "poets",
+"count": 5
+},
+{
+"word": "preludios",
+"count": 5
+},
+{
+"word": "clj",
+"count": 5
+},
+{
+"word": "studi",
+"count": 5
+},
+{
+"word": "tuum",
+"count": 5
+},
+{
+"word": "handel",
+"count": 5
+},
+{
+"word": "malbrough",
+"count": 5
+},
+{
+"word": "reiter",
+"count": 5
+},
+{
+"word": "vocalises",
+"count": 5
+},
+{
+"word": "walzes",
+"count": 5
+},
+{
+"word": "intime",
+"count": 5
+},
+{
+"word": "cantos",
+"count": 5
+},
+{
+"word": "welsh",
+"count": 5
+},
+{
+"word": "melodiae",
+"count": 5
+},
+{
+"word": "polonoise",
+"count": 5
+},
+{
+"word": "trumpets",
+"count": 5
+},
+{
+"word": "premiere",
+"count": 5
+},
+{
+"word": "parisienne",
+"count": 5
+},
+{
+"word": "chamber",
+"count": 5
+},
+{
+"word": "norwegian",
+"count": 5
+},
+{
+"word": "novelettes",
+"count": 5
+},
+{
+"word": "danket",
+"count": 5
+},
+{
+"word": "polkas",
+"count": 5
+},
+{
+"word": "pensieri",
+"count": 5
+},
+{
+"word": "perles",
+"count": 5
+},
+{
+"word": "figaro",
+"count": 5
+},
+{
+"word": "kss",
+"count": 5
+},
+{
+"word": "coquette",
+"count": 5
+},
+{
+"word": "fairy",
+"count": 5
+},
+{
+"word": "according",
+"count": 5
+},
+{
+"word": "russia",
+"count": 5
+},
+{
+"word": "johanna",
+"count": 5
+},
+{
+"word": "peter",
+"count": 5
+},
+{
+"word": "cappella",
+"count": 5
+},
+{
+"word": "georgia",
+"count": 5
+},
+{
+"word": "texten",
+"count": 5
+},
+{
+"word": "glosas",
+"count": 5
+},
+{
+"word": "sonates",
+"count": 5
+},
+{
+"word": "symphoniques",
+"count": 5
+},
+{
+"word": "instructive",
+"count": 5
+},
+{
+"word": "sonaten",
+"count": 5
+},
+{
+"word": "linke",
+"count": 5
+},
+{
+"word": "romantiques",
+"count": 5
+},
+{
+"word": "variation",
+"count": 5
+},
+{
+"word": "rondos",
+"count": 5
+},
+{
+"word": "stimmen",
+"count": 5
+},
+{
+"word": "mannerstimmen",
+"count": 5
+},
+{
+"word": "ubungsstucke",
+"count": 5
+},
+{
+"word": "postludes",
+"count": 5
+},
+{
+"word": "corde",
+"count": 5
+},
+{
+"word": "instrumental",
+"count": 5
+},
+{
+"word": "scottish",
+"count": 5
+},
+{
+"word": "stile",
+"count": 5
+},
+{
+"word": "ubungen",
+"count": 5
+},
+{
+"word": "norske",
+"count": 5
+},
+{
+"word": "bravura",
+"count": 5
+},
+{
+"word": "arabesques",
+"count": 5
+},
+{
+"word": "arabian",
+"count": 5
+},
+{
+"word": "frere",
+"count": 5
+},
+{
+"word": "jacques",
+"count": 5
+},
+{
+"word": "francaises",
+"count": 5
+},
+{
+"word": "paroles",
+"count": 5
+},
+{
+"word": "divertissemens",
+"count": 5
+},
+{
+"word": "duettini",
+"count": 5
+},
+{
+"word": "olden",
+"count": 5
+},
+{
+"word": "ayres",
+"count": 5
+},
+{
+"word": "balletti",
+"count": 5
+},
+{
+"word": "carillon",
+"count": 5
+},
+{
+"word": "accompagnement",
+"count": 5
+},
+{
+"word": "cotillons",
+"count": 5
+},
+{
+"word": "mercadante",
+"count": 5
+},
+{
+"word": "chambre",
+"count": 5
+},
+{
+"word": "tableaux",
+"count": 5
+},
+{
+"word": "cakewalk",
+"count": 5
+},
+{
+"word": "davids",
+"count": 5
+},
+{
+"word": "wwv",
+"count": 5
+},
+{
+"word": "filiae",
+"count": 5
+},
+{
+"word": "parole",
+"count": 5
+},
+{
+"word": "james",
+"count": 5
+},
+{
+"word": "salmi",
+"count": 5
+},
+{
+"word": "klagen",
+"count": 5
+},
+{
+"word": "erhor",
+"count": 5
+},
+{
+"word": "seufzen",
+"count": 5
+},
+{
+"word": "nit",
+"count": 5
+},
+{
+"word": "sunden",
+"count": 5
+},
+{
+"word": "strafe",
+"count": 5
+},
+{
+"word": "quelle",
+"count": 5
+},
+{
+"word": "weh",
+"count": 5
+},
+{
+"word": "guter",
+"count": 5
+},
+{
+"word": "liebster",
+"count": 5
+},
+{
+"word": "nichts",
+"count": 5
+},
+{
+"word": "arme",
+"count": 5
+},
+{
+"word": "bringt",
+"count": 5
+},
+{
+"word": "dann",
+"count": 5
+},
+{
+"word": "einmal",
+"count": 5
+},
+{
+"word": "gehst",
+"count": 5
+},
+{
+"word": "auge",
+"count": 5
+},
+{
+"word": "galatea",
+"count": 5
+},
+{
+"word": "acis",
+"count": 5
+},
+{
+"word": "musicum",
+"count": 5
+},
+{
+"word": "dark",
+"count": 5
+},
+{
+"word": "field",
+"count": 5
+},
+{
+"word": "hot",
+"count": 5
+},
+{
+"word": "sands",
+"count": 5
+},
+{
+"word": "astra",
+"count": 5
+},
+{
+"word": "altre",
+"count": 5
+},
+{
+"word": "gloriam",
+"count": 5
+},
+{
+"word": "puerum",
+"count": 5
+},
+{
+"word": "amica",
+"count": 5
+},
+{
+"word": "doloroso",
+"count": 5
+},
+{
+"word": "xvii",
+"count": 5
+},
+{
+"word": "varie",
+"count": 5
+},
+{
+"word": "fidelis",
+"count": 5
+},
+{
+"word": "joanna",
+"count": 5
+},
+{
+"word": "dis",
+"count": 5
+},
+{
+"word": "pris",
+"count": 5
+},
+{
+"word": "almande",
+"count": 5
+},
+{
+"word": "alors",
+"count": 5
+},
+{
+"word": "alouette",
+"count": 5
+},
+{
+"word": "scene",
+"count": 5
+},
+{
+"word": "zart",
+"count": 5
+},
+{
+"word": "hvide",
+"count": 5
+},
+{
+"word": "guds",
+"count": 5
+},
+{
+"word": "fonte",
+"count": 5
+},
+{
+"word": "altar",
+"count": 5
+},
+{
+"word": "passo",
+"count": 5
+},
+{
+"word": "alvorada",
+"count": 5
+},
+{
+"word": "keep",
+"count": 5
+},
+{
+"word": "family",
+"count": 5
+},
+{
+"word": "joe",
+"count": 5
+},
+{
+"word": "everywhere",
+"count": 5
+},
+{
+"word": "alzira",
+"count": 5
+},
+{
+"word": "bache",
+"count": 5
+},
+{
+"word": "flusse",
+"count": 5
+},
+{
+"word": "kreuz",
+"count": 5
+},
+{
+"word": "wiege",
+"count": 5
+},
+{
+"word": "jesaja",
+"count": 5
+},
+{
+"word": "alles",
+"count": 5
+},
+{
+"word": "stillen",
+"count": 5
+},
+{
+"word": "giove",
+"count": 5
+},
+{
+"word": "amadis",
+"count": 5
+},
+{
+"word": "yar",
+"count": 5
+},
+{
+"word": "amanda",
+"count": 5
+},
+{
+"word": "gentes",
+"count": 5
+},
+{
+"word": "dico",
+"count": 5
+},
+{
+"word": "woe",
+"count": 5
+},
+{
+"word": "democracy",
+"count": 5
+},
+{
+"word": "cadet",
+"count": 5
+},
+{
+"word": "americana",
+"count": 5
+},
+{
+"word": "sai",
+"count": 5
+},
+{
+"word": "fortuna",
+"count": 5
+},
+{
+"word": "crudele",
+"count": 5
+},
+{
+"word": "ascension",
+"count": 5
+},
+{
+"word": "facta",
+"count": 5
+},
+{
+"word": "beri",
+"count": 5
+},
+{
+"word": "astianatte",
+"count": 5
+},
+{
+"word": "cabin",
+"count": 5
+},
+{
+"word": "shop",
+"count": 5
+},
+{
+"word": "any",
+"count": 5
+},
+{
+"word": "lovers",
+"count": 5
+},
+{
+"word": "trail",
+"count": 5
+},
+{
+"word": "store",
+"count": 5
+},
+{
+"word": "palace",
+"count": 5
+},
+{
+"word": "panama",
+"count": 5
+},
+{
+"word": "atalanta",
+"count": 5
+},
+{
+"word": "divina",
+"count": 5
+},
+{
+"word": "athalie",
+"count": 5
+},
+{
+"word": "attesa",
+"count": 5
+},
+{
+"word": "orbis",
+"count": 5
+},
+{
+"word": "factor",
+"count": 5
+},
+{
+"word": "invisible",
+"count": 5
+},
+{
+"word": "rhin",
+"count": 5
+},
+{
+"word": "silence",
+"count": 5
+},
+{
+"word": "dieux",
+"count": 5
+},
+{
+"word": "port",
+"count": 5
+},
+{
+"word": "moys",
+"count": 5
+},
+{
+"word": "couchant",
+"count": 5
+},
+{
+"word": "couperin",
+"count": 5
+},
+{
+"word": "state",
+"count": 5
+},
+{
+"word": "audivi",
+"count": 5
+},
+{
+"word": "kaiser",
+"count": 5
+},
+{
+"word": "tritt",
+"count": 5
+},
+{
+"word": "wiedersehen",
+"count": 5
+},
+{
+"word": "deutschen",
+"count": 5
+},
+{
+"word": "basson",
+"count": 5
+},
+{
+"word": "bath",
+"count": 5
+},
+{
+"word": "ibf",
+"count": 5
+},
+{
+"word": "battaglia",
+"count": 5
+},
+{
+"word": "cuore",
+"count": 5
+},
+{
+"word": "clog",
+"count": 5
+},
+{
+"word": "park",
+"count": 5
+},
+{
+"word": "noc",
+"count": 5
+},
+{
+"word": "ones",
+"count": 5
+},
+{
+"word": "quiet",
+"count": 5
+},
+{
+"word": "courage",
+"count": 5
+},
+{
+"word": "timet",
+"count": 5
+},
+{
+"word": "cristal",
+"count": 5
+},
+{
+"word": "sourire",
+"count": 5
+},
+{
+"word": "retreat",
+"count": 5
+},
+{
+"word": "power",
+"count": 5
+},
+{
+"word": "wales",
+"count": 5
+},
+{
+"word": "truth",
+"count": 5
+},
+{
+"word": "graces",
+"count": 5
+},
+{
+"word": "ombre",
+"count": 5
+},
+{
+"word": "missa",
+"count": 5
+},
+{
+"word": "eclipse",
+"count": 5
+},
+{
+"word": "begin",
+"count": 5
+},
+{
+"word": "beginning",
+"count": 5
+},
+{
+"word": "schleifer",
+"count": 5
+},
+{
+"word": "salvation",
+"count": 5
+},
+{
+"word": "made",
+"count": 5
+},
+{
+"word": "recht",
+"count": 5
+},
+{
+"word": "oro",
+"count": 5
+},
+{
+"word": "beija",
+"count": 5
+},
+{
+"word": "csardas",
+"count": 5
+},
+{
+"word": "bill",
+"count": 5
+},
+{
+"word": "fly",
+"count": 5
+},
+{
+"word": "automobile",
+"count": 5
+},
+{
+"word": "bunny",
+"count": 5
+},
+{
+"word": "agua",
+"count": 5
+},
+{
+"word": "burlesca",
+"count": 5
+},
+{
+"word": "saints",
+"count": 5
+},
+{
+"word": "fire",
+"count": 5
+},
+{
+"word": "waves",
+"count": 5
+},
+{
+"word": "stream",
+"count": 5
+},
+{
+"word": "times",
+"count": 5
+},
+{
+"word": "soit",
+"count": 5
+},
+{
+"word": "vrai",
+"count": 5
+},
+{
+"word": "soupire",
+"count": 5
+},
+{
+"word": "toujours",
+"count": 5
+},
+{
+"word": "rire",
+"count": 5
+},
+{
+"word": "peu",
+"count": 5
+},
+{
+"word": "coup",
+"count": 5
+},
+{
+"word": "age",
+"count": 5
+},
+{
+"word": "avril",
+"count": 5
+},
+{
+"word": "cabocla",
+"count": 5
+},
+{
+"word": "caboclo",
+"count": 5
+},
+{
+"word": "cadence",
+"count": 5
+},
+{
+"word": "xviii",
+"count": 5
+},
+{
+"word": "rhythm",
+"count": 5
+},
+{
+"word": "urbs",
+"count": 5
+},
+{
+"word": "mario",
+"count": 5
+},
+{
+"word": "caledonian",
+"count": 5
+},
+{
+"word": "pie",
+"count": 5
+},
+{
+"word": "poppies",
+"count": 5
+},
+{
+"word": "columbia",
+"count": 5
+},
+{
+"word": "forth",
+"count": 5
+},
+{
+"word": "names",
+"count": 5
+},
+{
+"word": "daddy",
+"count": 5
+},
+{
+"word": "seasons",
+"count": 5
+},
+{
+"word": "faux",
+"count": 5
+},
+{
+"word": "bouche",
+"count": 5
+},
+{
+"word": "cecidit",
+"count": 5
+},
+{
+"word": "amy",
+"count": 5
+},
+{
+"word": "ballade",
+"count": 5
+},
+{
+"word": "boccherini",
+"count": 5
+},
+{
+"word": "mvwv",
+"count": 5
+},
+{
+"word": "violoncelle",
+"count": 5
+},
+{
+"word": "claudine",
+"count": 5
+},
+{
+"word": "clay",
+"count": 5
+},
+{
+"word": "cleveland",
+"count": 5
+},
+{
+"word": "climbing",
+"count": 5
+},
+{
+"word": "amante",
+"count": 5
+},
+{
+"word": "prato",
+"count": 5
+},
+{
+"word": "fileno",
+"count": 5
+},
+{
+"word": "miei",
+"count": 5
+},
+{
+"word": "clorinda",
+"count": 5
+},
+{
+"word": "clotilde",
+"count": 5
+},
+{
+"word": "cloud",
+"count": 5
+},
+{
+"word": "pratique",
+"count": 5
+},
+{
+"word": "madrid",
+"count": 5
+},
+{
+"word": "ninety",
+"count": 5
+},
+{
+"word": "com",
+"count": 5
+},
+{
+"word": "vivo",
+"count": 5
+},
+{
+"word": "lisette",
+"count": 5
+},
+{
+"word": "notation",
+"count": 5
+},
+{
+"word": "modinhas",
+"count": 5
+},
+{
+"word": "eius",
+"count": 5
+},
+{
+"word": "quatuor",
+"count": 5
+},
+{
+"word": "corranto",
+"count": 5
+},
+{
+"word": "gagliarde",
+"count": 5
+},
+{
+"word": "mie",
+"count": 5
+},
+{
+"word": "lontananza",
+"count": 5
+},
+{
+"word": "ombra",
+"count": 5
+},
+{
+"word": "fan",
+"count": 5
+},
+{
+"word": "saga",
+"count": 5
+},
+{
+"word": "looked",
+"count": 5
+},
+{
+"word": "count",
+"count": 5
+},
+{
+"word": "couplets",
+"count": 5
+},
+{
+"word": "complet",
+"count": 5
+},
+{
+"word": "harmonie",
+"count": 5
+},
+{
+"word": "creation",
+"count": 5
+},
+{
+"word": "strumenti",
+"count": 5
+},
+{
+"word": "angelis",
+"count": 5
+},
+{
+"word": "ijf",
+"count": 5
+},
+{
+"word": "swing",
+"count": 5
+},
+{
+"word": "crescendo",
+"count": 5
+},
+{
+"word": "cri",
+"count": 5
+},
+{
+"word": "cristina",
+"count": 5
+},
+{
+"word": "croon",
+"count": 5
+},
+{
+"word": "rste",
+"count": 5
+},
+{
+"word": "sidste",
+"count": 5
+},
+{
+"word": "nne",
+"count": 5
+},
+{
+"word": "vel",
+"count": 5
+},
+{
+"word": "ned",
+"count": 5
+},
+{
+"word": "natur",
+"count": 5
+},
+{
+"word": "aften",
+"count": 5
+},
+{
+"word": "verden",
+"count": 5
+},
+{
+"word": "linden",
+"count": 5
+},
+{
+"word": "kun",
+"count": 5
+},
+{
+"word": "stor",
+"count": 5
+},
+{
+"word": "dentro",
+"count": 5
+},
+{
+"word": "specchio",
+"count": 5
+},
+{
+"word": "gratia",
+"count": 5
+},
+{
+"word": "pedro",
+"count": 5
+},
+{
+"word": "departed",
+"count": 5
+},
+{
+"word": "walde",
+"count": 5
+},
+{
+"word": "carneval",
+"count": 5
+},
+{
+"word": "patient",
+"count": 5
+},
+{
+"word": "fischer",
+"count": 5
+},
+{
+"word": "garten",
+"count": 5
+},
+{
+"word": "geistertanz",
+"count": 5
+},
+{
+"word": "geliebten",
+"count": 5
+},
+{
+"word": "lehrer",
+"count": 5
+},
+{
+"word": "offenbaret",
+"count": 5
+},
+{
+"word": "stadt",
+"count": 5
+},
+{
+"word": "gross",
+"count": 5
+},
+{
+"word": "seinem",
+"count": 5
+},
+{
+"word": "machet",
+"count": 5
+},
+{
+"word": "freuen",
+"count": 5
+},
+{
+"word": "coridon",
+"count": 5
+},
+{
+"word": "knabe",
+"count": 5
+},
+{
+"word": "kuckuck",
+"count": 5
+},
+{
+"word": "gestorben",
+"count": 5
+},
+{
+"word": "aufgegangen",
+"count": 5
+},
+{
+"word": "schiffer",
+"count": 5
+},
+{
+"word": "carl",
+"count": 5
+},
+{
+"word": "hongroise",
+"count": 5
+},
+{
+"word": "pyrenees",
+"count": 5
+},
+{
+"word": "doodle",
+"count": 5
+},
+{
+"word": "union",
+"count": 5
+},
+{
+"word": "simeon",
+"count": 5
+},
+{
+"word": "sou",
+"count": 5
+},
+{
+"word": "weep",
+"count": 5
+},
+{
+"word": "helena",
+"count": 5
+},
+{
+"word": "luz",
+"count": 5
+},
+{
+"word": "nas",
+"count": 5
+},
+{
+"word": "doce",
+"count": 5
+},
+{
+"word": "bonus",
+"count": 5
+},
+{
+"word": "fast",
+"count": 5
+},
+{
+"word": "dolc",
+"count": 5
+},
+{
+"word": "speranza",
+"count": 5
+},
+{
+"word": "moro",
+"count": 5
+},
+{
+"word": "dolcemente",
+"count": 5
+},
+{
+"word": "procession",
+"count": 5
+},
+{
+"word": "dolores",
+"count": 5
+},
+{
+"word": "salutis",
+"count": 5
+},
+{
+"word": "meae",
+"count": 5
+},
+{
+"word": "auxilium",
+"count": 5
+},
+{
+"word": "exaudi",
+"count": 5
+},
+{
+"word": "arguas",
+"count": 5
+},
+{
+"word": "peccata",
+"count": 5
+},
+{
+"word": "eum",
+"count": 5
+},
+{
+"word": "veneris",
+"count": 5
+},
+{
+"word": "irw",
+"count": 5
+},
+{
+"word": "haut",
+"count": 5
+},
+{
+"word": "actum",
+"count": 5
+},
+{
+"word": "yankee",
+"count": 5
+},
+{
+"word": "feliz",
+"count": 5
+},
+{
+"word": "each",
+"count": 5
+},
+{
+"word": "reel",
+"count": 5
+},
+{
+"word": "lignum",
+"count": 5
+},
+{
+"word": "concipiet",
+"count": 5
+},
+{
+"word": "ecclesiae",
+"count": 5
+},
+{
+"word": "primavera",
+"count": 5
+},
+{
+"word": "cari",
+"count": 5
+},
+{
+"word": "sangue",
+"count": 5
+},
+{
+"word": "lauro",
+"count": 5
+},
+{
+"word": "verde",
+"count": 5
+},
+{
+"word": "ninfe",
+"count": 5
+},
+{
+"word": "istante",
+"count": 5
+},
+{
+"word": "hun",
+"count": 5
+},
+{
+"word": "nouvelle",
+"count": 5
+},
+{
+"word": "granada",
+"count": 5
+},
+{
+"word": "vale",
+"count": 5
+},
+{
+"word": "edinburgh",
+"count": 5
+},
+{
+"word": "onze",
+"count": 5
+},
+{
+"word": "egg",
+"count": 5
+},
+{
+"word": "warum",
+"count": 5
+},
+{
+"word": "refrain",
+"count": 5
+},
+{
+"word": "tem",
+"count": 5
+},
+{
+"word": "estampes",
+"count": 5
+},
+{
+"word": "popolo",
+"count": 5
+},
+{
+"word": "estote",
+"count": 5
+},
+{
+"word": "poetico",
+"count": 5
+},
+{
+"word": "estudiantina",
+"count": 5
+},
+{
+"word": "bemol",
+"count": 5
+},
+{
+"word": "ritmico",
+"count": 5
+},
+{
+"word": "oriental",
+"count": 5
+},
+{
+"word": "contento",
+"count": 5
+},
+{
+"word": "ethnic",
+"count": 5
+},
+{
+"word": "arabesque",
+"count": 5
+},
+{
+"word": "servir",
+"count": 5
+},
+{
+"word": "furs",
+"count": 5
+},
+{
+"word": "meu",
+"count": 5
+},
+{
+"word": "euge",
+"count": 5
+},
+{
+"word": "onegin",
+"count": 5
+},
+{
+"word": "chamounix",
+"count": 5
+},
+{
+"word": "violoncello",
+"count": 5
+},
+{
+"word": "clercs",
+"count": 5
+},
+{
+"word": "strauss",
+"count": 5
+},
+{
+"word": "grund",
+"count": 5
+},
+{
+"word": "ewiger",
+"count": 5
+},
+{
+"word": "variee",
+"count": 5
+},
+{
+"word": "heimat",
+"count": 5
+},
+{
+"word": "letter",
+"count": 5
+},
+{
+"word": "irae",
+"count": 5
+},
+{
+"word": "cuarto",
+"count": 5
+},
+{
+"word": "fantome",
+"count": 5
+},
+{
+"word": "skoven",
+"count": 5
+},
+{
+"word": "fragmenta",
+"count": 5
+},
+{
+"word": "fragmente",
+"count": 5
+},
+{
+"word": "fragmentos",
+"count": 5
+},
+{
+"word": "frais",
+"count": 5
+},
+{
+"word": "franc",
+"count": 5
+},
+{
+"word": "forgotten",
+"count": 5
+},
+{
+"word": "francaise",
+"count": 5
+},
+{
+"word": "freie",
+"count": 5
+},
+{
+"word": "fresh",
+"count": 5
+},
+{
+"word": "gru",
+"count": 5
+},
+{
+"word": "friday",
+"count": 5
+},
+{
+"word": "erden",
+"count": 5
+},
+{
+"word": "frisco",
+"count": 5
+},
+{
+"word": "hiver",
+"count": 5
+},
+{
+"word": "hus",
+"count": 5
+},
+{
+"word": "oregon",
+"count": 5
+},
+{
+"word": "sketch",
+"count": 5
+},
+{
+"word": "silent",
+"count": 5
+},
+{
+"word": "scotland",
+"count": 5
+},
+{
+"word": "bouquet",
+"count": 5
+},
+{
+"word": "room",
+"count": 5
+},
+{
+"word": "southland",
+"count": 5
+},
+{
+"word": "stagion",
+"count": 5
+},
+{
+"word": "giulietta",
+"count": 5
+},
+{
+"word": "bit",
+"count": 5
+},
+{
+"word": "horse",
+"count": 5
+},
+{
+"word": "alba",
+"count": 5
+},
+{
+"word": "nei",
+"count": 5
+},
+{
+"word": "nelle",
+"count": 5
+},
+{
+"word": "snowflakes",
+"count": 5
+},
+{
+"word": "vento",
+"count": 5
+},
+{
+"word": "awv",
+"count": 5
+},
+{
+"word": "honore",
+"count": 5
+},
+{
+"word": "sancto",
+"count": 5
+},
+{
+"word": "seel",
+"count": 5
+},
+{
+"word": "zeiten",
+"count": 5
+},
+{
+"word": "jer",
+"count": 5
+},
+{
+"word": "president",
+"count": 5
+},
+{
+"word": "refuge",
+"count": 5
+},
+{
+"word": "goe",
+"count": 5
+},
+{
+"word": "harpa",
+"count": 5
+},
+{
+"word": "profana",
+"count": 5
+},
+{
+"word": "harris",
+"count": 5
+},
+{
+"word": "harry",
+"count": 5
+},
+{
+"word": "hart",
+"count": 5
+},
+{
+"word": "jemand",
+"count": 5
+},
+{
+"word": "teufel",
+"count": 5
+},
+{
+"word": "witches",
+"count": 5
+},
+{
+"word": "haunting",
+"count": 5
+},
+{
+"word": "religion",
+"count": 5
+},
+{
+"word": "esperanza",
+"count": 5
+},
+{
+"word": "someone",
+"count": 5
+},
+{
+"word": "coming",
+"count": 5
+},
+{
+"word": "hearken",
+"count": 5
+},
+{
+"word": "oak",
+"count": 5
+},
+{
+"word": "desire",
+"count": 5
+},
+{
+"word": "hore",
+"count": 5
+},
+{
+"word": "namen",
+"count": 5
+},
+{
+"word": "dying",
+"count": 5
+},
+{
+"word": "doing",
+"count": 5
+},
+{
+"word": "else",
+"count": 5
+},
+{
+"word": "hate",
+"count": 5
+},
+{
+"word": "dixieland",
+"count": 5
+},
+{
+"word": "footsteps",
+"count": 5
+},
+{
+"word": "sadness",
+"count": 5
+},
+{
+"word": "pleasure",
+"count": 5
+},
+{
+"word": "wandered",
+"count": 5
+},
+{
+"word": "corporis",
+"count": 5
+},
+{
+"word": "put",
+"count": 5
+},
+{
+"word": "windsor",
+"count": 5
+},
+{
+"word": "ascolto",
+"count": 5
+},
+{
+"word": "angst",
+"count": 5
+},
+{
+"word": "vaghe",
+"count": 5
+},
+{
+"word": "charlie",
+"count": 5
+},
+{
+"word": "amene",
+"count": 5
+},
+{
+"word": "pleure",
+"count": 5
+},
+{
+"word": "cherry",
+"count": 5
+},
+{
+"word": "davis",
+"count": 5
+},
+{
+"word": "jefferson",
+"count": 5
+},
+{
+"word": "meuniere",
+"count": 5
+},
+{
+"word": "jephte",
+"count": 5
+},
+{
+"word": "propheten",
+"count": 5
+},
+{
+"word": "uberwand",
+"count": 5
+},
+{
+"word": "filles",
+"count": 5
+},
+{
+"word": "fauvette",
+"count": 5
+},
+{
+"word": "honneur",
+"count": 5
+},
+{
+"word": "teacher",
+"count": 5
+},
+{
+"word": "jigg",
+"count": 5
+},
+{
+"word": "moire",
+"count": 5
+},
+{
+"word": "tiroler",
+"count": 5
+},
+{
+"word": "berger",
+"count": 5
+},
+{
+"word": "jonathan",
+"count": 5
+},
+{
+"word": "excerpts",
+"count": 5
+},
+{
+"word": "smith",
+"count": 5
+},
+{
+"word": "konge",
+"count": 5
+},
+{
+"word": "koto",
+"count": 5
+},
+{
+"word": "kritische",
+"count": 5
+},
+{
+"word": "kronungs",
+"count": 5
+},
+{
+"word": "kundiman",
+"count": 5
+},
+{
+"word": "spielen",
+"count": 5
+},
+{
+"word": "manfred",
+"count": 5
+},
+{
+"word": "alessandro",
+"count": 5
+},
+{
+"word": "amazone",
+"count": 5
+},
+{
+"word": "amorosa",
+"count": 5
+},
+{
+"word": "andalouse",
+"count": 5
+},
+{
+"word": "foyer",
+"count": 5
+},
+{
+"word": "ponce",
+"count": 5
+},
+{
+"word": "ans",
+"count": 5
+},
+{
+"word": "grotte",
+"count": 5
+},
+{
+"word": "azur",
+"count": 5
+},
+{
+"word": "reunion",
+"count": 5
+},
+{
+"word": "jardinier",
+"count": 5
+},
+{
+"word": "manola",
+"count": 5
+},
+{
+"word": "melancholia",
+"count": 5
+},
+{
+"word": "modeste",
+"count": 5
+},
+{
+"word": "pianistica",
+"count": 5
+},
+{
+"word": "medecin",
+"count": 5
+},
+{
+"word": "vin",
+"count": 5
+},
+{
+"word": "erbette",
+"count": 5
+},
+{
+"word": "present",
+"count": 5
+},
+{
+"word": "saffo",
+"count": 5
+},
+{
+"word": "ane",
+"count": 5
+},
+{
+"word": "montagnard",
+"count": 5
+},
+{
+"word": "pianistes",
+"count": 5
+},
+{
+"word": "alpes",
+"count": 5
+},
+{
+"word": "avenir",
+"count": 5
+},
+{
+"word": "pont",
+"count": 5
+},
+{
+"word": "hirondelles",
+"count": 5
+},
+{
+"word": "montagnes",
+"count": 5
+},
+{
+"word": "lieti",
+"count": 5
+},
+{
+"word": "lilly",
+"count": 5
+},
+{
+"word": "repose",
+"count": 5
+},
+{
+"word": "wheel",
+"count": 5
+},
+{
+"word": "sound",
+"count": 5
+},
+{
+"word": "liten",
+"count": 5
+},
+{
+"word": "mixolydian",
+"count": 5
+},
+{
+"word": "dorian",
+"count": 5
+},
+{
+"word": "second",
+"count": 5
+},
+{
+"word": "octo",
+"count": 5
+},
+{
+"word": "paulus",
+"count": 5
+},
+{
+"word": "estre",
+"count": 5
+},
+{
+"word": "maman",
+"count": 5
+},
+{
+"word": "possum",
+"count": 5
+},
+{
+"word": "sag",
+"count": 5
+},
+{
+"word": "verloren",
+"count": 5
+},
+{
+"word": "memoirs",
+"count": 5
+},
+{
+"word": "melodramatic",
+"count": 5
+},
+{
+"word": "menina",
+"count": 5
+},
+{
+"word": "redoute",
+"count": 5
+},
+{
+"word": "schcl",
+"count": 5
+},
+{
+"word": "mitt",
+"count": 5
+},
+{
+"word": "mlle",
+"count": 5
+},
+{
+"word": "mme",
+"count": 5
+},
+{
+"word": "modinha",
+"count": 5
+},
+{
+"word": "moins",
+"count": 5
+},
+{
+"word": "momentos",
+"count": 5
+},
+{
+"word": "peau",
+"count": 5
+},
+{
+"word": "taille",
+"count": 5
+},
+{
+"word": "avez",
+"count": 5
+},
+{
+"word": "souverain",
+"count": 5
+},
+{
+"word": "mona",
+"count": 5
+},
+{
+"word": "maker",
+"count": 5
+},
+{
+"word": "vaaren",
+"count": 5
+},
+{
+"word": "natan",
+"count": 5
+},
+{
+"word": "guard",
+"count": 5
+},
+{
+"word": "navidad",
+"count": 5
+},
+{
+"word": "reminiscaris",
+"count": 5
+},
+{
+"word": "deserto",
+"count": 5
+},
+{
+"word": "tal",
+"count": 5
+},
+{
+"word": "absent",
+"count": 5
+},
+{
+"word": "peaceful",
+"count": 5
+},
+{
+"word": "gloriae",
+"count": 5
+},
+{
+"word": "sanctissima",
+"count": 5
+},
+{
+"word": "triunfo",
+"count": 5
+},
+{
+"word": "violeiro",
+"count": 5
+},
+{
+"word": "anthology",
+"count": 5
+},
+{
+"word": "text",
+"count": 5
+},
+{
+"word": "vois",
+"count": 5
+},
+{
+"word": "pontifice",
+"count": 5
+},
+{
+"word": "euridice",
+"count": 5
+},
+{
+"word": "addii",
+"count": 5
+},
+{
+"word": "peccavi",
+"count": 5
+},
+{
+"word": "patrick",
+"count": 5
+},
+{
+"word": "poppy",
+"count": 5
+},
+{
+"word": "instructor",
+"count": 5
+},
+{
+"word": "portuguese",
+"count": 5
+},
+{
+"word": "poste",
+"count": 5
+},
+{
+"word": "psalmorum",
+"count": 5
+},
+{
+"word": "selectorum",
+"count": 5
+},
+{
+"word": "puck",
+"count": 5
+},
+{
+"word": "religious",
+"count": 5
+},
+{
+"word": "amateur",
+"count": 5
+},
+{
+"word": "commencans",
+"count": 5
+},
+{
+"word": "responsorios",
+"count": 5
+},
+{
+"word": "reveille",
+"count": 5
+},
+{
+"word": "revelation",
+"count": 5
+},
+{
+"word": "recital",
+"count": 5
+},
+{
+"word": "autrefois",
+"count": 5
+},
+{
+"word": "roslein",
+"count": 5
+},
+{
+"word": "sabbath",
+"count": 5
+},
+{
+"word": "pontifex",
+"count": 5
+},
+{
+"word": "gegrusst",
+"count": 5
+},
+{
+"word": "allezeit",
+"count": 5
+},
+{
+"word": "seis",
+"count": 5
+},
+{
+"word": "semiramis",
+"count": 5
+},
+{
+"word": "sentite",
+"count": 5
+},
+{
+"word": "vuoi",
+"count": 5
+},
+{
+"word": "timpani",
+"count": 5
+},
+{
+"word": "leget",
+"count": 5
+},
+{
+"word": "astin",
+"count": 5
+},
+{
+"word": "pensoso",
+"count": 5
+},
+{
+"word": "solitudini",
+"count": 5
+},
+{
+"word": "bade",
+"count": 5
+},
+{
+"word": "vienna",
+"count": 5
+},
+{
+"word": "teus",
+"count": 5
+},
+{
+"word": "thalia",
+"count": 5
+},
+{
+"word": "baltimore",
+"count": 5
+},
+{
+"word": "bard",
+"count": 5
+},
+{
+"word": "messenger",
+"count": 5
+},
+{
+"word": "noble",
+"count": 5
+},
+{
+"word": "primero",
+"count": 5
+},
+{
+"word": "falsas",
+"count": 5
+},
+{
+"word": "tierra",
+"count": 5
+},
+{
+"word": "tigrane",
+"count": 5
+},
+{
+"word": "fanans",
+"count": 5
+},
+{
+"word": "poet",
+"count": 5
+},
+{
+"word": "trompeten",
+"count": 5
+},
+{
+"word": "vade",
+"count": 5
+},
+{
+"word": "vielliebchen",
+"count": 5
+},
+{
+"word": "vierstimmiger",
+"count": 5
+},
+{
+"word": "vinea",
+"count": 5
+},
+{
+"word": "violettes",
+"count": 5
+},
+{
+"word": "vorvisur",
+"count": 5
+},
+{
+"word": "vogguljo",
+"count": 5
+},
+{
+"word": "vogguvisa",
+"count": 5
+},
+{
+"word": "wiosna",
+"count": 5
+},
+{
+"word": "wybor",
+"count": 5
+},
+{
+"word": "wyoming",
+"count": 5
+},
+{
+"word": "dutch",
+"count": 4
+},
+{
+"word": "bus",
+"count": 4
+},
+{
+"word": "vogel",
+"count": 4
+},
+{
+"word": "grotta",
+"count": 4
+},
+{
+"word": "casa",
+"count": 4
+},
+{
+"word": "fate",
+"count": 4
+},
+{
+"word": "nova",
+"count": 4
+},
+{
+"word": "gelosia",
+"count": 4
+},
+{
+"word": "neve",
+"count": 4
+},
+{
+"word": "ponta",
+"count": 4
+},
+{
+"word": "serata",
+"count": 4
+},
+{
+"word": "cause",
+"count": 4
+},
+{
+"word": "enchantee",
+"count": 4
+},
+{
+"word": "hotel",
+"count": 4
+},
+{
+"word": "smoke",
+"count": 4
+},
+{
+"word": "pines",
+"count": 4
+},
+{
+"word": "pazzo",
+"count": 4
+},
+{
+"word": "napule",
+"count": 4
+},
+{
+"word": "interlude",
+"count": 4
+},
+{
+"word": "loss",
+"count": 4
+},
+{
+"word": "broken",
+"count": 4
+},
+{
+"word": "page",
+"count": 4
+},
+{
+"word": "month",
+"count": 4
+},
+{
+"word": "pacific",
+"count": 4
+},
+{
+"word": "nada",
+"count": 4
+},
+{
+"word": "deutscher",
+"count": 4
+},
+{
+"word": "minute",
+"count": 4
+},
+{
+"word": "adagios",
+"count": 4
+},
+{
+"word": "canonic",
+"count": 4
+},
+{
+"word": "cantate",
+"count": 4
+},
+{
+"word": "score",
+"count": 4
+},
+{
+"word": "composizioni",
+"count": 4
+},
+{
+"word": "hoffmann",
+"count": 4
+},
+{
+"word": "beginners",
+"count": 4
+},
+{
+"word": "emily",
+"count": 4
+},
+{
+"word": "dickinson",
+"count": 4
+},
+{
+"word": "doubles",
+"count": 4
+},
+{
+"word": "champagne",
+"count": 4
+},
+{
+"word": "chor",
+"count": 4
+},
+{
+"word": "kinderstucke",
+"count": 4
+},
+{
+"word": "tonbilder",
+"count": 4
+},
+{
+"word": "praeludien",
+"count": 4
+},
+{
+"word": "lette",
+"count": 4
+},
+{
+"word": "liedlein",
+"count": 4
+},
+{
+"word": "meyerbeer",
+"count": 4
+},
+{
+"word": "verschiedenen",
+"count": 4
+},
+{
+"word": "characters",
+"count": 4
+},
+{
+"word": "pensees",
+"count": 4
+},
+{
+"word": "rondeaux",
+"count": 4
+},
+{
+"word": "differents",
+"count": 4
+},
+{
+"word": "texts",
+"count": 4
+},
+{
+"word": "kyries",
+"count": 4
+},
+{
+"word": "artistiques",
+"count": 4
+},
+{
+"word": "sonnets",
+"count": 4
+},
+{
+"word": "sinfonie",
+"count": 4
+},
+{
+"word": "madrigals",
+"count": 4
+},
+{
+"word": "spiritual",
+"count": 4
+},
+{
+"word": "schatz",
+"count": 4
+},
+{
+"word": "espanoles",
+"count": 4
+},
+{
+"word": "famous",
+"count": 4
+},
+{
+"word": "composers",
+"count": 4
+},
+{
+"word": "grossere",
+"count": 4
+},
+{
+"word": "pearls",
+"count": 4
+},
+{
+"word": "cavalleria",
+"count": 4
+},
+{
+"word": "polskich",
+"count": 4
+},
+{
+"word": "gallopade",
+"count": 4
+},
+{
+"word": "ijv",
+"count": 4
+},
+{
+"word": "miniaturen",
+"count": 4
+},
+{
+"word": "moods",
+"count": 4
+},
+{
+"word": "melodieux",
+"count": 4
+},
+{
+"word": "mosaiques",
+"count": 4
+},
+{
+"word": "mouvements",
+"count": 4
+},
+{
+"word": "guillaume",
+"count": 4
+},
+{
+"word": "victor",
+"count": 4
+},
+{
+"word": "hugo",
+"count": 4
+},
+{
+"word": "hongroises",
+"count": 4
+},
+{
+"word": "notturni",
+"count": 4
+},
+{
+"word": "italiens",
+"count": 4
+},
+{
+"word": "fantasier",
+"count": 4
+},
+{
+"word": "papillons",
+"count": 4
+},
+{
+"word": "vocales",
+"count": 4
+},
+{
+"word": "puritains",
+"count": 4
+},
+{
+"word": "concertinos",
+"count": 4
+},
+{
+"word": "capriccios",
+"count": 4
+},
+{
+"word": "fughetta",
+"count": 4
+},
+{
+"word": "fables",
+"count": 4
+},
+{
+"word": "hamlet",
+"count": 4
+},
+{
+"word": "themen",
+"count": 4
+},
+{
+"word": "favorit",
+"count": 4
+},
+{
+"word": "himmelfahrt",
+"count": 4
+},
+{
+"word": "feuilles",
+"count": 4
+},
+{
+"word": "feuillets",
+"count": 4
+},
+{
+"word": "flageolet",
+"count": 4
+},
+{
+"word": "frauenchore",
+"count": 4
+},
+{
+"word": "fruhlingslieder",
+"count": 4
+},
+{
+"word": "jugendzeit",
+"count": 4
+},
+{
+"word": "karl",
+"count": 4
+},
+{
+"word": "martin",
+"count": 4
+},
+{
+"word": "singstimme",
+"count": 4
+},
+{
+"word": "gospel",
+"count": 4
+},
+{
+"word": "artistic",
+"count": 4
+},
+{
+"word": "reflections",
+"count": 4
+},
+{
+"word": "heine",
+"count": 4
+},
+{
+"word": "heitere",
+"count": 4
+},
+{
+"word": "humoresques",
+"count": 4
+},
+{
+"word": "hymnen",
+"count": 4
+},
+{
+"word": "idylls",
+"count": 4
+},
+{
+"word": "spiritus",
+"count": 4
+},
+{
+"word": "salve",
+"count": 4
+},
+{
+"word": "francisco",
+"count": 4
+},
+{
+"word": "terzett",
+"count": 4
+},
+{
+"word": "idea",
+"count": 4
+},
+{
+"word": "jingle",
+"count": 4
+},
+{
+"word": "hymne",
+"count": 4
+},
+{
+"word": "versetti",
+"count": 4
+},
+{
+"word": "virtuoso",
+"count": 4
+},
+{
+"word": "vortragsstudien",
+"count": 4
+},
+{
+"word": "melodiske",
+"count": 4
+},
+{
+"word": "blanche",
+"count": 4
+},
+{
+"word": "altdeutsche",
+"count": 4
+},
+{
+"word": "artistes",
+"count": 4
+},
+{
+"word": "tonarten",
+"count": 4
+},
+{
+"word": "grece",
+"count": 4
+},
+{
+"word": "dalle",
+"count": 4
+},
+{
+"word": "folies",
+"count": 4
+},
+{
+"word": "choralgesange",
+"count": 4
+},
+{
+"word": "market",
+"count": 4
+},
+{
+"word": "antico",
+"count": 4
+},
+{
+"word": "secondo",
+"count": 4
+},
+{
+"word": "sorrow",
+"count": 4
+},
+{
+"word": "birds",
+"count": 4
+},
+{
+"word": "messa",
+"count": 4
+},
+{
+"word": "cancoes",
+"count": 4
+},
+{
+"word": "orleans",
+"count": 4
+},
+{
+"word": "digte",
+"count": 4
+},
+{
+"word": "armonici",
+"count": 4
+},
+{
+"word": "theatre",
+"count": 4
+},
+{
+"word": "danser",
+"count": 4
+},
+{
+"word": "verschiedener",
+"count": 4
+},
+{
+"word": "contre",
+"count": 4
+},
+{
+"word": "china",
+"count": 4
+},
+{
+"word": "colors",
+"count": 4
+},
+{
+"word": "motiven",
+"count": 4
+},
+{
+"word": "haute",
+"count": 4
+},
+{
+"word": "gauche",
+"count": 4
+},
+{
+"word": "vent",
+"count": 4
+},
+{
+"word": "midi",
+"count": 4
+},
+{
+"word": "arpa",
+"count": 4
+},
+{
+"word": "xix",
+"count": 4
+},
+{
+"word": "laudes",
+"count": 4
+},
+{
+"word": "clement",
+"count": 4
+},
+{
+"word": "tonos",
+"count": 4
+},
+{
+"word": "hai",
+"count": 4
+},
+{
+"word": "vigil",
+"count": 4
+},
+{
+"word": "japanese",
+"count": 4
+},
+{
+"word": "kirchen",
+"count": 4
+},
+{
+"word": "einsame",
+"count": 4
+},
+{
+"word": "ziemi",
+"count": 4
+},
+{
+"word": "serbische",
+"count": 4
+},
+{
+"word": "streichorchester",
+"count": 4
+},
+{
+"word": "trovas",
+"count": 4
+},
+{
+"word": "ainsi",
+"count": 4
+},
+{
+"word": "tancredi",
+"count": 4
+},
+{
+"word": "lange",
+"count": 4
+},
+{
+"word": "gehen",
+"count": 4
+},
+{
+"word": "erbarmen",
+"count": 4
+},
+{
+"word": "deinem",
+"count": 4
+},
+{
+"word": "treu",
+"count": 4
+},
+{
+"word": "stunde",
+"count": 4
+},
+{
+"word": "gnade",
+"count": 4
+},
+{
+"word": "kame",
+"count": 4
+},
+{
+"word": "edler",
+"count": 4
+},
+{
+"word": "finden",
+"count": 4
+},
+{
+"word": "herzliebes",
+"count": 4
+},
+{
+"word": "klag",
+"count": 4
+},
+{
+"word": "erde",
+"count": 4
+},
+{
+"word": "moglich",
+"count": 4
+},
+{
+"word": "bald",
+"count": 4
+},
+{
+"word": "sterben",
+"count": 4
+},
+{
+"word": "acqua",
+"count": 4
+},
+{
+"word": "juvenilia",
+"count": 4
+},
+{
+"word": "danube",
+"count": 4
+},
+{
+"word": "anne",
+"count": 4
+},
+{
+"word": "elegy",
+"count": 4
+},
+{
+"word": "acteon",
+"count": 4
+},
+{
+"word": "acuto",
+"count": 4
+},
+{
+"word": "riva",
+"count": 4
+},
+{
+"word": "clare",
+"count": 4
+},
+{
+"word": "espressivo",
+"count": 4
+},
+{
+"word": "lugubre",
+"count": 4
+},
+{
+"word": "bourree",
+"count": 4
+},
+{
+"word": "adieux",
+"count": 4
+},
+{
+"word": "elegiaque",
+"count": 4
+},
+{
+"word": "cara",
+"count": 4
+},
+{
+"word": "regi",
+"count": 4
+},
+{
+"word": "guten",
+"count": 4
+},
+{
+"word": "patti",
+"count": 4
+},
+{
+"word": "coelestis",
+"count": 4
+},
+{
+"word": "mijn",
+"count": 4
+},
+{
+"word": "almand",
+"count": 4
+},
+{
+"word": "lin",
+"count": 4
+},
+{
+"word": "everlasting",
+"count": 4
+},
+{
+"word": "aloha",
+"count": 4
+},
+{
+"word": "many",
+"count": 4
+},
+{
+"word": "sehnsucht",
+"count": 4
+},
+{
+"word": "sehnen",
+"count": 4
+},
+{
+"word": "osterreich",
+"count": 4
+},
+{
+"word": "omega",
+"count": 4
+},
+{
+"word": "briefe",
+"count": 4
+},
+{
+"word": "gutige",
+"count": 4
+},
+{
+"word": "geschrieben",
+"count": 4
+},
+{
+"word": "sit",
+"count": 4
+},
+{
+"word": "trinita",
+"count": 4
+},
+{
+"word": "ladk",
+"count": 4
+},
+{
+"word": "landscapes",
+"count": 4
+},
+{
+"word": "glorioso",
+"count": 4
+},
+{
+"word": "sonatine",
+"count": 4
+},
+{
+"word": "herd",
+"count": 4
+},
+{
+"word": "strande",
+"count": 4
+},
+{
+"word": "niagara",
+"count": 4
+},
+{
+"word": "springbrunnen",
+"count": 4
+},
+{
+"word": "grunen",
+"count": 4
+},
+{
+"word": "wald",
+"count": 4
+},
+{
+"word": "aman",
+"count": 4
+},
+{
+"word": "amando",
+"count": 4
+},
+{
+"word": "mulher",
+"count": 4
+},
+{
+"word": "amate",
+"count": 4
+},
+{
+"word": "amazonen",
+"count": 4
+},
+{
+"word": "reseda",
+"count": 4
+},
+{
+"word": "took",
+"count": 4
+},
+{
+"word": "americans",
+"count": 4
+},
+{
+"word": "creed",
+"count": 4
+},
+{
+"word": "legion",
+"count": 4
+},
+{
+"word": "parle",
+"count": 4
+},
+{
+"word": "shades",
+"count": 4
+},
+{
+"word": "amizade",
+"count": 4
+},
+{
+"word": "peno",
+"count": 4
+},
+{
+"word": "perche",
+"count": 4
+},
+{
+"word": "sta",
+"count": 4
+},
+{
+"word": "ascendo",
+"count": 4
+},
+{
+"word": "patrem",
+"count": 4
+},
+{
+"word": "igb",
+"count": 4
+},
+{
+"word": "sancta",
+"count": 4
+},
+{
+"word": "religieuse",
+"count": 4
+},
+{
+"word": "aspro",
+"count": 4
+},
+{
+"word": "assai",
+"count": 4
+},
+{
+"word": "worm",
+"count": 4
+},
+{
+"word": "astiterunt",
+"count": 4
+},
+{
+"word": "terrae",
+"count": 4
+},
+{
+"word": "ease",
+"count": 4
+},
+{
+"word": "tide",
+"count": 4
+},
+{
+"word": "fireside",
+"count": 4
+},
+{
+"word": "sundown",
+"count": 4
+},
+{
+"word": "inn",
+"count": 4
+},
+{
+"word": "edge",
+"count": 4
+},
+{
+"word": "jubilee",
+"count": 4
+},
+{
+"word": "tea",
+"count": 4
+},
+{
+"word": "babies",
+"count": 4
+},
+{
+"word": "monastery",
+"count": 4
+},
+{
+"word": "hall",
+"count": 4
+},
+{
+"word": "atala",
+"count": 4
+},
+{
+"word": "brasileiros",
+"count": 4
+},
+{
+"word": "atta",
+"count": 4
+},
+{
+"word": "gioia",
+"count": 4
+},
+{
+"word": "attendite",
+"count": 4
+},
+{
+"word": "paix",
+"count": 4
+},
+{
+"word": "attente",
+"count": 4
+},
+{
+"word": "attila",
+"count": 4
+},
+{
+"word": "principes",
+"count": 4
+},
+{
+"word": "ate",
+"count": 4
+},
+{
+"word": "bem",
+"count": 4
+},
+{
+"word": "breton",
+"count": 4
+},
+{
+"word": "tombeau",
+"count": 4
+},
+{
+"word": "tsar",
+"count": 4
+},
+{
+"word": "eure",
+"count": 4
+},
+{
+"word": "flots",
+"count": 4
+},
+{
+"word": "debut",
+"count": 4
+},
+{
+"word": "ondes",
+"count": 4
+},
+{
+"word": "gare",
+"count": 4
+},
+{
+"word": "infante",
+"count": 4
+},
+{
+"word": "langage",
+"count": 4
+},
+{
+"word": "cieux",
+"count": 4
+},
+{
+"word": "aurore",
+"count": 4
+},
+{
+"word": "nest",
+"count": 4
+},
+{
+"word": "pardon",
+"count": 4
+},
+{
+"word": "bleu",
+"count": 4
+},
+{
+"word": "mur",
+"count": 4
+},
+{
+"word": "louise",
+"count": 4
+},
+{
+"word": "travail",
+"count": 4
+},
+{
+"word": "dessus",
+"count": 4
+},
+{
+"word": "auctor",
+"count": 4
+},
+{
+"word": "roland",
+"count": 4
+}
+]

@@ -46,7 +46,7 @@ struct Phase7Test {
             (.indexTip, CGPoint(x: 0.55, y: 0.42)),
             (.middleMCP, CGPoint(x: 0.54, y: 0.49)),
             (.middlePIP, CGPoint(x: 0.56, y: 0.45)),
-            (.middleTip, CGPoint(x: 0.57, y: 0.40)),
+            (.middleTip, CGPoint(x: 0.57, y: 0.47)),
             (.ringMCP, CGPoint(x: 0.56, y: 0.50)),
             (.ringPIP, CGPoint(x: 0.58, y: 0.47)),
             (.ringTip, CGPoint(x: 0.59, y: 0.43)),
@@ -639,6 +639,27 @@ struct Phase7Test {
         check(notes[2].scoreArticulation == "pizzicato", "articulation pizzicato")
         check(notes[2].measureStartBeats == 2, "mesure 2")
         check(notes[2].onsetBeats == 2, "onset mesure 2")
+
+        // Variante MusicXML <other-play>pizz.</other-play>.
+        let otherPlayXML = """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <score-partwise version="4.0">
+          <part-list><score-part id="P1"><part-name>Cello</part-name></score-part></part-list>
+          <part id="P1"><measure number="1">
+            <attributes><divisions>1</divisions></attributes>
+            <note><pitch><step>C</step><octave>3</octave></pitch><duration>1</duration>
+              <notations><other-play>pizz.</other-play></notations>
+            </note>
+          </measure></part>
+        </score-partwise>
+        """
+        if let otherScore = try? MusicXMLParser.parse(data: Data(otherPlayXML.utf8)),
+           let otherNote = otherScore.parts.first?.notes.first {
+            print("MUSICXML other-play: \(otherNote.scoreArticulation ?? "—")")
+            check(otherNote.scoreArticulation == "pizzicato", "other-play pizz. → pizzicato")
+        } else {
+            check(false, "other-play : parsing échoué")
+        }
     }
 
     // MARK: - Suivi de partition

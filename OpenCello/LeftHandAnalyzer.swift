@@ -258,7 +258,7 @@ final class LeftHandAnalyzer {
         // touche : dans une vue 3/4, c'est le point le plus haut de la main,
         // pas le plus bas (le 4e doigt est court et tombait toujours en bas).
         let sorted = candidates.sorted { $0.point.y > $1.point.y }
-        if let hint = positionHint, hint >= 6,
+        if let hint = positionHint, hint >= 5,
            let thumb = hand.point(.thumbTip),
            let lowest = sorted.last?.point,
            thumb.y < lowest.y - handSpan * 0.08 {

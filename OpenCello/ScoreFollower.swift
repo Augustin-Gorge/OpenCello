@@ -12,6 +12,8 @@ struct FollowFeedback {
     var beat: Double?
     var expectedDurationBeats: Double?
     var expectedGlissando = false
+    var expectedVelocity: Int?
+    var expectedArticulation: String?
     var progress: Double = 0
     var message = ""
     var isInTune = false
@@ -144,6 +146,8 @@ final class ScoreFollower {
         feedback.beat = max(1, expected.onsetBeats - expected.measureStartBeats + 1)
         feedback.expectedDurationBeats = expected.durationBeats
         feedback.expectedGlissando = expected.glissando
+        feedback.expectedVelocity = expected.velocity
+        feedback.expectedArticulation = expected.scoreArticulation
         feedback.isInTune = abs(cents) <= 25
 
         if anchorActual == nil {

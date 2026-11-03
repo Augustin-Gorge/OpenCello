@@ -920,7 +920,12 @@ final class SessionEngine: ObservableObject {
                 glideSlope: pendingGlide?.slope,
                 isVoluntaryGlide: pendingGlideVoluntary,
                 contour: event.centsContour,
-                articulation: articulation.rawValue
+                articulation: articulation.rawValue,
+                expectedDuration: feedback.expectedDurationBeats.map {
+                    $0 * 60 / max(30, pieceBPM)
+                },
+                velocity: feedback.expectedVelocity,
+                scoreArticulation: feedback.expectedArticulation
             )
             report.addPosition(record)
 

@@ -556,6 +556,28 @@ OpenCello/
 - Audiveris (AGPL) et LilyPond (GPL) restent des outils externes de développement, jamais distribués avec l'app.
 **Suite** : durcir la réparation (périmètre des éditions + fidélité par mesure), évaluer le Prélude complet multi-pages, puis exposer IMSLP → OMR dans le mode morceau (Phase 8).
 
+### 2026-11-03 — Son de violoncelle, MusicXML précis, test cadre fixe et publication GitHub
+
+**Objectif** : remplacer le son de replay « sinusoïde » par un vrai timbre de violoncelle, utiliser les indications MusicXML (nuances, articulations, durées, glissandos), préparer un test caméra en cadre fixe avec des violoncellistes et publier le dépôt sur GitHub.
+**Fait** :
+- **Replay audio** : `ReplayAudioEngine` utilise désormais un `AVAudioUnitSampler` avec le violoncelle General MIDI 42 de macOS (`gs_instruments.dls`), chargé sans fichier embarqué. Un **SoundFont personnel** peut être déposé dans `~/Library/Application Support/OpenCello/Instruments/cello.sf2` et est prioritaire. Repli : synthèse PCM améliorée (8 harmoniques, formants de caisse 260/520/1250/2800 Hz, souffle d'archet, vibrato progressif) au lieu de la sinusoïde.
+- **MusicXML précis** : `MusicXMLParser` lit les nuances (`p`, `mf`, `f`…) → vélocité MIDI, et les articulations (`staccato`, `accent`, `tenuto`, `marcato`, `spiccato`, `slur`) ; `ScoreNote` expose `velocity` et `scoreArticulation`. `FollowFeedback`, `NotePositionRecord` et `ReplayNote` transportent durée attendue, vélocité et articulation. La version « ce que ça devrait être » utilise les durées/articulations MusicXML ; la version « ce que tu as fait » conserve les écarts rythmiques et de justesse.
+- **Test cadre fixe** : nouveau harnais `tools/qa/fixed_frame_main.swift` (lecture vidéo locale, 10 fps, CSV : corps/mains/main gauche/angle/presseur/position/A17/A19/A18) et protocole `docs/19-protocole-test-cadre-fixe.md` (cadrage, repères, script de prise, annotation, seuils, éthique).
+- **Publication** : dépôt poussé sur `https://github.com/Augustin-Gorge/OpenCello` (branche `main`), avec le travail v1.1 et l'outillage OMR présent dans l'arbre.
+**Fichiers** : `OpenCello/ReplayKit.swift`, `ReplayView.swift`, `MusicXMLParser.swift`, `ScoreFollower.swift`, `ProgressStore.swift`, `SessionEngine.swift` ; `tools/qa/fixed_frame_main.swift`, `tools/qa/phase7_main.swift` ; `docs/19-protocole-test-cadre-fixe.md`, `docs/08`, `docs/09`, `README.md`, `AGENTS.md`, `tools/qa/README.md`, `docs/14`.
+**Tests** :
+- `xcodebuild … build` → **BUILD SUCCEEDED**, aucune warning Swift (seul l'appintentsmetadataprocessor).
+- `phase7_test` → `PHASE7: OK`, avec `MUSICXML: … vélocité 90 · articulation staccato`.
+- Test audio local : `INSTRUMENT: Violoncelle Apple DLS (GM 42)`, `PLAYING: true` ; mesure de sortie DLS peak 0,076 / RMS 0,018 (avant gain +6 dB).
+- `fixed_frame_test` sur une vidéo de test `testsrc` (2 s, 15 fps) → 15 frames lues, 0 % de détection (attendu : aucune personne), CSV écrit.
+- `mxml_test` 5/5, `v1_test` 29 exercices + PDF/pack OK ; smoke test app lance/quitte.
+**Limites / risques** :
+- Les meilleures bibliothèques de violoncelle du marché (Spitfire Solo Cello, Embertone Blakus Cello, NI Stradivari Cello, Chris Hein Solo Cello, Emotional Cello, Cinesamples Tina Guo, Orchestral Tools Berlin Solo Strings) sont **commerciales** et ne peuvent pas être embarquées dans une app MIT ; le DLS Apple est un timbre General MIDI correct mais pas équivalent au haut de gamme. Un SoundFont personnel est supporté.
+- **Aucun violoncelliste réel n'a encore été enregistré** : le protocole et le harnais sont prêts, mais les seuils de position/doigt/angle restent non validés.
+- Le pitch bend MIDI est limité à ±2 demi-tons et les canaux à 8 notes simultanées ; les micro-écarts de justesse sont approchés.
+- Le test `testsrc` ne prouve que la lecture vidéo/CSV, pas la détection.
+**Suite** : recruter 2-3 violoncellistes, exécuter `docs/19`, annoter et publier les métriques ; si nécessaire, ajouter un sélecteur de SoundFont dans Réglages et un hôte AU pour les bibliothèques commerciales autorisées par l'utilisateur.
+
 ---
 
 ## 14. Leçons retenues

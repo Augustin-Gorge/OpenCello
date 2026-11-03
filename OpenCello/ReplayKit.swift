@@ -128,7 +128,10 @@ enum ReplayBuilder {
                 duration: max(0.08, note.durationBeats * secondsPerBeat),
                 cents: isCurrent ? (feedback.cents ?? 0) : 0,
                 contour: isCurrent ? (event?.centsContour ?? []) : [],
-                rhythmMs: isCurrent ? (feedback.rhythmMs ?? 0) : 0
+                rhythmMs: isCurrent ? (feedback.rhythmMs ?? 0) : 0,
+                expectedDuration: max(0.08, note.durationBeats * secondsPerBeat),
+                velocity: note.velocity,
+                scoreArticulation: note.scoreArticulation
             )
         }
 
@@ -204,7 +207,10 @@ enum ReplayBuilder {
                 duration: max(0.08, note.duration),
                 cents: note.cents,
                 contour: note.contour,
-                rhythmMs: note.rhythmMs ?? 0
+                rhythmMs: note.rhythmMs ?? 0,
+                expectedDuration: note.expectedDuration,
+                velocity: note.velocity,
+                scoreArticulation: note.scoreArticulation
             )
         }
     }
@@ -239,16 +245,23 @@ enum ReplaySynth {
         guard !notes.isEmpty else { return [] }
 
         let base = notes.map(\.onset).min() ?? 0
-        let end = notes.map { $0.onset + $0.duration }.max() ?? 1
+        let end = notes.map { note in
+            note.onset + max(note.duration, corrected ? (note.expectedDuration ?? note.duration) : 0)
+        }.max() ?? 1
         let total = max(0.25, end - base + 0.35)
         var samples = [Float](repeating: 0, count: Int(total * sampleRate))
 
         for note in notes {
             let rhythmOffset = corrected ? 0 : note.rhythmMs / 1000
             let start = max(0, note.onset - base + rhythmOffset)
-            let duration = max(0.06, note.duration)
+            var duration = max(0.06, corrected ? (note.expectedDuration ?? note.duration) : note.duration)
+            if corrected {
+                duration *= articulationFactor(note.scoreArticulation)
+            }
             let fallbackCents = corrected ? 0 : note.cents
             let contour = corrected ? [] : note.contour
+            let velocity = Double(note.velocity ?? 90) / 127
+            let amplitude = 0.35 + 0.45 * velocity
             addTone(
                 into: &samples,
                 start: start,
@@ -256,7 +269,7 @@ enum ReplaySynth {
                 midi: Double(note.midi),
                 contour: contour.isEmpty ? [fallbackCents] : contour,
                 sampleRate: sampleRate,
-                amplitude: 0.55
+                amplitude: amplitude
             )
         }
 
@@ -287,6 +300,15 @@ enum ReplaySynth {
         return samples
     }
 
+    static func articulationFactor(_ articulation: String?) -> Double {
+        switch articulation?.lowercased() {
+        case "staccato", "spiccato": return 0.55
+        case "marcato": return 0.45
+        case "tenuto": return 1.05
+        default: return 1.0
+        }
+    }
+
     private static func addTone(
         into samples: inout [Float],
         start: Double,
@@ -306,7 +328,11 @@ enum ReplaySynth {
         for offset in 0..<count {
             let progress = Double(offset) / Double(max(1, count - 1))
             let cents = interpolate(contour, progress)
-            let frequency = 440 * pow(2, (midi + cents / 100 - 69) / 12)
+            // Vibrato progressif (≈5,2 Hz, ±6 cents) : la corde frottée
+            // n'est jamais parfaitement droite.
+            let vibratoDepth = 6.0 * min(1, max(0, (progress - 0.18) / 0.35))
+            let vibrato = sin(2 * Double.pi * 5.2 * Double(offset) / sampleRate) * vibratoDepth
+            let frequency = 440 * pow(2, (midi + (cents + vibrato) / 100 - 69) / 12)
             phase += 2 * Double.pi * frequency / sampleRate
             let envelope = adsr(
                 index: offset,
@@ -314,12 +340,34 @@ enum ReplaySynth {
                 attack: attack,
                 release: release
             )
-            let value = sin(phase)
-                + 0.45 * sin(2 * phase)
-                + 0.20 * sin(3 * phase)
-                + 0.10 * sin(4 * phase)
-            samples[startIndex + offset] += Float(value * envelope * amplitude / 1.75)
+            var value = 0.0
+            for harmonic in 1...8 {
+                let harmonicFrequency = frequency * Double(harmonic)
+                let gain = (1.0 / pow(Double(harmonic), 1.25)) * bodyGain(harmonicFrequency)
+                value += gain * sin(phase * Double(harmonic) + Double(harmonic) * 0.15)
+            }
+            // Souffle d'archet très bref à l'attaque, déterministe.
+            let bowNoise = (sin(phase * 7.13) + sin(phase * 11.7)) * 0.5
+                * max(0, 1 - progress * 9) * 0.05
+            value += bowNoise
+            samples[startIndex + offset] += Float(value * envelope * amplitude / 2.2)
         }
+    }
+
+    /// Résonances grossières de la caisse du violoncelle (corps + table).
+    private static func bodyGain(_ frequency: Double) -> Double {
+        let modes: [(center: Double, gain: Double, width: Double)] = [
+            (260, 0.55, 90),
+            (520, 0.35, 120),
+            (1250, 0.25, 250),
+            (2800, 0.12, 500)
+        ]
+        var gain = 0.45
+        for mode in modes {
+            let distance = (frequency - mode.center) / mode.width
+            gain += mode.gain * exp(-distance * distance)
+        }
+        return gain
     }
 
     private static func addGlide(
@@ -380,17 +428,198 @@ enum ReplaySynth {
 @MainActor
 final class ReplayAudioEngine: ObservableObject {
     @Published var isPlaying = false
+    @Published var instrumentName = "Violoncelle (Apple DLS)"
 
     private let engine = AVAudioEngine()
     private let player = AVAudioPlayerNode()
+    private let sampler = AVAudioUnitSampler()
     private let sampleRate = ReplaySynth.defaultSampleRate
+    private var sequencer: AVAudioSequencer?
     private var configured = false
+    private var samplerReady = false
+    private var finishWork: DispatchWorkItem?
+
+    private static let replayBPM = 120.0
+    private static let celloProgram: UInt8 = 42
+    private static let maxChannels = 8
+    private static let dlsURL = URL(
+        fileURLWithPath: "/System/Library/Components/CoreAudio.component/Contents/Resources/gs_instruments.dls"
+    )
 
     func play(moment: ReplayMoment, corrected: Bool) {
         stop()
+        configureIfNeeded()
+        if samplerReady, playWithSampler(moment: moment, corrected: corrected) {
+            return
+        }
+        playPCM(moment: moment, corrected: corrected)
+    }
+
+    func stop() {
+        finishWork?.cancel()
+        finishWork = nil
+        sequencer?.stop()
+        sequencer = nil
+        player.stop()
+        if engine.isRunning {
+            engine.stop()
+        }
+        isPlaying = false
+    }
+
+    // MARK: - Configuration
+
+    private func configureIfNeeded() {
+        guard !configured else { return }
+        engine.attach(player)
+        engine.attach(sampler)
+        if let format = AVAudioFormat(standardFormatWithSampleRate: sampleRate, channels: 1) {
+            engine.connect(player, to: engine.mainMixerNode, format: format)
+        }
+        engine.connect(sampler, to: engine.mainMixerNode, format: nil)
+        configured = true
+        loadInstrument()
+    }
+
+    /// Priorité à un SoundFont personnel (cello.sf2), sinon le violoncelle
+    /// General MIDI fourni par macOS. Aucun échantillon commercial n'est
+    /// embarqué : les grandes bibliothèques du marché sont sous licence.
+    private func loadInstrument() {
+        if let soundFont = Self.userSoundFontURL {
+            do {
+                try sampler.loadSoundBankInstrument(
+                    at: soundFont,
+                    program: Self.celloProgram,
+                    bankMSB: 0,
+                    bankLSB: 0
+                )
+                samplerReady = true
+                sampler.overallGain = 6
+                instrumentName = "SoundFont personnel (cello.sf2)"
+                return
+            } catch {
+                // Repli sur le DLS système.
+            }
+        }
+
+        do {
+            try sampler.loadInstrument(at: Self.dlsURL)
+            sampler.sendProgramChange(
+                Self.celloProgram,
+                bankMSB: 0,
+                bankLSB: 0,
+                onChannel: 0
+            )
+            samplerReady = true
+            sampler.overallGain = 6
+            instrumentName = "Violoncelle Apple DLS (GM 42)"
+        } catch {
+            samplerReady = false
+            instrumentName = "Synthèse PCM de secours"
+        }
+    }
+
+    private static var userSoundFontURL: URL? {
+        guard let base = FileManager.default.urls(
+            for: .applicationSupportDirectory,
+            in: .userDomainMask
+        ).first else { return nil }
+        let url = base
+            .appendingPathComponent("OpenCello", isDirectory: true)
+            .appendingPathComponent("Instruments", isDirectory: true)
+            .appendingPathComponent("cello.sf2")
+        return FileManager.default.fileExists(atPath: url.path) ? url : nil
+    }
+
+    // MARK: - Lecture par échantillonneur (violoncelle)
+
+    private func playWithSampler(moment: ReplayMoment, corrected: Bool) -> Bool {
+        let notes = moment.notes.sorted { $0.onset < $1.onset }
+        guard !notes.isEmpty else { return false }
+
+        let sequence = AVAudioSequencer(audioEngine: engine)
+        let track = sequence.createAndAppendTrack()
+        track.destinationAudioUnit = sampler
+        sequence.tempoTrack.addEvent(
+            AVExtendedTempoEvent(tempo: Self.replayBPM),
+            at: 0
+        )
+
+        for channel in 0..<Self.maxChannels {
+            track.addEvent(
+                AVMIDIProgramChangeEvent(
+                    channel: UInt32(channel),
+                    programNumber: UInt32(Self.celloProgram)
+                ),
+                at: 0
+            )
+        }
+
+        let secondsPerBeat = 60 / Self.replayBPM
+        let base = notes.map(\.onset).min() ?? 0
+        var endSeconds = 0.0
+
+        for (index, note) in notes.enumerated() {
+            let channel = UInt32(index % Self.maxChannels)
+            let start = max(0, (corrected ? note.onset : note.onset + note.rhythmMs / 1000) - base)
+            var duration = corrected ? (note.expectedDuration ?? note.duration) : note.duration
+            if corrected {
+                duration *= ReplaySynth.articulationFactor(note.scoreArticulation)
+            }
+            duration = max(0.06, duration)
+
+            let velocity = UInt32(max(1, min(127, note.velocity ?? 90)))
+            let key = UInt32(max(0, min(127, note.midi)))
+            let startBeat = start / secondsPerBeat
+            let durationBeats = duration / secondsPerBeat
+
+            let cents = corrected ? 0 : max(-200, min(200, note.cents))
+            let bend = UInt32(max(0, min(16383, Int(8192 + cents / 200 * 8192))))
+            track.addEvent(
+                AVMIDIPitchBendEvent(channel: channel, value: bend),
+                at: max(0, startBeat - 0.002)
+            )
+            track.addEvent(
+                AVMIDINoteEvent(
+                    channel: channel,
+                    key: key,
+                    velocity: velocity,
+                    duration: durationBeats
+                ),
+                at: startBeat
+            )
+            track.addEvent(
+                AVMIDIPitchBendEvent(channel: channel, value: 8192),
+                at: startBeat + durationBeats + 0.01
+            )
+
+            endSeconds = max(endSeconds, start + duration)
+        }
+
+        do {
+            try engine.start()
+            try sequence.start()
+        } catch {
+            return false
+        }
+
+        sequencer = sequence
+        isPlaying = true
+        let work = DispatchWorkItem { [weak self] in
+            Task { @MainActor in
+                self?.isPlaying = false
+            }
+        }
+        finishWork = work
+        DispatchQueue.main.asyncAfter(deadline: .now() + endSeconds + 0.25, execute: work)
+        return true
+    }
+
+    // MARK: - Repli PCM
+
+    private func playPCM(moment: ReplayMoment, corrected: Bool) {
         let samples = ReplaySynth.render(moment: moment, corrected: corrected, sampleRate: sampleRate)
         guard !samples.isEmpty, let buffer = makeBuffer(samples) else { return }
-        configureIfNeeded()
         do {
             try engine.start()
         } catch {
@@ -403,19 +632,6 @@ final class ReplayAudioEngine: ObservableObject {
         }
         player.play()
         isPlaying = true
-    }
-
-    func stop() {
-        player.stop()
-        isPlaying = false
-    }
-
-    private func configureIfNeeded() {
-        guard !configured else { return }
-        guard let format = AVAudioFormat(standardFormatWithSampleRate: sampleRate, channels: 1) else { return }
-        engine.attach(player)
-        engine.connect(player, to: engine.mainMixerNode, format: format)
-        configured = true
     }
 
     private func makeBuffer(_ samples: [Float]) -> AVAudioPCMBuffer? {

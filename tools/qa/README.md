@@ -72,7 +72,6 @@ positions, techniques, replays), pack professeur, export anonymisé, seuils B1
 et seuils de posture par profil (2 alertes max).
 
 ## Phase 7 : main gauche, positions, techniques, replays
-
 ```bash
 swiftc -O -o build/qa/phase7_test \
   OpenCello/LeftHandAnalyzer.swift OpenCello/HandPoseAnalyzer.swift OpenCello/PoseAnalyzer.swift \
@@ -91,7 +90,24 @@ Vérifie : main gauche synthétique (angle, doigt presseur, pouce en hypothèse)
 positions 1-7/cordes à vide, agrégats de déplacement, glissé (pente/durée),
 piqué régulier/inégal, 5 types de replays, synthèse PCM, commentaires de
 rapport, 29 exercices, persistance rétro-compatible et parsing MusicXML
-(glissando, doigté, début de mesure).
+(glissando, doigté, nuances/articulations, début de mesure).
+
+## Test caméra « cadre fixe » (avec violoncellistes)
+
+```bash
+swiftc -O -o build/qa/fixed_frame_test \
+  OpenCello/AppSettings.swift OpenCello/PostureRules.swift OpenCello/PoseAnalyzer.swift \
+  OpenCello/HandPoseAnalyzer.swift OpenCello/LeftHandAnalyzer.swift \
+  tools/qa/fixed_frame_main.swift \
+  -framework Vision -framework AVFoundation -framework Combine
+./build/qa/fixed_frame_test chemin/vers/prise.mov build/qa/prise.csv
+```
+
+Lit une vidéo locale en cadre fixe (aucune copie), échantillonne à 10 fps et
+écrit un CSV : corps, mains, main gauche, angle, doigt presseur, indice de
+position, A17/A19/A18. Le protocole de prise et les seuils sont dans
+`docs/19-protocole-test-cadre-fixe.md`. **Aucun violoncelliste n'a encore été
+enregistré** : le harnais est prêt, pas validé.
 
 ## Phases 4-5 : lignes, archet, vibrato, articulations
 

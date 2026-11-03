@@ -64,14 +64,14 @@ On reprendra les 12 sous-heuristiques du papier Purdue (Clarté C1-C2, Guidance 
 
 Chaque constat du rapport doit pouvoir être **rejoué** en un clic, en citant précisément le passage concerné.
 
-> **Implémentation (3 novembre 2026)** : `ReplayBuilder` produit les moments (justesse, rythme, glissé, déplacement, doigté, piqué) et `ReplayView` les présente avec un piano-roll Canvas, un sélecteur « Ce que tu as fait / Ce que ça devrait être » et une écoute locale. En session, `PieceView` expose « Revoir ça » pour le dernier moment apparié ; le rapport liste les replays de la séance. La portée gravée reste une évolution : le piano-roll fournit le repère mesure/temps/note sans dépendre d'un moteur de gravure.
+> **Implémentation (3 novembre 2026)** : `ReplayBuilder` produit les moments (justesse, rythme, glissé, déplacement, doigté, piqué) et `ReplayView` les présente avec un piano-roll Canvas, un sélecteur « Ce que tu as fait / Ce que ça devrait être » et une écoute locale par échantillonneur de violoncelle (DLS macOS ou SoundFont personnel). En session, `PieceView` expose « Revoir ça » pour le dernier moment apparié ; le rapport liste les replays de la séance. La portée gravée reste une évolution : le piano-roll fournit le repère mesure/temps/note sans dépendre d'un moteur de gravure.
 
 ### Principe
 Un replay = un « moment » (indices partition + statistiques de la séance) avec **trois vues synchronisées** :
 
 1. **Le repère visuel** : piano-roll local avec la mesure/le temps cités surlignés et la grille de temps attendue (pulsation) — reconstruit depuis la partition et les statistiques.
 2. **Ce que tu as fait** : courbe de cents, onsets détectés, note jouée vs note attendue — **reconstruits depuis les statistiques stockées**, pas depuis un enregistrement audio.
-3. **Ce que ça devrait donner** : lecture de la version correcte par **synthèse PCM locale** (`AVAudioEngine`, sinusoïde + harmoniques + ADSR), au bon tempo — pas de SoundFont ni de fichier MIDI externe.
+3. **Ce que ça devrait donner** : lecture de la version correcte par un **échantillonneur de violoncelle** (DLS GM 42 de macOS, ou SoundFont personnel `cello.sf2`), au bon tempo et avec les nuances/articulations du MusicXML — pas de fichier MIDI externe ni d'échantillon commercial embarqué.
 
 ### Exemples
 - **Rythme** : « Sur la blanche pointée (mesure 12), tu tiens 3,4 temps au lieu de 3 : la note suivante démarre en retard. » Le replay affiche la note surlignée pendant 3 temps pendant que tes onsets montrent le dépassement, puis joue la version correcte.

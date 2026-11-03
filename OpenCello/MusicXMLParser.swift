@@ -14,6 +14,10 @@ struct ScoreNote: Identifiable {
     /// Doigté écrit (`<fingering>`), référence facultative : l'app mesure le
     /// doigté réel et ne l'impose pas.
     var fingering: Int? = nil
+    /// Nuance écrite (p, mf, f…) convertie en vélocité MIDI 1-127.
+    var velocity: Int? = nil
+    /// Articulation écrite (staccato, accent, tenuto…) pour le rendu du replay.
+    var scoreArticulation: String? = nil
 }
 
 struct ScorePart: Identifiable {
@@ -76,6 +80,8 @@ final class MusicXMLParser: NSObject, XMLParserDelegate {
         var tieStop: Bool
         var glissando: Bool = false
         var fingering: Int? = nil
+        var velocity: Int? = nil
+        var scoreArticulation: String? = nil
     }
 
     private struct PartAccumulator {
@@ -109,6 +115,8 @@ final class MusicXMLParser: NSObject, XMLParserDelegate {
     private var pendingTieStop = false
     private var pendingGlissando = false
     private var pendingFingering: Int?
+    private var pendingVelocity: Int?
+    private var pendingScoreArticulation: String?
     private var creatorIsComposer = false
     private var lastNoteOnset = 0
     private var failed = false
@@ -136,7 +144,9 @@ final class MusicXMLParser: NSObject, XMLParserDelegate {
                         measureIndex: raw.measure,
                         measureStartBeats: Double(raw.measureStart) / Double(divisions),
                         glissando: raw.glissando,
-                        fingering: raw.fingering
+                        fingering: raw.fingering,
+                        velocity: raw.velocity,
+                        scoreArticulation: raw.scoreArticulation
                     )
                 }
             return ScorePart(name: accumulator.name, notes: notes)
@@ -213,9 +223,21 @@ final class MusicXMLParser: NSObject, XMLParserDelegate {
             pendingTieStop = false
             pendingGlissando = false
             pendingFingering = nil
+            pendingScoreArticulation = nil
 
         case "glissando", "slide":
             pendingGlissando = true
+
+        case "p", "pp", "ppp", "pppp", "mp", "mf", "f", "ff", "fff", "ffff", "sf", "sfz":
+            pendingVelocity = Self.velocity(for: elementName)
+
+        case "accent", "staccato", "tenuto", "marcato", "spiccato":
+            pendingScoreArticulation = elementName
+
+        case "slur":
+            if attributeDict["type"] == "start" {
+                pendingScoreArticulation = pendingScoreArticulation ?? "legato"
+            }
 
         case "rest":
             pendingRest = true
@@ -324,6 +346,24 @@ final class MusicXMLParser: NSObject, XMLParserDelegate {
 
     // MARK: Note
 
+    /// Convertit une nuance MusicXML en vélocité MIDI (1-127).
+    private static func velocity(for dynamic: String) -> Int {
+        switch dynamic {
+        case "pppp": return 20
+        case "ppp": return 30
+        case "pp": return 45
+        case "p": return 60
+        case "mp": return 75
+        case "mf": return 90
+        case "f": return 105
+        case "ff": return 118
+        case "fff": return 124
+        case "ffff": return 127
+        case "sf", "sfz": return 112
+        default: return 90
+        }
+    }
+
     private func finalizeNote() {
         defer {
             currentNote = nil
@@ -353,6 +393,8 @@ final class MusicXMLParser: NSObject, XMLParserDelegate {
         note.tieStop = pendingTieStop
         note.glissando = pendingGlissando
         note.fingering = pendingFingering
+        note.velocity = pendingVelocity
+        note.scoreArticulation = pendingScoreArticulation
 
         if currentPartIndex >= 0, currentPartIndex < parts.count {
             parts[currentPartIndex].notes.append(note)

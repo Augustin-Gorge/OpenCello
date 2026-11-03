@@ -534,6 +534,9 @@ struct Phase7Test {
           <part id="P1">
             <measure number="1">
               <attributes><divisions>2</divisions></attributes>
+              <direction>
+                <direction-type><dynamics><mf/></dynamics></direction-type>
+              </direction>
               <note>
                 <pitch><step>C</step><octave>3</octave></pitch>
                 <duration>2</duration>
@@ -542,7 +545,7 @@ struct Phase7Test {
               <note>
                 <pitch><step>D</step><octave>3</octave></pitch>
                 <duration>2</duration>
-                <notations><fingering>2</fingering></notations>
+                <notations><fingering>2</fingering><staccato/></notations>
               </note>
             </measure>
             <measure number="2">
@@ -559,10 +562,12 @@ struct Phase7Test {
             return
         }
         let notes = score.parts[0].notes
-        print("MUSICXML: \(notes.count) notes · glissando \(notes[0].glissando) · fingering \(notes[1].fingering ?? -1) · mesure2 début \(notes[2].measureStartBeats)")
+        print("MUSICXML: \(notes.count) notes · glissando \(notes[0].glissando) · fingering \(notes[1].fingering ?? -1) · vélocité \(notes[0].velocity ?? -1) · articulation \(notes[1].scoreArticulation ?? "—") · mesure2 début \(notes[2].measureStartBeats)")
         check(notes.count == 3, "3 notes MusicXML")
         check(notes[0].glissando, "glissando")
         check(notes[1].fingering == 2, "fingering")
+        check(notes[0].velocity == 90, "nuance mf → vélocité 90")
+        check(notes[1].scoreArticulation == "staccato", "articulation staccato")
         check(notes[2].measureStartBeats == 2, "mesure 2")
         check(notes[2].onsetBeats == 2, "onset mesure 2")
     }

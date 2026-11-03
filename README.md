@@ -20,7 +20,7 @@ Application macOS open source d'aide à la pratique du violoncelle : analyse de 
 - **main gauche (A17-A20, rapport seulement)** : angle de main, pouce en hypothèse, souplesse des doigts, coude-guide ;
 - **positions et déplacements chiffrés** : matrice doigt × position × direction, justesse d'arrivée, glissé parasite vs volontaire, confiance par note ;
 - **piqué et glissé** suivis au profil (B14/B17) ;
-- **replays pédagogiques** : piano-roll reconstruit depuis les statistiques, « ce que tu as fait / ce que ça devrait être », synthèse PCM locale — aucun audio brut conservé ;
+- **replays pédagogiques** : piano-roll reconstruit depuis les statistiques, « ce que tu as fait / ce que ça devrait être », **lecture par échantillonneur de violoncelle** (DLS macOS GM 42 ou SoundFont personnel `cello.sf2`), nuances/articulations MusicXML — aucun audio brut conservé ;
 - **pack professeur** (PDF + JSON + notes), aide intégrée, export **anonymisé** pour étude, contribution d'exercices et protocole d'étude ;
 - **onboarding, réglages** (profil, diapason, tolérances) et icône d'application.
 
@@ -100,6 +100,7 @@ Tout le code est dans `OpenCello/` (SwiftUI, macOS 14+) :
 | [docs/16-etude-longitudinale.md](docs/16-etude-longitudinale.md) | Protocole d'étude longitudinale (non exécutée) |
 | [docs/17-contribution-exercices.md](docs/17-contribution-exercices.md) | Schéma et règles de contribution d'exercices |
 | [docs/18-omr-local.md](docs/18-omr-local.md) | OMR local PDF → MusicXML : Ollama + constrained decoding, boucles de contrôle, comparaison Audiveris/PDF2Muse |
+| [docs/19-protocole-test-cadre-fixe.md](docs/19-protocole-test-cadre-fixe.md) | Protocole de test caméra « cadre fixe » avec violoncellistes (non exécuté) |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Guide de contribution (build, tests, style, exercices) |
 
 ## Choix techniques
@@ -110,6 +111,22 @@ Tout le code est dans `OpenCello/` (SwiftUI, macOS 14+) :
 - Graphiques : **Swift Charts** (courbes/barres) + **Liveline** (SPM, MIT — radar/spider et anneaux, Canvas natif) ; statistiques : **Accelerate/vDSP** ; PDF : **PDFKit** (frameworks système).
 - Règle du projet : **dépendances d'abord** — assembler des briques existantes plutôt que réécrire du code (`AGENTS.md`).
 - Licence cible : **MIT** (attention aux licences des briques intégrées — voir `docs/07`).
+
+### Son de violoncelle des replays
+
+- **Par défaut** : échantillonneur `AVAudioUnitSampler` + banque DLS fournie par macOS
+  (`gs_instruments.dls`, programme General MIDI 42 « Cello »), sans fichier à embarquer.
+- **Meilleure qualité** : déposer un SoundFont personnel dans
+  `~/Library/Application Support/OpenCello/Instruments/cello.sf2` ; il est chargé en priorité.
+- **Repli** : synthèse PCM physique (harmoniques, formants de caisse, souffle d'archet) si
+  la banque système est indisponible.
+- Les **nuances et articulations MusicXML** (`p`, `mf`, `f`, staccato, accent, tenuto,
+  marcato, slur) pilotent la vélocité et la durée ; les glissandos et doigtés sont lus.
+- Les grandes bibliothèques du marché (Spitfire Solo Cello, Embertone Blakus Cello,
+  Native Instruments Stradivari Cello, Chris Hein Solo Cello, Emotional Cello,
+  Cinesamples Tina Guo, Orchestral Tools Berlin Solo Strings) sont **commerciales** :
+  elles ne peuvent pas être redistribuées dans une app MIT. Aucun échantillon de ce type
+  n'est embarqué.
 
 ## Licence
 

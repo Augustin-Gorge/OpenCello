@@ -60,7 +60,7 @@ struct ReplayView: View {
                 }
 
                 Spacer()
-                Text("Re-synthèse locale (sinusoïde + harmoniques) — aucun audio brut n'est conservé.")
+                Text("\(audio.instrumentName) — rendu local, aucun audio brut conservé.")
                     .font(.caption2)
                     .foregroundStyle(.secondary)
             }
@@ -123,10 +123,11 @@ struct ReplayPianoRoll: View {
                 let isTarget = note.scoreIndex == moment.scoreIndex
                 let start = corrected ? note.onset : note.onset + note.rhythmMs / 1000
                 let playedMidi = corrected ? Double(note.midi) : Double(note.midi) + note.cents / 100
+                let drawDuration = corrected ? (note.expectedDuration ?? note.duration) : note.duration
                 let rect = CGRect(
                     x: x(start),
                     y: y(playedMidi) - 5,
-                    width: max(3, x(start + note.duration) - x(start)),
+                    width: max(3, x(start + drawDuration) - x(start)),
                     height: 10
                 )
                 let color: Color = isTarget ? .orange : (corrected ? .teal : .blue)
@@ -134,10 +135,11 @@ struct ReplayPianoRoll: View {
 
                 // Trait de justesse : la note attendue reste visible en gris.
                 if !corrected, abs(note.cents) >= 10 {
+                    let expectedDuration = note.expectedDuration ?? note.duration
                     let expected = CGRect(
                         x: x(note.onset),
                         y: y(Double(note.midi)) - 1,
-                        width: max(2, x(note.onset + note.duration) - x(note.onset)),
+                        width: max(2, x(note.onset + expectedDuration) - x(note.onset)),
                         height: 2
                     )
                     context.fill(Path(roundedRect: expected, cornerRadius: 1), with: .color(.gray.opacity(0.55)))

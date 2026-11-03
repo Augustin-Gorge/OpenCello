@@ -83,6 +83,12 @@ struct NotePositionRecord: Codable, Identifiable {
     let isVoluntaryGlide: Bool
     let contour: [Double]
     let articulation: String?
+    /// Durée attendue en secondes d'après le MusicXML (pour la version corrigée).
+    var expectedDuration: Double? = nil
+    /// Nuance écrite convertie en vélocité MIDI.
+    var velocity: Int? = nil
+    /// Articulation écrite dans la partition (staccato, accent, legato…).
+    var scoreArticulation: String? = nil
 
     var id: String {
         "\(scoreIndex ?? -1)-\(String(format: "%.3f", onset))"
@@ -155,6 +161,10 @@ struct ReplayNote: Codable, Identifiable {
     let cents: Double
     let contour: [Double]
     let rhythmMs: Double
+    /// Durée attendue (MusicXML) en secondes ; nil = durée jouée.
+    var expectedDuration: Double? = nil
+    var velocity: Int? = nil
+    var scoreArticulation: String? = nil
 
     var id: Int { scoreIndex }
 }

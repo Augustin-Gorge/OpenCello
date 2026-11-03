@@ -103,6 +103,9 @@ swiftc -O -o build/qa/phase7_test \
   -framework SwiftUI -framework AppKit -framework PDFKit -framework AVFoundation -framework Vision
 ./build/qa/phase7_test
 
+# Test caméra cadre fixe (nécessite une vidéo de violoncelliste) :
+# ./build/qa/fixed_frame_test chemin/vers/prise.mov build/qa/prise.csv
+
 # Données de démonstration pour tester l'UI (sauvegarder history.json avant !)
 swiftc -O -o build/qa/seed_demo OpenCello/ProgressStore.swift OpenCello/StatsKit.swift \
   OpenCello/ReportAnalysis.swift OpenCello/ExerciseCatalog.swift OpenCello/AppSettings.swift \

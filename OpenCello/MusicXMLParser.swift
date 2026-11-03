@@ -14,6 +14,8 @@ struct ScoreNote: Identifiable {
     /// Doigté écrit (`<fingering>`), référence facultative : l'app mesure le
     /// doigté réel et ne l'impose pas.
     var fingering: Int? = nil
+    /// Corde écrite (`<string>`) : 1 = la, 2 = ré, 3 = sol, 4 = do.
+    var stringNumber: Int? = nil
     /// Nuance écrite (p, mf, f…) convertie en vélocité MIDI 1-127.
     var velocity: Int? = nil
     /// Articulation écrite (staccato, accent, tenuto…) pour le rendu du replay.
@@ -80,6 +82,7 @@ final class MusicXMLParser: NSObject, XMLParserDelegate {
         var tieStop: Bool
         var glissando: Bool = false
         var fingering: Int? = nil
+        var stringNumber: Int? = nil
         var velocity: Int? = nil
         var scoreArticulation: String? = nil
     }
@@ -115,6 +118,7 @@ final class MusicXMLParser: NSObject, XMLParserDelegate {
     private var pendingTieStop = false
     private var pendingGlissando = false
     private var pendingFingering: Int?
+    private var pendingStringNumber: Int?
     private var pendingVelocity: Int?
     private var pendingScoreArticulation: String?
     private var creatorIsComposer = false
@@ -145,6 +149,7 @@ final class MusicXMLParser: NSObject, XMLParserDelegate {
                         measureStartBeats: Double(raw.measureStart) / Double(divisions),
                         glissando: raw.glissando,
                         fingering: raw.fingering,
+                        stringNumber: raw.stringNumber,
                         velocity: raw.velocity,
                         scoreArticulation: raw.scoreArticulation
                     )
@@ -223,6 +228,7 @@ final class MusicXMLParser: NSObject, XMLParserDelegate {
             pendingTieStop = false
             pendingGlissando = false
             pendingFingering = nil
+            pendingStringNumber = nil
             pendingScoreArticulation = nil
 
         case "glissando", "slide":
@@ -329,6 +335,9 @@ final class MusicXMLParser: NSObject, XMLParserDelegate {
         case "fingering":
             pendingFingering = Int(value)
 
+        case "string":
+            pendingStringNumber = Int(value)
+
         case "note":
             finalizeNote()
 
@@ -393,6 +402,7 @@ final class MusicXMLParser: NSObject, XMLParserDelegate {
         note.tieStop = pendingTieStop
         note.glissando = pendingGlissando
         note.fingering = pendingFingering
+        note.stringNumber = pendingStringNumber
         note.velocity = pendingVelocity
         note.scoreArticulation = pendingScoreArticulation
 

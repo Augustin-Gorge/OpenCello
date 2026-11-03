@@ -90,7 +90,7 @@ Latence : le suivi réagit dès l'attaque ; les métriques de timbre arrivent à
 
 Objectif : que **chaque note jouée** pendant le suivi reçoive une **position** et un **doigt** mesurés — c'est ce qui permet des conseils précis (« ton 2e doigt en 4e position arrive 30 cents bas ») et une analyse par doigt sur le répertoire réel, pas seulement sur des gammes.
 
-> **Implémentation** : `PositionTracker` fusionne les candidats audio (corde × position × doigt), l'indice caméra (`LeftHandAnalyzer.positionHint`) et la continuité ; `SessionEngine` enregistre un `NotePositionRecord` par note appariée, avec la confiance. La caméra est active en mode morceau (`HandPoseAnalyzer` + Vision Body), et la position/le doigt sont affichés en direct dans `PieceView`. En cas d'échec de détection, la position reste `nil` et la confiance baisse — aucune valeur n'est inventée.
+> **Implémentation** : `PositionTracker` fusionne la note, la corde (MusicXML `<string>` ou continuité) et le doigt (`LeftHandAnalyzer`, pouce inclus) ; dès que corde + doigt sont connus, la position est **calculée exactement** (`note − corde à vide − décalage du doigt + 1`) et marquée `exact = true`. Sinon, il affiche les candidats (la/ré/sol/do) et une confiance. `SessionEngine` enregistre un `NotePositionRecord` par note appariée. La caméra est active en mode morceau (`HandPoseAnalyzer` + Vision Body), et la position/le doigt sont affichés en direct dans `PieceView`. En cas d'échec de détection, la position reste `nil` et la confiance baisse — aucune valeur n'est inventée.
 
 ### 7.1 Principe
 
@@ -119,8 +119,9 @@ La partition (MusicXML) donne la **hauteur** attendue, mais pas le doigté : une
 ### 7.4 Limites
 
 - Les doigts sont petits à distance de caméra : l'identité du doigt presseur est une heuristique (bout le plus bas), la confiance doit être affichée honnêtement.
-- En positions hautes (pouce/thumb position), les repères changent : estimation dégradée au départ.
-- Le MusicXML ne contient généralement **pas de doigtés** : l'app mesure le doigté réel, elle ne lit pas un doigté « officiel ». Les `<technical><fingering>` du MusicXML sont désormais **parsés** comme référence facultative (`ScoreNote.fingering`), mais ne sont pas imposés.
+- **La position est exacte dès que la corde et le doigt sont connus** (formule note − corde − doigt + 1). Si le MusicXML ne donne pas `<string>` et que la corde n'est pas stable, l'app affiche les candidats au lieu d'une position inventée ; la caméra peut lever l'ambiguïté avec une marge suffisante.
+- En **position du pouce** (registre aigu, 7e et au-delà), le pouce peut être le doigt presseur ; il est alors affiché comme « pouce » et non comme corde à vide.
+- Le MusicXML ne contient généralement **pas de doigtés** : l'app mesure le doigté réel, elle ne lit pas un doigté « officiel ». Les `<technical><fingering>` et `<string>` du MusicXML sont désormais **parsés** comme références facultatives (`ScoreNote.fingering`, `ScoreNote.stringNumber`), et les `<string>` servent à rendre la position exacte.
 
 ## 8. Limites et suite
 

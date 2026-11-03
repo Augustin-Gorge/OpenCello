@@ -89,6 +89,14 @@ struct NotePositionRecord: Codable, Identifiable {
     var velocity: Int? = nil
     /// Articulation écrite dans la partition (staccato, accent, legato…).
     var scoreArticulation: String? = nil
+    /// Corde estimée/jouée : 1 = la, 2 = ré, 3 = sol, 4 = do.
+    var stringNumber: Int? = nil
+    /// Corde écrite dans le MusicXML, si présente.
+    var expectedStringNumber: Int? = nil
+    /// Vrai si la position est déduite exactement (note + doigt + corde).
+    var exactPosition: Bool = false
+    /// Vrai si le pouce joue (position du pouce, registre aigu).
+    var isThumbPosition: Bool = false
 
     var id: String {
         "\(scoreIndex ?? -1)-\(String(format: "%.3f", onset))"
@@ -96,12 +104,16 @@ struct NotePositionRecord: Codable, Identifiable {
 
     var fingerText: String {
         guard let finger else { return "doigté non mesuré" }
-        return finger == 0 ? "corde à vide" : "\(finger)e doigt"
+        switch finger {
+        case 0: return "corde à vide"
+        case 5: return "pouce"
+        default: return "\(finger)e doigt"
+        }
     }
 
     var positionText: String {
         guard let position else { return "position non mesurée" }
-        return "\(position)e position"
+        return isThumbPosition ? "position du pouce \(position)e" : "\(position)e position"
     }
 }
 

@@ -137,8 +137,11 @@ enum ReplayBuilder {
 
         let position = assignment?.position
         let finger = assignment?.finger
-        let positionText = position.map { "\($0)e position" } ?? "position non mesurée"
-        let fingerText = finger.map { $0 == 0 ? "corde à vide" : "\($0)e doigt" } ?? "doigté non mesuré"
+        let isThumb = finger == 5
+        let positionText = position.map {
+            isThumb ? "position du pouce \($0)e" : "\($0)e position"
+        } ?? "position non mesurée"
+        let fingerText = finger.map { $0 == 0 ? "corde à vide" : ($0 == 5 ? "pouce" : "\($0)e doigt") } ?? "doigté non mesuré"
         let glide = event?.glideDuration.map { $0 * 1000 }
         return ReplayMoment(
             kind: "Marqué",
@@ -421,6 +424,130 @@ enum ReplaySynth {
             let gain = Float(index) / Float(fade)
             samples[index] *= gain
             samples[samples.count - 1 - index] *= gain
+        }
+    }
+}
+
+/// Génère un extrait MusicXML monophonique à partir d'un moment de replay.
+/// Sert à afficher une **portée gravée** (swift-sheet-music) sans dépendre du
+/// fichier source complet : les notes, mesures, durées et articulations du
+/// moment sont ré-encodées dans un fragment propre.
+enum ReplayStaffXML {
+    static func musicXML(for moment: ReplayMoment) -> Data? {
+        let notes = moment.notes.filter { $0.midi >= 0 && $0.midi <= 127 }
+        guard !notes.isEmpty else { return nil }
+
+        let groups = Dictionary(grouping: notes) { note in
+            note.measure > 0 ? note.measure : 1
+        }
+        let measureKeys = groups.keys.sorted()
+        guard !measureKeys.isEmpty else { return nil }
+
+        var xml = """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE score-partwise PUBLIC "-//Recordare//DTD MusicXML 4.0 Partwise//EN" "http://www.musicxml.org/dtds/partwise.dtd">
+        <score-partwise version="4.0">
+          <work><work-title>Replay</work-title></work>
+          <identification><encoding><software>OpenCello</software></encoding></identification>
+          <part-list><score-part id="P1"><part-name>Cello</part-name></score-part></part-list>
+          <part id="P1">
+
+        """
+
+        for (index, key) in measureKeys.enumerated() {
+            let measureNotes = (groups[key] ?? []).sorted {
+                if $0.beat != $1.beat { return $0.beat < $1.beat }
+                return $0.onset < $1.onset
+            }
+            xml += "    <measure number=\"\(key)\">\n"
+            if index == 0 {
+                xml += """
+                      <attributes>
+                        <divisions>4</divisions>
+                        <key><fifths>0</fifths></key>
+                        <time><beats>4</beats><beat-type>4</beat-type></time>
+                        <clef><sign>F</sign><line>4</line></clef>
+                      </attributes>
+
+                """
+            }
+
+            var cursor = 0
+            for note in measureNotes {
+                let beat = max(1, note.beat)
+                let start = max(cursor, min(15, Int(((beat - 1) * 4).rounded())))
+                if start > cursor {
+                    xml += "      <forward><duration>\(start - cursor)</duration></forward>\n"
+                }
+
+                let duration = max(0.06, note.expectedDuration ?? note.duration)
+                let notation = notatedDuration(duration)
+                let divisions = notation.divisions
+                let pitch = pitchParts(for: note.midi)
+                xml += "      <note>\n"
+                xml += "        <pitch><step>\(pitch.step)</step>"
+                if pitch.alter != 0 {
+                    xml += "<alter>\(pitch.alter)</alter>"
+                }
+                xml += "<octave>\(pitch.octave)</octave></pitch>\n"
+                xml += "        <duration>\(divisions)</duration>\n"
+                xml += "        <voice>1</voice>\n"
+                xml += "        <type>\(notation.type)</type>\n"
+                if notation.dotted {
+                    xml += "        <dot/>\n"
+                }
+                if let articulation = note.scoreArticulation {
+                    let tag = articulationTag(articulation)
+                    if let tag {
+                        xml += "        <notations><\(tag)/></notations>\n"
+                    }
+                }
+                xml += "      </note>\n"
+                cursor = max(cursor, start + divisions)
+            }
+            xml += "    </measure>\n"
+        }
+
+        xml += """
+          </part>
+        </score-partwise>
+        """
+        return Data(xml.utf8)
+    }
+
+    private static func pitchParts(for midi: Int) -> (step: String, alter: Int, octave: Int) {
+        let names = ["C", "C", "D", "D", "E", "F", "F", "G", "G", "A", "A", "B"]
+        let alters = [0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0]
+        let pitchClass = ((midi % 12) + 12) % 12
+        let octave = midi / 12 - 1
+        return (names[pitchClass], alters[pitchClass], octave)
+    }
+
+    private static func notatedDuration(_ seconds: Double) -> (divisions: Int, type: String, dotted: Bool) {
+        // À 120 BPM : 1 temps = 0,5 s ; divisions = 4 par temps.
+        let beats = max(0.25, seconds * 2)
+        let options: [(beats: Double, divisions: Int, type: String, dotted: Bool)] = [
+            (4.0, 16, "whole", false),
+            (3.0, 12, "half", true),
+            (2.0, 8, "half", false),
+            (1.5, 6, "quarter", true),
+            (1.0, 4, "quarter", false),
+            (0.75, 3, "eighth", true),
+            (0.5, 2, "eighth", false),
+            (0.25, 1, "16th", false)
+        ]
+        let best = options.min { abs($0.beats - beats) < abs($1.beats - beats) } ?? options[4]
+        return (best.divisions, best.type, best.dotted)
+    }
+
+    private static func articulationTag(_ articulation: String) -> String? {
+        switch articulation.lowercased() {
+        case "staccato": return "staccato"
+        case "accent": return "accent"
+        case "tenuto": return "tenuto"
+        case "marcato": return "strong-accent"
+        case "spiccato": return "staccato"
+        default: return nil
         }
     }
 }

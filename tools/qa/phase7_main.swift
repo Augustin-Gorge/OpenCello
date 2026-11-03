@@ -87,6 +87,16 @@ struct Phase7Test {
         check(presser == 2, "doigt presseur 2")
         check(curl >= 0 && curl <= 1)
         check(metrics.positionHint != nil, "position hint présent")
+
+        var thumbPoints = makeHandFrame().points
+        thumbPoints = thumbPoints.map { point in
+            guard point.joint == .thumbTip else { return point }
+            return HandPoint(joint: .thumbTip, point: CGPoint(x: 0.57, y: 0.30), confidence: 0.9)
+        }
+        let thumbFrame = HandFrame(points: thumbPoints, confidence: 0.9, timestamp: 1.0)
+        let thumbMetrics = LeftHandAnalyzer().analyze(hands: [thumbFrame], body: body, timestamp: 1.0)
+        print("HAND pouce: presseur \(thumbMetrics?.presserFinger ?? -1)")
+        check(thumbMetrics?.presserFinger == 5, "pouce détecté comme doigt presseur")
     }
 
     // MARK: - Positions
@@ -106,13 +116,53 @@ struct Phase7Test {
         check(assignment.finger == 4, "doigt 4")
         check(assignment.confidence > 0.5, "confiance > 0,5")
         check(assignment.stringMidi == 50, "corde ré")
+        check(assignment.exact, "position exacte via note + doigt + caméra")
 
-        let open = tracker.assign(midi: 43, hand: hand, expected: nil)
+        let open = tracker.assign(midi: 43, hand: LeftHandMetrics(valid: true), expected: nil)
         let openPosition = open.position.map { "\($0)e" } ?? "—"
         print("POSITION 43: \(openPosition) · doigt \(open.finger.map(String.init) ?? "—") · corde à vide \(open.isOpenString)")
         check(open.isOpenString, "corde à vide reconnue")
         check(open.finger == 0, "doigt 0")
         check(open.position == nil, "pas de position inventée pour une corde à vide")
+        check(open.stringNumber == 3, "corde à vide sol")
+
+        // Position exacte : note + doigt + corde écrite dans le MusicXML.
+        let exactTracker = PositionTracker()
+        let exactHand = LeftHandMetrics(
+            valid: true,
+            presserFinger: 1,
+            presserConfidence: 0.7,
+            positionHint: 4,
+            positionHintConfidence: 0.3
+        )
+        var exactExpected = FollowFeedback()
+        exactExpected.expectedMidi = 62
+        exactExpected.expectedStringNumber = 1
+        exactExpected.expectedFingering = 1
+        let exact = exactTracker.assign(midi: 62, hand: exactHand, expected: exactExpected)
+        print("POSITION exacte: \(exact.positionText) · \(exact.fingerText) · \(exact.stringText) · exacte \(exact.exact) · \(exact.source)")
+        check(exact.exact, "position exacte note + doigt + corde")
+        check(exact.position == 4, "62 sur la corde de la = 4e position, 1er doigt")
+        check(exact.stringNumber == 1, "corde la")
+
+        // Pouce en position haute.
+        let thumbTracker = PositionTracker()
+        let thumbHand = LeftHandMetrics(
+            valid: true,
+            presserFinger: 5,
+            presserConfidence: 0.7,
+            positionHint: 8,
+            positionHintConfidence: 0.3
+        )
+        var thumbExpected = FollowFeedback()
+        thumbExpected.expectedMidi = 64
+        thumbExpected.expectedStringNumber = 1
+        thumbExpected.expectedFingering = 5
+        let thumb = thumbTracker.assign(midi: 64, hand: thumbHand, expected: thumbExpected)
+        print("POUSSÉ: \(thumb.positionText) · \(thumb.fingerText) · exacte \(thumb.exact)")
+        check(thumb.exact, "position du pouce exacte")
+        check(thumb.isThumbPosition, "pouce reconnu")
+        check(thumb.position == 8, "64 sur la corde de la = pouce 8e")
 
         // Continuité : la note suivante reste dans la même région.
         let next = tracker.assign(midi: 61, hand: hand, expected: nil)
@@ -285,6 +335,22 @@ struct Phase7Test {
         check(played.count == corrected.count, "même durée")
         check(played != corrected, "versions différentes")
         check((played.map { abs($0) }.max() ?? 0) <= 0.8, "pas de saturation")
+
+        if let xml = ReplayStaffXML.musicXML(for: moment),
+           let staffScore = try? MusicXMLParser.parse(data: xml) {
+            let staffNotes = staffPartNotes(staffScore)
+            print("STAFF XML: \(xml.count) octets · \(staffNotes) notes")
+            check(staffNotes == moment.notes.count, "portée : toutes les notes du moment")
+            if ProcessInfo.processInfo.environment["WRITE_STAFF"] == "1" {
+                try? xml.write(to: URL(fileURLWithPath: "/tmp/opencello_staff.xml"))
+            }
+        } else {
+            check(false, "portée : MusicXML généré invalide")
+        }
+    }
+
+    static func staffPartNotes(_ score: Score) -> Int {
+        score.parts.map { $0.notes.count }.max() ?? 0
     }
 
     // MARK: - Rapport de séance
@@ -540,7 +606,7 @@ struct Phase7Test {
               <note>
                 <pitch><step>C</step><octave>3</octave></pitch>
                 <duration>2</duration>
-                <notations><glissando type="start">gliss.</glissando></notations>
+                <notations><glissando type="start">gliss.</glissando><technical><string>3</string></technical></notations>
               </note>
               <note>
                 <pitch><step>D</step><octave>3</octave></pitch>
@@ -562,11 +628,12 @@ struct Phase7Test {
             return
         }
         let notes = score.parts[0].notes
-        print("MUSICXML: \(notes.count) notes · glissando \(notes[0].glissando) · fingering \(notes[1].fingering ?? -1) · vélocité \(notes[0].velocity ?? -1) · articulation \(notes[1].scoreArticulation ?? "—") · mesure2 début \(notes[2].measureStartBeats)")
+        print("MUSICXML: \(notes.count) notes · glissando \(notes[0].glissando) · fingering \(notes[1].fingering ?? -1) · vélocité \(notes[0].velocity ?? -1) · corde \(notes[0].stringNumber ?? -1) · articulation \(notes[1].scoreArticulation ?? "—") · mesure2 début \(notes[2].measureStartBeats)")
         check(notes.count == 3, "3 notes MusicXML")
         check(notes[0].glissando, "glissando")
         check(notes[1].fingering == 2, "fingering")
         check(notes[0].velocity == 90, "nuance mf → vélocité 90")
+        check(notes[0].stringNumber == 3, "corde 3 (sol)")
         check(notes[1].scoreArticulation == "staccato", "articulation staccato")
         check(notes[2].measureStartBeats == 2, "mesure 2")
         check(notes[2].onsetBeats == 2, "onset mesure 2")

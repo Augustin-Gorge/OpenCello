@@ -371,7 +371,7 @@ struct ReportCommentary {
             case .up: movement = "En montant"
             case .same: movement = "Sur place"
             }
-            let finger = worst.finger == 0 ? "corde à vide" : "\(worst.finger)e doigt"
+            let finger = worst.finger == 0 ? "corde à vide" : (worst.finger == 5 ? "pouce" : "\(worst.finger)e doigt")
             let sign = worst.meanCents >= 0 ? "trop haut" : "trop bas"
             items.append(CommentaryItem(
                 id: "position-shift",

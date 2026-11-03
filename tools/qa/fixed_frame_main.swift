@@ -79,8 +79,8 @@ struct FixedFrameTest {
             guard let sample = output.copyNextSampleBuffer() else { break }
             let timestamp = CMSampleBufferGetPresentationTimeStamp(sample).seconds
             guard timestamp.isFinite else { continue }
-            // 10 fps suffisent pour les statistiques ; la vidéo peut être à 30/60 fps.
-            guard timestamp - lastTimestamp >= 0.1 else { continue }
+            // 15 fps, comme l'app ; la vidéo peut être à 30/60 fps.
+            guard timestamp - lastTimestamp >= 1.0 / 15.0 else { continue }
             lastTimestamp = timestamp
             guard let imageBuffer = CMSampleBufferGetImageBuffer(sample) else { continue }
 

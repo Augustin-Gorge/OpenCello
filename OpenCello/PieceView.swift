@@ -5,6 +5,8 @@ import AppKit
 struct PieceView: View {
     @EnvironmentObject private var engine: SessionEngine
     @State private var showImporter = false
+    @State private var showPDFImporter = false
+    @State private var showStudio = false
 
     var body: some View {
         HSplitView {
@@ -16,11 +18,26 @@ struct PieceView: View {
         .sheet(item: $engine.liveReplay) { moment in
             ReplayView(moment: moment)
         }
+        .sheet(isPresented: $showStudio) {
+            if let url = engine.scoreURL {
+                ScoreStudioView(url: url) { parsed in
+                    engine.applyEditedScore(parsed)
+                }
+            } else {
+                ContentUnavailableView(
+                    "Aucune partition",
+                    systemImage: "music.note.list",
+                    description: Text("Chargez ou convertissez d'abord un MusicXML.")
+                )
+                .frame(width: 520, height: 220)
+            }
+        }
     }
 
     // MARK: - Recherche IMSLP + import
 
     private var searchPane: some View {
+        ScrollView {
         VStack(alignment: .leading, spacing: 12) {
             Text("Chercher une œuvre sur IMSLP").font(.headline)
             HStack {
@@ -95,13 +112,84 @@ struct PieceView: View {
                         }
                     }
                 }
-                .frame(maxHeight: 260)
+                .frame(maxHeight: 240)
+            }
+
+            if let workTitle = engine.imslpWorkTitle {
+                Divider()
+                Text("Fichiers PDF de l'œuvre").font(.headline)
+                Text(workTitle)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
+
+                if engine.imslpFilesLoading {
+                    HStack(spacing: 8) {
+                        ProgressView().controlSize(.small)
+                        Text("Chargement des fichiers…").font(.caption)
+                    }
+                }
+                if let error = engine.imslpFilesError {
+                    Text(error).font(.caption).foregroundStyle(.red)
+                }
+
+                if !engine.imslpFiles.isEmpty {
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 6) {
+                            ForEach(engine.imslpFiles) { file in
+                                HStack(alignment: .top, spacing: 8) {
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(file.name)
+                                            .font(.caption.weight(.semibold))
+                                        if !file.description.isEmpty {
+                                            Text(file.description)
+                                                .font(.caption2)
+                                                .foregroundStyle(.secondary)
+                                                .lineLimit(1)
+                                        }
+                                        Text(file.isPublicDomain
+                                             ? "Domaine public"
+                                             : (file.copyright.isEmpty
+                                                ? "Licence non précisée"
+                                                : file.copyright))
+                                            .font(.caption2)
+                                            .foregroundStyle(file.isPublicDomain ? .green : .orange)
+                                    }
+                                    Spacer()
+                                    if engine.imslpDownloadingIndex == file.index {
+                                        ProgressView().controlSize(.small)
+                                    } else {
+                                        Button {
+                                            engine.downloadIMSLPFile(file)
+                                        } label: {
+                                            Image(systemName: "arrow.down.circle")
+                                        }
+                                        .buttonStyle(.borderless)
+                                        .help("Télécharger ce PDF")
+                                        .disabled(file.index == nil
+                                                  || engine.imslpDownloadingIndex != nil)
+                                    }
+                                }
+                                .padding(6)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 6)
+                                        .fill(Color(nsColor: .controlBackgroundColor))
+                                )
+                            }
+                        }
+                    }
+                    .frame(maxHeight: 170)
+                } else if !engine.imslpFilesLoading, engine.imslpFilesError == nil {
+                    Text("Aucun PDF listé sur cette page.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
             }
 
             Divider()
 
             Text("Partition pour le suivi").font(.headline)
-            Text("IMSLP fournit des PDF. Pour suivre votre jeu note par note, importez un **MusicXML** (export MuseScore / Finale / Sibelius). Le PDF reste disponible sur IMSLP pour le travail.")
+            Text("IMSLP fournit des PDF. OpenCello peut les convertir en MusicXML avec Audiveris (outil externe), puis les modifier dans MuseScore. Vous pouvez aussi importer un MusicXML déjà prêt.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
 
@@ -111,19 +199,93 @@ struct PieceView: View {
                 } label: {
                     Label("Importer MusicXML…", systemImage: "doc.badge.plus")
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(.bordered)
+
+                Button {
+                    showPDFImporter = true
+                } label: {
+                    Label("Importer un PDF…", systemImage: "doc.richtext")
+                }
+                .buttonStyle(.bordered)
 
                 Button("Gamme de démo") { engine.loadDemoScore() }
                     .buttonStyle(.bordered)
             }
 
+            if let pdf = engine.currentPDF {
+                VStack(alignment: .leading, spacing: 8) {
+                    Label(pdf.lastPathComponent, systemImage: "doc.richtext")
+                        .font(.callout.weight(.semibold))
+
+                    if let xml = engine.currentMusicXML {
+                        Text("MusicXML : \(xml.lastPathComponent)")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                        HStack {
+                            Button {
+                                if engine.scoreURL != xml {
+                                    engine.importScore(from: xml)
+                                }
+                                showStudio = true
+                            } label: {
+                                Label("Voir / modifier la partition", systemImage: "eye")
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .disabled(engine.omrState.isRunning)
+
+                            Menu {
+                                Button("Reconvertir avec Audiveris") {
+                                    engine.convertCurrentPDF(force: true)
+                                }
+                                Button("Afficher dans le Finder") {
+                                    NSWorkspace.shared.activateFileViewerSelecting([xml])
+                                }
+                            } label: {
+                                Image(systemName: "ellipsis.circle")
+                            }
+                            .menuStyle(.borderlessButton)
+                            .frame(width: 28)
+                        }
+                    } else {
+                        Button {
+                            engine.convertCurrentPDF()
+                        } label: {
+                            Label("Convertir en MusicXML", systemImage: "wand.and.stars")
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .disabled(engine.omrState.isRunning)
+                    }
+
+                    if engine.omrState.isRunning {
+                        HStack(spacing: 8) {
+                            ProgressView().controlSize(.small)
+                            Text(engine.omrState.label)
+                                .font(.caption)
+                            Button("Annuler") { engine.cancelOMR() }
+                                .buttonStyle(.link)
+                        }
+                    }
+                    if case let .failed(message) = engine.omrState {
+                        Text(message)
+                            .font(.caption)
+                            .foregroundStyle(.red)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+                .padding(10)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Color(nsColor: .controlBackgroundColor))
+                )
+            }
+
             if let message = engine.message {
                 Text(message).font(.caption).foregroundStyle(.secondary)
             }
-
-            Spacer()
         }
         .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .fileImporter(
             isPresented: $showImporter,
             allowedContentTypes: [.xml, UTType(filenameExtension: "musicxml") ?? .xml],
@@ -132,6 +294,16 @@ struct PieceView: View {
             if case .success(let urls) = result, let url = urls.first {
                 engine.importScore(from: url)
             }
+        }
+        .fileImporter(
+            isPresented: $showPDFImporter,
+            allowedContentTypes: [.pdf],
+            allowsMultipleSelection: false
+        ) { result in
+            if case .success(let urls) = result, let url = urls.first {
+                engine.importPDF(from: url)
+            }
+        }
         }
     }
 
@@ -143,6 +315,24 @@ struct PieceView: View {
                 Text(engine.scoreTitle.isEmpty ? score.title : engine.scoreTitle).font(.title2.bold())
                 if let composer = score.composer, !composer.isEmpty {
                     Text(composer).font(.caption).foregroundStyle(.secondary)
+                }
+
+                if let xml = engine.currentMusicXML {
+                    HStack(spacing: 8) {
+                        Button {
+                            showStudio = true
+                        } label: {
+                            Label("Voir / modifier", systemImage: "eye")
+                        }
+                        .buttonStyle(.bordered)
+                        .disabled(engine.pieceRunning)
+                        .help(engine.pieceRunning
+                              ? "Arrêtez le suivi pour modifier la partition."
+                              : "Aperçu intégré + édition dans MuseScore")
+                        Text(xml.lastPathComponent)
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
                 }
 
                 HStack {
@@ -220,12 +410,20 @@ struct PieceView: View {
                             Text(engine.scoreTitle)
                                 .font(.headline)
                                 .multilineTextAlignment(.center)
-                            Button {
-                                showImporter = true
-                            } label: {
-                                Label("Importer le MusicXML…", systemImage: "doc.badge.plus")
+                            HStack {
+                                Button {
+                                    showImporter = true
+                                } label: {
+                                    Label("Importer le MusicXML…", systemImage: "doc.badge.plus")
+                                }
+                                .buttonStyle(.bordered)
+                                Button {
+                                    showPDFImporter = true
+                                } label: {
+                                    Label("Importer un PDF…", systemImage: "doc.richtext")
+                                }
+                                .buttonStyle(.bordered)
                             }
-                            .buttonStyle(.borderedProminent)
                         }
                         .padding(12)
                         .background(
@@ -311,14 +509,14 @@ struct PieceView: View {
         VStack(alignment: .leading, spacing: 4) {
             HStack(spacing: 16) {
                 if let assignment = engine.pieceAssignment {
-                    let position = assignment.position.map { "\($0)e position" } ?? "position —"
-                    let finger = assignment.finger.map { $0 == 0 ? "corde à vide" : "\($0)e doigt" } ?? "doigt —"
-                    Label(position, systemImage: "hand.point.up.left")
-                    Text(finger)
-                    Text("confiance \(Int((assignment.confidence * 100).rounded())) %")
+                    Label(assignment.positionText, systemImage: "hand.point.up.left")
+                    Text(assignment.fingerText)
+                    Text(assignment.exact ? "exacte" : "estimée")
+                        .foregroundStyle(assignment.exact ? Color.green : Color.secondary)
+                    Text("\(Int((assignment.confidence * 100).rounded())) %")
                         .foregroundStyle(.secondary)
                     if assignment.isShift, let from = assignment.fromPosition {
-                        Text("\(from)e → \(assignment.position ?? 0)e")
+                        Text("depuis \(from)e")
                             .foregroundStyle(.orange)
                     }
                 } else {
@@ -335,6 +533,16 @@ struct PieceView: View {
                     .disabled(engine.pieceLastMoment == nil)
             }
             .font(.caption)
+            if let assignment = engine.pieceAssignment, !assignment.exact, !assignment.alternatives.isEmpty {
+                Text("Candidats : \(assignment.alternatives.joined(separator: " · "))")
+                    .font(.caption2)
+                    .foregroundStyle(.orange)
+            }
+            if let assignment = engine.pieceAssignment {
+                Text(assignment.source)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
             Text(engine.pieceHandStatus)
                 .font(.caption2)
                 .foregroundStyle(.secondary)

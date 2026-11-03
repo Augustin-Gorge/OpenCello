@@ -1,7 +1,12 @@
 import SwiftUI
+import SheetMusic
+import SheetMusicCore
+import SheetMusicLayout
+import SheetMusicUI
 
-/// Replay pédagogique : piano-roll reconstruit depuis les statistiques,
-/// version jouée vs version corrigée synthétisée localement.
+/// Replay pédagogique : portée gravée (swift-sheet-music) reconstruite depuis
+/// le MusicXML du moment, avec repli piano-roll ; version jouée vs corrigée
+/// écoutée avec un échantillonneur de violoncelle.
 struct ReplayView: View {
     let moment: ReplayMoment
     @StateObject private var audio = ReplayAudioEngine()
@@ -38,10 +43,20 @@ struct ReplayView: View {
             .pickerStyle(.segmented)
             .frame(maxWidth: 360)
 
-            ReplayPianoRoll(moment: moment, corrected: corrected)
-                .frame(minHeight: 240)
-                .background(RoundedRectangle(cornerRadius: 10).fill(Color(nsColor: .textBackgroundColor)))
-                .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.secondary.opacity(0.2)))
+            VStack(alignment: .leading, spacing: 6) {
+                if #available(macOS 15.0, *) {
+                    ReplayStaffView(moment: moment)
+                        .frame(minHeight: 220, maxHeight: 280)
+                } else {
+                    ReplayPianoRoll(moment: moment, corrected: corrected)
+                        .frame(minHeight: 240)
+                }
+                Text("Portée gravée générée depuis le MusicXML du moment — repli piano-roll si le rendu n'est pas disponible.")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+            .background(RoundedRectangle(cornerRadius: 10).fill(Color(nsColor: .textBackgroundColor)))
+            .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.secondary.opacity(0.2)))
 
             HStack(spacing: 10) {
                 Button {
@@ -68,6 +83,45 @@ struct ReplayView: View {
         .padding(20)
         .frame(minWidth: 680, minHeight: 440)
         .onDisappear { audio.stop() }
+    }
+}
+
+/// Portée gravée d'un extrait de replay via swift-sheet-music. Le MusicXML
+/// est régénéré depuis le moment (mesures, hauteurs, durées, articulations)
+/// pour que la portée montre exactement le passage cité.
+@available(macOS 15.0, *)
+private struct ReplayStaffView: View {
+    let moment: ReplayMoment
+    @State private var score: SheetMusicCore.Score?
+    @State private var failed = false
+
+    var body: some View {
+        Group {
+            if let score {
+                ScoreView(score: score, availableWidth: 620)
+                    .frame(maxWidth: .infinity)
+                    .clipped()
+            } else if failed {
+                ReplayPianoRoll(moment: moment, corrected: false)
+                    .frame(minHeight: 220)
+            } else {
+                ProgressView("Gravure de la portée…")
+                    .frame(maxWidth: .infinity, minHeight: 220)
+            }
+        }
+        .task(id: moment.id) {
+            failed = false
+            score = nil
+            guard let data = ReplayStaffXML.musicXML(for: moment) else {
+                failed = true
+                return
+            }
+            do {
+                score = try SheetMusic.loadScore(musicXMLData: data)
+            } catch {
+                failed = true
+            }
+        }
     }
 }
 

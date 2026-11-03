@@ -18,7 +18,7 @@ Application macOS open source d'aide à la pratique du violoncelle : analyse de 
 - **mode profil archet** : détection de lignes (Hough), calibration chevalet → touche, angle/zone de contact (A10/A11) ;
 - **vibrato** (taux/amplitude), **articulations** (heuristique 7 classes), **fluidité du geste** (jerk/mobilité, indicatif) ;
 - **main gauche (A17-A20, rapport seulement)** : angle de main, pouce en hypothèse, souplesse des doigts, coude-guide ;
-- **positions et déplacements chiffrés** : matrice doigt × position × direction, justesse d'arrivée, glissé parasite vs volontaire, confiance par note ;
+- **positions et déplacements chiffrés** : position **exacte** dès que note + corde + doigt sont connus (formule, pas de ±1), candidats la/ré/sol/do sinon, pouce en position haute, matrice doigt × position × direction, justesse d'arrivée, glissé parasite vs volontaire ;
 - **piqué et glissé** suivis au profil (B14/B17) ;
 - **replays pédagogiques** : piano-roll reconstruit depuis les statistiques, « ce que tu as fait / ce que ça devrait être », **lecture par échantillonneur de violoncelle** (DLS macOS GM 42 ou SoundFont personnel `cello.sf2`), nuances/articulations MusicXML — aucun audio brut conservé ;
 - **pack professeur** (PDF + JSON + notes), aide intégrée, export **anonymisé** pour étude, contribution d'exercices et protocole d'étude ;

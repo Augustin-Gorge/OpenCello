@@ -1,5 +1,5 @@
 {
-  "originHash" : "81809893f8b3f8ad3dba3b336c63b148c0881267019015ff319c1d06ab4f3853",
+  "originHash" : "348770cfe165705efabaf4394cd14458ad5e88ad8567970761d5f232521c40dc",
   "pins" : [
     {
       "identity" : "liveline-swift",
@@ -8,6 +8,51 @@
       "state" : {
         "revision" : "2b57a29bc13d9acb7029f12caa29d6d7ccfda80f",
         "version" : "0.7.0"
+      }
+    },
+    {
+      "identity" : "swift-java-jni-core",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/swiftlang/swift-java-jni-core.git",
+      "state" : {
+        "revision" : "b440a0be98381550cf189c903782e817619ffa05",
+        "version" : "0.5.1"
+      }
+    },
+    {
+      "identity" : "swift-sheet-music",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/jiyimeta/swift-sheet-music.git",
+      "state" : {
+        "revision" : "fe18ade45aaf4666a4da57ff0ede4dc63f896eed",
+        "version" : "4.27.0"
+      }
+    },
+    {
+      "identity" : "swift-syntax",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/swiftlang/swift-syntax.git",
+      "state" : {
+        "revision" : "79e4b74a295b6eb74a8b585e3a39d29e70c1dbd1",
+        "version" : "603.0.2"
+      }
+    },
+    {
+      "identity" : "swift-wirelet",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/jiyimeta/swift-wirelet.git",
+      "state" : {
+        "revision" : "fae71081a36122f170f3dc9b870f4e27ebf34c65",
+        "version" : "0.5.0"
+      }
+    },
+    {
+      "identity" : "swiftysynth",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/jiyimeta/swiftysynth.git",
+      "state" : {
+        "revision" : "0e97e6ae288351905c246f5b0979600e8eb37954",
+        "version" : "0.4.1"
       }
     }
   ],

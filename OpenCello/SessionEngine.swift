@@ -48,6 +48,15 @@ final class SessionEngine: ObservableObject {
     @Published var imslpError: String?
     @Published var imslpComposer: String?
     @Published var imslpUsedFallback = false
+    @Published var imslpWorkTitle: String?
+    @Published var imslpFiles: [IMSLPScoreFile] = []
+    @Published var imslpFilesLoading = false
+    @Published var imslpFilesError: String?
+    @Published var imslpDownloadingIndex: Int?
+    @Published var currentPDF: URL?
+    @Published var currentMusicXML: URL?
+    @Published var omrState: OMRState = .idle
+    @Published var scoreURL: URL?
     @Published var score: Score?
     @Published var scoreTitle = ""
     @Published var selectedPartIndex = 0
@@ -454,7 +463,142 @@ final class SessionEngine: ObservableObject {
 
     func selectIMSLPTitle(_ work: IMSLPWork) {
         scoreTitle = work.title
-        message = "Titre retenu : \(work.title). Importez le MusicXML correspondant pour lancer le suivi."
+        imslpWorkTitle = work.title
+        imslpFiles = []
+        imslpFilesError = nil
+        imslpDownloadingIndex = nil
+        currentPDF = nil
+        currentMusicXML = nil
+        scoreURL = nil
+        omrState = .idle
+        score = nil
+        pieceFeedback = nil
+        pieceStats = nil
+        pieceProgress = 0
+        message = "Titre retenu : \(work.title). Chargement des fichiers PDF…"
+        Task { await loadIMSLPFiles(title: work.title) }
+    }
+
+    func loadIMSLPFiles(title: String) async {
+        imslpFilesLoading = true
+        imslpFilesError = nil
+        do {
+            let files = try await IMSLPClient.shared.listScoreFiles(pageTitle: title)
+            imslpFiles = files.sorted { a, b in
+                if a.isPublicDomain != b.isPublicDomain {
+                    return a.isPublicDomain
+                }
+                return a.name.localizedCaseInsensitiveCompare(b.name) == .orderedAscending
+            }
+            if files.isEmpty {
+                imslpFilesError = "Aucun PDF n'est listé sur cette page IMSLP."
+            }
+        } catch {
+            imslpFiles = []
+            imslpFilesError = "Liste des PDF indisponible : \(error.localizedDescription)"
+        }
+        imslpFilesLoading = false
+    }
+
+    func downloadIMSLPFile(_ file: IMSLPScoreFile) {
+        guard let index = file.index else {
+            message = "Ce fichier n'a pas d'index de téléchargement IMSLP."
+            return
+        }
+        guard let workTitle = imslpWorkTitle else {
+            message = "Sélectionnez d'abord une œuvre IMSLP."
+            return
+        }
+        imslpDownloadingIndex = index
+        message = "Téléchargement de \(file.name)…"
+        Task {
+            do {
+                let data = try await IMSLPClient.shared.downloadScoreFile(index: index)
+                let pdf = try ScoreLibrary.storePDF(
+                    data: data,
+                    workTitle: workTitle,
+                    fileName: file.name
+                )
+                currentPDF = pdf
+                currentMusicXML = ScoreLibrary.existingMusicXML(for: pdf)
+                if let xml = currentMusicXML {
+                    importScore(from: xml)
+                    omrState = .ready(xml)
+                    message = "PDF téléchargé ; MusicXML déjà présent et chargé."
+                } else {
+                    omrState = .idle
+                    message = "PDF téléchargé (\(file.name)). Conversion en MusicXML possible."
+                }
+            } catch {
+                message = "Téléchargement impossible : \(error.localizedDescription)"
+            }
+            imslpDownloadingIndex = nil
+        }
+    }
+
+    func importPDF(from url: URL) {
+        do {
+            let title = url.deletingPathExtension().lastPathComponent
+            let pdf = try ScoreLibrary.importPDF(from: url, workTitle: title)
+            currentPDF = pdf
+            imslpWorkTitle = title
+            currentMusicXML = ScoreLibrary.existingMusicXML(for: pdf)
+            if let xml = currentMusicXML {
+                importScore(from: xml)
+                omrState = .ready(xml)
+                message = "PDF importé ; MusicXML déjà présent et chargé."
+            } else {
+                score = nil
+                scoreURL = nil
+                omrState = .idle
+                message = "PDF importé. Utilisez « Convertir en MusicXML » pour lancer Audiveris."
+            }
+        } catch {
+            message = "Import du PDF impossible : \(error.localizedDescription)"
+        }
+    }
+
+    func convertCurrentPDF(force: Bool = false) {
+        guard let pdf = currentPDF else {
+            message = "Aucun PDF sélectionné."
+            return
+        }
+        if let existing = ScoreLibrary.existingMusicXML(for: pdf), !force {
+            currentMusicXML = existing
+            importScore(from: existing)
+            omrState = .ready(existing)
+            message = "MusicXML déjà présent : ouvert sans reconversion."
+            return
+        }
+        omrState = .running("Conversion en cours avec Audiveris…")
+        message = nil
+        Task {
+            do {
+                let target = ScoreLibrary.musicXMLURL(for: pdf)
+                _ = try await ScoreOMR.shared.convert(pdf: pdf, musicXML: target)
+                currentMusicXML = target
+                importScore(from: target)
+                omrState = .ready(target)
+                message = "MusicXML créé : \(target.lastPathComponent)"
+            } catch let omr as OMRServiceError {
+                if case .cancelled = omr {
+                    omrState = .idle
+                    message = "Conversion annulée."
+                } else {
+                    omrState = .failed(omr.localizedDescription)
+                    message = omr.localizedDescription
+                }
+            } catch {
+                omrState = .failed(error.localizedDescription)
+                message = error.localizedDescription
+            }
+        }
+    }
+
+    func cancelOMR() {
+        ScoreOMR.shared.cancel()
+        omrState = .idle
+        message = "Annulation demandée."
     }
 
     func importScore(from url: URL) {
@@ -465,16 +609,39 @@ final class SessionEngine: ObservableObject {
             let data = try Data(contentsOf: url)
             let parsed = try MusicXMLParser.parse(data: data)
             score = parsed
-            scoreTitle = parsed.title
+            scoreURL = url
+            currentMusicXML = url
+            if !parsed.title.isEmpty {
+                scoreTitle = parsed.title
+            } else if scoreTitle.isEmpty {
+                scoreTitle = url.deletingPathExtension().lastPathComponent
+            }
+            let siblingPDF = url.deletingPathExtension().appendingPathExtension("pdf")
+            if FileManager.default.fileExists(atPath: siblingPDF.path) {
+                currentPDF = siblingPDF
+            }
             selectedPartIndex = parsed.defaultPartIndex
             if let tempo = parsed.tempo { pieceBPM = tempo }
             pieceFeedback = nil
             pieceStats = nil
             pieceProgress = 0
-            message = "Partition chargée : \(parsed.title)"
+            message = "Partition chargée : \(scoreTitle)"
         } catch {
             message = "Impossible de lire la partition : \(error.localizedDescription)"
         }
+    }
+
+    /// Applique un MusicXML réécrit par MuseScore (ou un autre éditeur) au
+    /// suivi en cours, sans toucher au fichier.
+    func applyEditedScore(_ parsed: Score) {
+        score = parsed
+        if !parsed.title.isEmpty { scoreTitle = parsed.title }
+        selectedPartIndex = min(selectedPartIndex, max(0, parsed.parts.count - 1))
+        if let tempo = parsed.tempo { pieceBPM = tempo }
+        pieceFeedback = nil
+        pieceStats = nil
+        pieceProgress = 0
+        message = "Partition mise à jour depuis MuseScore."
     }
 
     func loadDemoScore() {
@@ -685,7 +852,7 @@ final class SessionEngine: ObservableObject {
                 report.addHand(metrics)
                 if pieceRunning {
                     if metrics.valid {
-                        let presser = metrics.presserFinger.map { $0 == 0 ? "corde à vide" : "\($0)e doigt" } ?? "—"
+                        let presser = metrics.presserFinger.map { $0 == 0 ? "corde à vide" : ($0 == 5 ? "pouce" : "\($0)e doigt") } ?? "—"
                         let confidence = Int((metrics.presserConfidence * 100).rounded())
                         pieceHandStatus = "Main gauche détectée · doigt presseur \(presser) (\(confidence) %)"
                     } else {
@@ -925,7 +1092,11 @@ final class SessionEngine: ObservableObject {
                     $0 * 60 / max(30, pieceBPM)
                 },
                 velocity: feedback.expectedVelocity,
-                scoreArticulation: feedback.expectedArticulation
+                scoreArticulation: feedback.expectedArticulation,
+                stringNumber: assignment.stringNumber,
+                expectedStringNumber: feedback.expectedStringNumber,
+                exactPosition: assignment.exact,
+                isThumbPosition: assignment.isThumbPosition
             )
             report.addPosition(record)
 
@@ -964,7 +1135,10 @@ final class SessionEngine: ObservableObject {
             glideSlope: pendingGlide?.slope,
             isVoluntaryGlide: false,
             contour: event.centsContour,
-            articulation: articulation.rawValue
+            articulation: articulation.rawValue,
+            stringNumber: assignment.stringNumber,
+            exactPosition: assignment.exact,
+            isThumbPosition: assignment.isThumbPosition
         )
         report.addPosition(record)
     }

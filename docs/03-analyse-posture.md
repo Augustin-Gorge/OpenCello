@@ -113,7 +113,7 @@ Objectif : dire **où** est la main, **comment** elle se déplace et **quels doi
 - **Par la caméra** : distance de la main au long de la touche rapportée à des repères calibrés (silhouette de l'instrument, emplacement estimé du chevalet/du sillet, position des épaules du joueur). Sur un 4/4, la 2e position est à ~11 cm du sillet, la 3e à ~14 cm, la 4e à ~17 cm — l'ordre de grandeur est exploitable même avec du bruit.
 - **Par le son** : la note jouée (YIN) + la corde estimée (timbre, ambitus, contexte partition) donnent le doigté probable → la position. Ex. : un mi3 (E3) joué sur la corde de ré implique la **1re position** (1er doigt) ; un do4 (C4) sur la corde de la implique la **2e position** (1er doigt) — la même note sur une autre corde peut correspondre à une autre position, d'où l'intérêt de fusionner avec la caméra.
 - **Note par note (mode morceau, v1.1)** : chaque note appariée par le suivi de partition reçoit une position et un doigt mesurés (moteur visuel + audio, `docs/13` §7) — la matrice doigt × position se remplit ainsi avec le répertoire joué, pas seulement avec des gammes.
-- **Fusion** : l'app combine les deux sources et affiche la position estimée avec une confiance (la caméra tranche quand le son est ambigu : mêmes notes sur cordes différentes).
+- **Fusion** : dès que la **note jouée**, la **corde** et le **doigt appuyé** sont connus, la position est **calculée exactement** : `position = note − corde à vide − décalage du doigt + 1`. La caméra sert à lever l'ambiguïté de corde (ou le doigt), pas à inventer une position. Si la corde n'est pas connue (pas de `<string>` dans le MusicXML, pas de corde précédente stable), l'app affiche les **candidats** (la/ré/sol/do) au lieu d'une fausse certitude.
 
 ### 8.2 Métriques d'un déplacement (shift)
 
@@ -144,8 +144,9 @@ Le profil garde ces chiffres session après session → tendance de progrès par
 
 ### 8.5 Modèle retenu dans le code
 
-- **Cordes à vide** : C2 (36), G2 (43), D3 (50), A3 (57) ; elles sont un choix légitime (doigt 0) et ne reçoivent **aucune position** (`nil`) : elles n'entrent pas dans la matrice doigt × position et ne sont jamais comptées comme un déplacement.
-- **1re position** : doigts 1-4 à 2, 4, 5 et 7 demi-tons de la corde à vide ; chaque position supérieure décale l'ensemble d'un demi-ton. Ce modèle simple sert de **vraisemblance**, pas de vérité : le score final combine l'audio, la continuité, l'indice caméra (P14) et le doigt presseur.
-- **Confiance** : affichée note par note (0-100 %) dans l'onglet Morceau ; une position indéterminée reste `nil` plutôt que d'inventer une valeur.
+- **Cordes à vide** : la (A3, 57), ré (D3, 50), sol (G2, 43), do (C2, 36) ; elles sont un choix légitime (doigt 0) et ne reçoivent **aucune position** (`nil`) : elles n'entrent pas dans la matrice doigt × position et ne sont jamais comptées comme un déplacement.
+- **1re position** : doigts 1-4 à 2, 4, 5 et 7 demi-tons de la corde à vide ; chaque position supérieure décale l'ensemble d'un demi-ton. La position est **exacte** quand la corde et le doigt sont connus, même en positions hautes.
+- **Pouce (doigt 5)** : en position du pouce (7e et au-delà), le pouce est un sillet mobile ; il peut être le doigt presseur. La formule reste `position = note − corde à vide + 1` pour le pouce, et les doigts 1-4 au-dessus utilisent les mêmes décalages. `LeftHandAnalyzer` détecte le pouce quand son bout est plus bas que les autres doigts ; c'est signalé comme **pouce** et non comme corde à vide.
+- **Confiance** : affichée note par note (0-100 %) dans l'onglet Morceau ; une position indéterminée reste `nil` plutôt que d'inventer une valeur. `exact = vrai` seulement si la corde vient du MusicXML/du contexte stable et le doigt de la caméra (ou si la caméra lève l'ambiguïté avec une marge suffisante).
 - **Stockage** : `NotePositionRecord` par note (position, doigt, direction, glide, contour de cents) et `PositionStatsRecord` par séance ; le tout est couvert par `phase7_test`.
 - **Replays** : la position/le doigt estimés sont cités dans le replay (`docs/09` §7) et le piano-roll est reconstruit depuis ces statistiques — aucun audio brut n'est conservé.

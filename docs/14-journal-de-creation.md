@@ -578,6 +578,29 @@ OpenCello/
 - Le test `testsrc` ne prouve que la lecture vidéo/CSV, pas la détection.
 **Suite** : recruter 2-3 violoncellistes, exécuter `docs/19`, annoter et publier les métriques ; si nécessaire, ajouter un sélecteur de SoundFont dans Réglages et un hôte AU pour les bibliothèques commerciales autorisées par l'utilisateur.
 
+### 2026-11-03 — Position exacte (note + doigt + corde), pouce, portée gravée et test vidéo réelle
+
+**Objectif** : répondre à l'exigence « la position doit être exacte, pas ±1 » : la note jouée, le doigt appuyé et la corde suffisent pour calculer la position ; prendre en charge le pouce en position haute ; afficher une vraie portée ; tester sur une vidéo de violoncellistes disponible en ligne.
+**Fait** :
+- **Moteur de position exact** : `PositionTracker` calcule `position = note − corde à vide − décalage du doigt + 1` dès que la corde et le doigt sont connus. Cordes MusicXML 1 = la (A3, 57), 2 = ré (D3, 50), 3 = sol (G2, 43), 4 = do (C2, 36) ; doigts 1-4 à 2/4/5/7 demi-tons en 1re position, chaque position +1 demi-ton ; positions hautes jusqu'à 24. Si la corde manque, l'app affiche les **candidats** la/ré/sol/do et ne prétend pas à l'exactitude ; `exact = true` seulement avec corde + doigt (ou caméra avec marge suffisante).
+- **Pouce** : le pouce est le doigt **5** (sillet mobile en 7e position et au-delà). `LeftHandAnalyzer` le détecte quand son bout est plus bas que les doigts ; `PositionTracker` calcule sa position et les doigts 1-4 au-dessus. `PieceView`, les rapports et les replays affichent « pouce » et « position du pouce Xe ».
+- **MusicXML** : parsing de `<string>` (corde) en plus de `<fingering>` ; `FollowFeedback.expectedStringNumber`/`expectedFingering` ; `NotePositionRecord` conserve corde, corde attendue, exactitude et pouce.
+- **Portée gravée** : `ReplayStaffXML` génère un fragment MusicXML monophonique à partir du moment (mesures, hauteurs, durées quantifiées, articulations) ; `ReplayStaffView` l'affiche avec **swift-sheet-music** (`ScoreView`), avec repli piano-roll sur macOS 14 ou en cas d'échec. Le fragment a été ouvert dans **MuseScore 4** (installation locale) : import/gravure OK. L'atelier de partition de l'autre chantier utilise MuseScore pour l'édition ; le replay garde un rendu embarqué pour ne pas dépendre de MuseScore.
+- **Test vidéo réelle** : extrait de 30 s de la vidéo **domaine public** *Alisa Weilerstein and Sujari Britt — Boccherini, Sonata for Two Cellos* (Wikimedia Commons), 1280×720, deux violoncellistes. Harnais `fixed_frame_test` : 310 frames à 15 fps, corps 99,4 %, mains 58,4 %, angle valide 30,3 % (moyenne 21,1°, max 60,3°), presseur 4 majoritaire, pouce 42 frames. Après filtre de plausibilité (angle > 75° rejeté), A19 est passé de 54,8 % à 26,8 % et l'angle max de 160,7° à 60,3°.
+**Fichiers** : `OpenCello/PositionTracker.swift`, `LeftHandAnalyzer.swift`, `MusicXMLParser.swift`, `ScoreFollower.swift`, `ProgressStore.swift`, `SessionEngine.swift`, `ReplayKit.swift`, `ReplayView.swift`, `PieceView.swift`, `ReportAnalysis.swift` ; `tools/qa/phase7_main.swift`, `fixed_frame_main.swift` ; `docs/03`, `docs/10`, `docs/13`, `docs/19`, `README.md` ; fichiers de l'atelier de partition (`ScoreLibrary`, `ScoreOMR`, `ScoreStudioModel`, `ScoreStudioView`, `OpenCelloApp`, `project.pbxproj`, `Package.resolved`) nécessaires au build de la portée.
+**Tests** :
+- `xcodebuild … build` → **BUILD SUCCEEDED**, aucune warning Swift.
+- `phase7_test` → `PHASE7: OK` : position 60 → 4e/doigt 4 exacte via caméra, 62 + corde la + doigt 1 → 4e exacte, 64 + pouce + corde la → pouce 8e exacte, pouce détecté comme doigt presseur, corde 3 lue, portée 3 notes valide.
+- `mxml_test` 5/5 ; `v1_test` 29 exercices + PDF/pack OK.
+- `ReplayStaffXML` chargé par `SheetMusic.loadScore` puis gravé par MuseScore 4 ; rendu `ScoreView` vérifié en image.
+- Vidéo publique : métriques ci-dessus ; **aucune annotation humaine**, donc ce n'est pas une validation des seuils.
+**Limites / risques** :
+- L'exactitude dépend de la **corde** : sans `<string>` MusicXML ni corde stable, l'app montre des candidats ; elle ne peut pas deviner la corde par la seule hauteur.
+- Le doigt presseur reste une heuristique caméra ; une erreur de doigt fausse la position « exacte ». Le pouce est détecté par position du bout, avec confiance.
+- La vidéo publique est un cadre large à deux instrumentistes : faible détection des mains (58 %), pas une validation. Le protocole `docs/19` exige un cadre serré sur une main.
+- Le rendu de portée intégré dépend de swift-sheet-music (macOS 15) ; macOS 14 garde le piano-roll. MuseScore reste un outil externe d'édition/validation, pas une dépendance runtime.
+**Suite** : recruter 2-3 violoncellistes en cadre serré, annoter les positions/doigts, mesurer l'exactitude réelle ; ajouter éventuellement un sélecteur de corde manuel quand le MusicXML n'en contient pas.
+
 ---
 
 ## 14. Leçons retenues

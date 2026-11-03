@@ -14,6 +14,8 @@ struct FollowFeedback {
     var expectedGlissando = false
     var expectedVelocity: Int?
     var expectedArticulation: String?
+    var expectedStringNumber: Int?
+    var expectedFingering: Int?
     var progress: Double = 0
     var message = ""
     var isInTune = false
@@ -148,6 +150,8 @@ final class ScoreFollower {
         feedback.expectedGlissando = expected.glissando
         feedback.expectedVelocity = expected.velocity
         feedback.expectedArticulation = expected.scoreArticulation
+        feedback.expectedStringNumber = expected.stringNumber
+        feedback.expectedFingering = expected.fingering
         feedback.isInTune = abs(cents) <= 25
 
         if anchorActual == nil {

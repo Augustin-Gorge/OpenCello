@@ -19,33 +19,69 @@ struct PositionAssignment {
     var position: Int?
     var finger: Int?
     var stringMidi: Int?
+    var stringNumber: Int? = nil
     var confidence: Double = 0
     var isOpenString = false
+    var exact = false
+    var alternatives: [String] = []
+    var isThumbPosition = false
     var direction: ShiftDirection = .same
     var isShift = false
     var fromPosition: Int?
     var fromFinger: Int?
     var cameraHint: Int?
     var source = "audio"
+
+    var stringText: String {
+        switch stringNumber {
+        case 1: return "la"
+        case 2: return "ré"
+        case 3: return "sol"
+        case 4: return "do"
+        default: return "corde —"
+        }
+    }
+
+    var fingerText: String {
+        guard let finger else { return "doigt —" }
+        switch finger {
+        case 0: return "corde à vide"
+        case 5: return "pouce"
+        default: return "\(finger)e doigt"
+        }
+    }
+
+    var positionText: String {
+        guard let position else { return "position —" }
+        return isThumbPosition ? "pouce \(position)e" : "\(position)e position"
+    }
 }
 
-/// Fusionne les candidats audio (corde × position × doigt) avec l'indice
-/// caméra (P14) et la continuité de la main. La corde à vide est traitée
-/// comme un choix (doigt 0), jamais comme une erreur.
+/// Déduit la position **exactement** dès que la corde et le doigt sont connus :
+/// position = note − corde à vide − décalage du doigt + 1.
 ///
-/// Modèle simplifié : en 1re position, les doigts 1-4 sont à 2, 4, 5 et 7
-/// demi-tons de la corde à vide ; chaque position supérieure décale l'ensemble
-/// d'un demi-ton. La résolution annoncée est d'environ ±1 position.
+/// Modèle : cordes 1 = la (A3), 2 = ré (D3), 3 = sol (G2), 4 = do (C2) ;
+/// en 1re position les doigts 1-4 sont à 2, 4, 5 et 7 demi-tons de la corde
+/// à vide, chaque position supérieure décale l'ensemble d'un demi-ton.
+/// Le pouce (doigt 5) est traité comme un sillet mobile en position haute
+/// (7e et au-delà), avec les mêmes décalages pour les doigts au-dessus.
 final class PositionTracker {
     private struct Candidate {
+        let stringNumber: Int
         let stringMidi: Int
-        let position: Int
         let finger: Int
+        let position: Int
         let midi: Double
     }
 
-    private let openStrings = [36, 43, 50, 57] // C2, G2, D3, A3
-    private let firstPositionOffsets = [2, 4, 5, 7]
+    // 1 = la (A3), 2 = ré (D3), 3 = sol (G2), 4 = do (C2) — notation MusicXML.
+    private let strings: [(number: Int, midi: Int)] = [
+        (1, 57),
+        (2, 50),
+        (3, 43),
+        (4, 36)
+    ]
+    private let fingerOffsets = [2, 4, 5, 7] // doigts 1-4 en 1re position
 
     private var last: PositionAssignment?
 
@@ -54,21 +90,24 @@ final class PositionTracker {
     }
 
     func assign(midi: Double, hand: LeftHandMetrics?, expected: FollowFeedback?) -> PositionAssignment {
-        let candidates = makeCandidates()
-            .filter { abs($0.midi - midi) <= 0.75 }
+        let target = midi.rounded()
+        let candidates = makeCandidates().filter { abs($0.midi - target) <= 0.6 }
 
         guard !candidates.isEmpty else {
             let assignment = PositionAssignment(
                 position: nil,
-                finger: nil,
+                finger: hand?.presserFinger,
                 stringMidi: nil,
+                stringNumber: nil,
                 confidence: 0.1,
+                exact: false,
+                alternatives: [],
                 direction: .same,
                 isShift: false,
                 fromPosition: last?.position,
                 fromFinger: last?.finger,
                 cameraHint: hand?.positionHint,
-                source: "indéterminé"
+                source: "note hors modèle"
             )
             last = assignment
             return assignment
@@ -78,82 +117,126 @@ final class PositionTracker {
         let hintConfidence = hand?.positionHintConfidence ?? 0
         let presser = hand?.presserFinger
         let presserConfidence = hand?.presserConfidence ?? 0
+        let expectedString = expected?.expectedStringNumber
+        let expectedFinger = expected?.expectedFingering
         let expectedMidi = expected?.expectedMidi
 
-        var scored: [(candidate: Candidate, score: Double)] = []
-        for candidate in candidates {
-            var score = -abs(candidate.midi - midi) * 4.0
-            score -= 0.04 * Double(candidate.position - 1)
-
-            if candidate.finger == 0 {
-                // Une corde à vide n'est pas un « saut de position » : elle ne
-                // subit pas la pénalité de continuité de la main.
-                score += 0.12
-                if hand?.valid == true { score -= 0.08 }
-            } else if let lastPosition = last?.position {
-                score -= 0.30 * Double(abs(candidate.position - lastPosition))
-                if candidate.stringMidi == last?.stringMidi {
-                    score += 0.20
-                }
-                if candidate.finger == last?.finger {
-                    score += 0.04
-                }
+        func score(_ candidate: Candidate) -> Double {
+            var value = -abs(candidate.midi - target) * 10
+            if let expectedString, candidate.stringNumber == expectedString {
+                value += 4
             }
-
-            if candidate.finger > 0 {
-                if let hint, hintConfidence > 0.15 {
-                    score -= 0.28 * Double(abs(candidate.position - hint))
-                }
-
-                if let presser, presserConfidence > 0.25 {
-                    score += candidate.finger == presser ? 0.30 : -0.10
-                }
+            if let expectedFinger, candidate.finger == expectedFinger {
+                value += 3
             }
-
+            if let presser, presserConfidence > 0.25 {
+                value += candidate.finger == presser ? 4 : -1.5
+            }
+            if let hint, hintConfidence > 0.15 {
+                value -= 0.35 * Double(abs(candidate.position - hint))
+            }
             if let expectedMidi, abs(candidate.midi - Double(expectedMidi)) < 0.51 {
-                score += 0.25
+                value += 1
             }
-
-            scored.append((candidate, score))
+            if candidate.finger == 0 {
+                value += 0.5
+                if let presser, presser != 0 { value -= 2 }
+            }
+            if candidate.finger == 5 {
+                value += presser == 5 ? 3 : -1.5
+                if candidate.position < 7 { value -= 2 }
+            }
+            if let lastPosition = last?.position, candidate.finger > 0 {
+                value -= 0.15 * Double(abs(candidate.position - lastPosition))
+                if candidate.stringNumber == last?.stringNumber { value += 0.4 }
+            }
+            return value
         }
 
-        scored.sort { $0.score > $1.score }
-        let best = scored[0]
-        let second = scored.dropFirst().first
-        let margin = second.map { best.score - $0.score } ?? 1.0
-        var confidence = 1 / (1 + exp(-(margin - 0.05) * 5))
-        confidence *= hand?.valid == true ? 0.88 : 0.66
-        if let expectedMidi, abs(best.candidate.midi - Double(expectedMidi)) < 0.51 {
-            confidence += 0.08
-        }
-        confidence = max(0.15, min(0.98, confidence))
+        let scored = candidates
+            .map { (candidate: $0, score: score($0)) }
+            .sorted { $0.score > $1.score }
+        let best = scored[0].candidate
+        let secondScore = scored.dropFirst().first?.score
+        let margin = secondScore.map { scored[0].score - $0 } ?? 5
 
-        let isOpen = best.candidate.finger == 0
+        let stringKnown = expectedString != nil
+        let fingerKnown = (presser != nil && presserConfidence > 0.35) || expectedFinger != nil
+        let isOpen = best.finger == 0
+        let cameraKnown = presser != nil && presserConfidence > 0.35 && hint != nil && hintConfidence > 0.2
+        let cameraDistance = hint.map { abs(best.position - $0) } ?? 99
+        let nextOtherString = scored.dropFirst().first {
+            $0.candidate.stringNumber != best.stringNumber || $0.candidate.finger != best.finger
+        }
+        let nextPositionGap = nextOtherString.map { abs($0.candidate.position - best.position) } ?? 99
+        let cameraExact = cameraKnown && !isOpen && cameraDistance <= 1
+            && (nextPositionGap >= 3 || margin >= 3)
+        let exact = (stringKnown && fingerKnown) || cameraExact
+
+        var confidence: Double
+        if exact {
+            confidence = stringKnown && fingerKnown ? 0.97 : 0.92
+        } else if margin > 2 {
+            confidence = 0.85
+        } else if margin > 0.8 {
+            confidence = 0.7
+        } else {
+            confidence = 0.5
+        }
+        if !stringKnown { confidence *= 0.85 }
+        if !fingerKnown { confidence *= 0.8 }
+        confidence = max(0.2, min(0.99, confidence))
+
+        let isThumb = best.finger == 5
         let direction: ShiftDirection
         if isOpen {
             direction = .same
         } else if let previous = last?.position {
-            if best.candidate.position > previous { direction = .up }
-            else if best.candidate.position < previous { direction = .down }
+            if best.position > previous { direction = .up }
+            else if best.position < previous { direction = .down }
             else { direction = .same }
         } else {
             direction = .same
         }
 
+        let alternatives: [String] = exact ? [] : scored.prefix(4).map { item in
+            let candidate = item.candidate
+            let stringName = stringName(for: candidate.stringNumber)
+            let finger = candidate.finger == 0
+                ? "corde à vide"
+                : (candidate.finger == 5 ? "pouce" : "\(candidate.finger)e doigt")
+            return "\(stringName) · \(finger) · \(candidate.position)e"
+        }
+
+        let source: String
+        if exact && stringKnown && fingerKnown {
+            source = "note + doigt + corde"
+        } else if exact {
+            source = "note + doigt + caméra"
+        } else if stringKnown {
+            source = "note + corde (doigt estimé)"
+        } else if fingerKnown {
+            source = "note + doigt (corde ambiguë)"
+        } else {
+            source = "audio + caméra"
+        }
+
         let assignment = PositionAssignment(
-            // Une corde à vide ne définit pas de position de main : ne pas
-            // inventer un numéro de position ni un déplacement.
-            position: isOpen ? nil : best.candidate.position,
-            finger: best.candidate.finger,
-            stringMidi: best.candidate.stringMidi,
+            position: isOpen ? nil : best.position,
+            finger: best.finger,
+            stringMidi: best.stringMidi,
+            stringNumber: best.stringNumber,
             confidence: confidence,
             isOpenString: isOpen,
+            exact: exact,
+            alternatives: alternatives,
+            isThumbPosition: isThumb,
             direction: direction,
-            isShift: !isOpen && last?.position != nil && best.candidate.position != last?.position,
+            isShift: !isOpen && last?.position != nil && best.position != last?.position,
             fromPosition: isOpen ? nil : last?.position,
             fromFinger: isOpen ? nil : last?.finger,
             cameraHint: hint,
-            source: hand?.valid == true ? "caméra + audio" : "audio"
+            source: source
         )
         last = assignment
         return assignment
@@ -161,23 +244,59 @@ final class PositionTracker {
 
     private func makeCandidates() -> [Candidate] {
         var candidates: [Candidate] = []
-        for open in openStrings {
-            candidates.append(Candidate(stringMidi: open, position: 1, finger: 0, midi: Double(open)))
-            for position in 1...7 {
-                for (index, offset) in firstPositionOffsets.enumerated() {
-                    let midi = Double(open + offset + (position - 1))
+        for string in strings {
+            candidates.append(
+                Candidate(
+                    stringNumber: string.number,
+                    stringMidi: string.midi,
+                    finger: 0,
+                    position: 1,
+                    midi: Double(string.midi)
+                )
+            )
+            for position in 1...24 {
+                for (index, offset) in fingerOffsets.enumerated() {
+                    let midi = string.midi + offset + (position - 1)
+                    if midi <= 108 {
+                        candidates.append(
+                            Candidate(
+                                stringNumber: string.number,
+                                stringMidi: string.midi,
+                                finger: index + 1,
+                                position: position,
+                                midi: Double(midi)
+                            )
+                        )
+                    }
+                }
+            }
+            // Pouce : sillet mobile en position haute (7e et au-delà).
+            for position in 7...24 {
+                let midi = string.midi + (position - 1)
+                if midi <= 108 {
                     candidates.append(
                         Candidate(
-                            stringMidi: open,
+                            stringNumber: string.number,
+                            stringMidi: string.midi,
+                            finger: 5,
                             position: position,
-                            finger: index + 1,
-                            midi: midi
+                            midi: Double(midi)
                         )
                     )
                 }
             }
         }
         return candidates
+    }
+
+    private func stringName(for number: Int) -> String {
+        switch number {
+        case 1: return "la"
+        case 2: return "ré"
+        case 3: return "sol"
+        case 4: return "do"
+        default: return "corde ?"
+        }
     }
 }
 
@@ -186,6 +305,7 @@ final class PositionTracker {
 struct PositionAggregate: Identifiable {
     let position: Int
     let finger: Int
+    let stringNumber: Int?
     let direction: ShiftDirection
     let fromPosition: Int?
     let count: Int
@@ -196,17 +316,28 @@ struct PositionAggregate: Identifiable {
     let meanGlideSlope: Double?
     let parasiteCount: Int
     let parasiteRatio: Double?
+    let exactCount: Int
 
     var id: String {
-        "\(fromPosition ?? 0)-\(position)-\(finger)-\(direction.rawValue)"
+        "\(stringNumber ?? 0)-\(fromPosition ?? 0)-\(position)-\(finger)-\(direction.rawValue)"
     }
 
     var label: String {
-        let fingerText = finger == 0 ? "corde à vide" : "\(finger)e doigt"
-        if let fromPosition, fromPosition != position {
-            return "\(fromPosition)e → \(position)e position · \(fingerText) · \(direction.rawValue)"
+        let stringText: String
+        switch stringNumber {
+        case 1: stringText = "la · "
+        case 2: stringText = "ré · "
+        case 3: stringText = "sol · "
+        case 4: stringText = "do · "
+        default: stringText = ""
         }
-        return "\(position)e position · \(fingerText)"
+        let fingerText = finger == 0 ? "corde à vide" : (finger == 5 ? "pouce" : "\(finger)e doigt")
+        if let fromPosition, fromPosition != position {
+            let positionText = finger == 5 ? "position du pouce \(position)e" : "\(fromPosition)e → \(position)e position"
+            return "\(stringText)\(positionText) · \(fingerText) · \(direction.rawValue)"
+        }
+        let positionText = finger == 5 ? "position du pouce \(position)e" : "\(position)e position"
+        return "\(stringText)\(positionText) · \(fingerText)"
     }
 }
 
@@ -219,7 +350,7 @@ enum PositionAnalysis {
         for note in filtered {
             guard let position = note.position, let finger = note.finger else { continue }
             let direction = ShiftDirection(rawValue: note.direction ?? "") ?? .same
-            let key = "\(note.fromPosition ?? 0)-\(position)-\(finger)-\(direction.rawValue)"
+            let key = "\(note.stringNumber ?? 0)-\(note.fromPosition ?? 0)-\(position)-\(finger)-\(direction.rawValue)"
             groups[key, default: []].append(note)
         }
 
@@ -238,6 +369,7 @@ enum PositionAnalysis {
             return PositionAggregate(
                 position: position,
                 finger: finger,
+                stringNumber: first.stringNumber,
                 direction: direction,
                 fromPosition: first.fromPosition,
                 count: samples.count,
@@ -247,7 +379,8 @@ enum PositionAnalysis {
                 meanGlideMs: glides.isEmpty ? nil : glides.reduce(0, +) / Double(glides.count),
                 meanGlideSlope: slopes.isEmpty ? nil : slopes.reduce(0, +) / Double(slopes.count),
                 parasiteCount: parasites,
-                parasiteRatio: shiftCount > 0 ? Double(parasites) / Double(shiftCount) : nil
+                parasiteRatio: shiftCount > 0 ? Double(parasites) / Double(shiftCount) : nil,
+                exactCount: samples.filter(\.exactPosition).count
             )
         }
         .sorted { lhs, rhs in

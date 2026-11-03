@@ -49,6 +49,10 @@
 		AB0000000000000000000240 /* TechniqueTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000140 /* TechniqueTracker.swift */; };
 		AB0000000000000000000241 /* ReplayKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000141 /* ReplayKit.swift */; };
 		AB0000000000000000000242 /* ReplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000142 /* ReplayView.swift */; };
+		AC0000000000000000000201 /* ScoreLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC0000000000000000000101 /* ScoreLibrary.swift */; };
+		AC0000000000000000000202 /* ScoreOMR.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC0000000000000000000102 /* ScoreOMR.swift */; };
+		AC0000000000000000000204 /* ScoreStudioModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC0000000000000000000104 /* ScoreStudioModel.swift */; };
+		AC0000000000000000000205 /* ScoreStudioView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC0000000000000000000105 /* ScoreStudioView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -95,6 +99,10 @@
 		AB0000000000000000000140 /* TechniqueTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TechniqueTracker.swift; sourceTree = "<group>"; };
 		AB0000000000000000000141 /* ReplayKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplayKit.swift; sourceTree = "<group>"; };
 		AB0000000000000000000142 /* ReplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplayView.swift; sourceTree = "<group>"; };
+		AC0000000000000000000101 /* ScoreLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreLibrary.swift; sourceTree = "<group>"; };
+		AC0000000000000000000102 /* ScoreOMR.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreOMR.swift; sourceTree = "<group>"; };
+		AC0000000000000000000104 /* ScoreStudioModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreStudioModel.swift; sourceTree = "<group>"; };
+		AC0000000000000000000105 /* ScoreStudioView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreStudioView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -169,6 +177,10 @@
 				AB0000000000000000000140 /* TechniqueTracker.swift */,
 				AB0000000000000000000141 /* ReplayKit.swift */,
 				AB0000000000000000000142 /* ReplayView.swift */,
+				AC0000000000000000000101 /* ScoreLibrary.swift */,
+				AC0000000000000000000102 /* ScoreOMR.swift */,
+				AC0000000000000000000104 /* ScoreStudioModel.swift */,
+				AC0000000000000000000105 /* ScoreStudioView.swift */,
 			);
 			path = OpenCello;
 			sourceTree = "<group>";
@@ -191,6 +203,10 @@
 			name = OpenCello;
 			packageProductDependencies = (
 				AB0000000000000000000045 /* Liveline */,
+				AC0000000000000000000045 /* SheetMusic */,
+				AC0000000000000000000046 /* SheetMusicCore */,
+				AC0000000000000000000047 /* SheetMusicLayout */,
+				AC0000000000000000000048 /* SheetMusicUI */,
 			);
 			productName = OpenCello;
 			productReference = AB0000000000000000000011 /* OpenCello.app */;
@@ -222,6 +238,7 @@
 			mainGroup = AB0000000000000000000002;
 			packageReferences = (
 				AB0000000000000000000044 /* XCRemoteSwiftPackageReference "liveline-swift" */,
+				AC0000000000000000000044 /* XCRemoteSwiftPackageReference "swift-sheet-music" */,
 			);
 			productRefGroup = AB0000000000000000000003 /* Products */;
 			projectDirPath = "";
@@ -289,6 +306,10 @@
 				AB0000000000000000000240 /* TechniqueTracker.swift in Sources */,
 				AB0000000000000000000241 /* ReplayKit.swift in Sources */,
 				AB0000000000000000000242 /* ReplayView.swift in Sources */,
+				AC0000000000000000000201 /* ScoreLibrary.swift in Sources */,
+				AC0000000000000000000202 /* ScoreOMR.swift in Sources */,
+				AC0000000000000000000204 /* ScoreStudioModel.swift in Sources */,
+				AC0000000000000000000205 /* ScoreStudioView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -422,6 +443,14 @@
 				minimumVersion = 0.7.0;
 			};
 		};
+		AC0000000000000000000044 /* XCRemoteSwiftPackageReference "swift-sheet-music" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/jiyimeta/swift-sheet-music.git";
+			requirement = {
+				kind = exactVersion;
+				version = 4.27.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -429,6 +458,26 @@
 			isa = XCSwiftPackageProductDependency;
 			package = AB0000000000000000000044 /* XCRemoteSwiftPackageReference "liveline-swift" */;
 			productName = Liveline;
+		};
+		AC0000000000000000000045 /* SheetMusic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AC0000000000000000000044 /* XCRemoteSwiftPackageReference "swift-sheet-music" */;
+			productName = SheetMusic;
+		};
+		AC0000000000000000000046 /* SheetMusicCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AC0000000000000000000044 /* XCRemoteSwiftPackageReference "swift-sheet-music" */;
+			productName = SheetMusicCore;
+		};
+		AC0000000000000000000047 /* SheetMusicLayout */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AC0000000000000000000044 /* XCRemoteSwiftPackageReference "swift-sheet-music" */;
+			productName = SheetMusicLayout;
+		};
+		AC0000000000000000000048 /* SheetMusicUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AC0000000000000000000044 /* XCRemoteSwiftPackageReference "swift-sheet-music" */;
+			productName = SheetMusicUI;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

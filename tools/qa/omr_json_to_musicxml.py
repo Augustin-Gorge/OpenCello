@@ -307,6 +307,13 @@ def score_to_musicxml(doc, keep_grace=False):
             time = ET.SubElement(el, "time")
             ET.SubElement(time, "beats").text = str(attrs["beats"])
             ET.SubElement(time, "beat-type").text = str(attrs["beat_type"])
+        if attrs.get("clef_sign"):
+            clef = ET.SubElement(el, "clef")
+            ET.SubElement(clef, "sign").text = str(attrs["clef_sign"])
+            ET.SubElement(clef, "line").text = str(attrs.get("clef_line", 3))
+            if attrs.get("clef_octave_change"):
+                ET.SubElement(clef, "clef-octave-change").text = str(
+                    attrs["clef_octave_change"])
         return el
 
     def sub_note(parent, note, is_chord):
@@ -343,19 +350,28 @@ def score_to_musicxml(doc, keep_grace=False):
     tempo = doc.get("tempo_bpm")
     for pi, part in enumerate(doc.get("parts", []), start=1):
         p = ET.SubElement(root, "part", {"id": "P%d" % pi})
-        emitted_sig, emitted_fifths = None, None
+        emitted_sig, emitted_fifths, emitted_clef = None, None, None
         first_measure = True
         for measure in part.get("measures", []):
             m = ET.SubElement(p, "measure", {"number": str(measure.get("number", 1))})
             sig = (measure.get("time_beats"), measure.get("time_beat_type"))
             fifths = measure.get("key_fifths")
-            if first_measure or (sig[0] and sig != emitted_sig) or (fifths is not None and fifths != emitted_fifths):
+            clef = (measure.get("clef_sign"), measure.get("clef_line"),
+                    measure.get("clef_octave_change"))
+            clef_changed = bool(clef[0]) and clef != emitted_clef
+            if first_measure or (sig[0] and sig != emitted_sig) \
+                    or (fifths is not None and fifths != emitted_fifths) or clef_changed:
                 attrs = {"fifths": fifths if fifths is not None else 0}
                 if sig[0] and sig[1]:
                     attrs.update(beats=sig[0], beat_type=sig[1])
+                if clef[0]:
+                    attrs.update(clef_sign=clef[0], clef_line=clef[1] or 3,
+                                 clef_octave_change=clef[2])
                 sub_attrib(m, attrs)
                 emitted_sig = sig if sig[0] else emitted_sig
                 emitted_fifths = fifths
+                if clef[0]:
+                    emitted_clef = clef
                 first_measure = False
             if tempo and pi == 1 and measure is part["measures"][0]:
                 ET.SubElement(m, "sound", {"tempo": str(int(tempo))})
@@ -512,6 +528,16 @@ def musicxml_to_document(xml_text):
                         if t is not None:
                             measure["time_beats"] = int(t.find("beats").text)
                             measure["time_beat_type"] = int(t.find("beat-type").text)
+                        clef = el.find("clef")
+                        if clef is not None:
+                            sign = clef.findtext("sign")
+                            line = clef.findtext("line")
+                            if sign and line:
+                                measure["clef_sign"] = sign.strip()
+                                measure["clef_line"] = int(line)
+                                octave = clef.findtext("clef-octave-change")
+                                if octave:
+                                    measure["clef_octave_change"] = int(octave)
                     elif el.tag == "barline":
                         if el.get("location") == "left":
                             if el.find("repeat") is not None and el.find("repeat").get("direction") == "forward":

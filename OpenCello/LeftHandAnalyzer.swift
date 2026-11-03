@@ -132,7 +132,10 @@ final class LeftHandAnalyzer {
         if let elbow = body.leftElbow, let bodyWrist = body.leftWrist {
             let forearm = CGVector(dx: bodyWrist.x - elbow.x, dy: bodyWrist.y - elbow.y)
             let axis = CGVector(dx: middleTip.x - wrist.x, dy: middleTip.y - wrist.y)
-            if let angle = signedAngle(forearm, axis) {
+            if let angle = signedAngle(forearm, axis), abs(angle) <= 75 {
+                // Au-delà de ~75°, l'axe main/avant-bras est presque toujours
+                // une erreur de landmarks (occlusion, main de l'autre côté) :
+                // on préfère ne pas mesurer plutôt que produire un faux A17.
                 metrics.handAngleDegrees = abs(angle)
                 metrics.signedHandAngleDegrees = angle
                 metrics.valid = true
@@ -159,9 +162,9 @@ final class LeftHandAnalyzer {
         metrics.positionHint = position.position
         metrics.positionHintConfidence = position.confidence
 
-        metrics.flags["A17"] = (metrics.handAngleDegrees ?? 0) > thresholds.handAngleLimit
-        metrics.flags["A18"] = metrics.thumbHypothesis
-        metrics.flags["A19"] = (metrics.fingerSpeedP90 ?? 0) > thresholds.fingerSpeedLimit
+        metrics.flags["A17"] = metrics.valid && (metrics.handAngleDegrees ?? 0) > thresholds.handAngleLimit
+        metrics.flags["A18"] = metrics.valid && metrics.thumbHypothesis
+        metrics.flags["A19"] = metrics.valid && (metrics.fingerSpeedP90 ?? 0) > thresholds.fingerSpeedLimit
 
         return metrics
     }
@@ -248,6 +251,15 @@ final class LeftHandAnalyzer {
             return (candidates.first?.finger, candidates.isEmpty ? 0 : 0.25)
         }
         let sorted = candidates.sorted { $0.point.y < $1.point.y }
+        if let thumb = hand.point(.thumbTip),
+           let lowest = sorted.first?.point,
+           thumb.y < lowest.y - handSpan * 0.08 {
+            // En position du pouce, le pouce est posé sur la corde, souvent
+            // plus bas que les doigts : il devient le doigt presseur (5).
+            let gap = lowest.y - thumb.y
+            let confidence = min(0.9, max(0.35, gap / max(0.01, handSpan * 0.25)))
+            return (5, confidence)
+        }
         let gap = abs(sorted[1].point.y - sorted[0].point.y)
         let confidence = min(0.9, max(0.2, gap / max(0.01, handSpan * 0.35)))
         return (sorted[0].finger, confidence)

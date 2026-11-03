@@ -113,7 +113,35 @@ puis exporter le rapport JSON et vérifier :
 - Code participant uniquement (P01…), pas de nom dans les CSV.
 - Ne pas publier les vidéos sans accord explicite.
 
-## 8. Ce qui reste à faire
+## 8. Premier test sur une vidéo publique (3 novembre 2026)
+
+Une vidéo **du domaine public** a été utilisée pour vérifier le harnais, sans
+prétendre à une validation : *Alisa Weilerstein and Sujari Britt — Boccherini,
+Sonata for Two Cellos, 1st movement* (Wikimedia Commons, 1280×720, cadre large,
+deux violoncellistes). Extrait de 30 s, 310 frames échantillonnées à 15 fps.
+
+| Métrique | Résultat |
+|---|---|
+| Corps détecté | 99,4 % |
+| Mains détectées | 58,4 % |
+| Main gauche analysable | 58,4 % |
+| Angle P11 valide | 30,3 % (moyenne 21,1°, max 60,3°) |
+| Doigt presseur | 1:6 · 2:13 · 3:3 · 4:117 · 5 (pouce):42 |
+| A17 | 16,8 % |
+| A19 | 26,8 % |
+| A18 (hypothèse) | 12,6 % |
+
+Lecture : le **cadre large** (deux instrumentistes, mains petites) explique la
+faible détection des mains et de l'angle ; les seuils A17/A19 ne sont pas
+validés par ce test. Le filtre de plausibilité (angle > 75° rejeté) a fait
+passer A19 de 54,8 % à 26,8 % et l'angle max de 160,7° à 60,3°. Une vidéo
+cadrée sur **une seule main gauche** est nécessaire pour le protocole réel.
+
+Le MusicXML de portée généré par `ReplayStaffXML` a aussi été ouvert dans
+**MuseScore 4** (installation locale) : import et gravure OK, ce qui valide le
+fragment produit avant affichage dans l'app.
+
+## 9. Ce qui reste à faire
 
 - Recruter 2-3 violoncellistes (niveaux différents) et exécuter le script.
 - Annoter les frames et calculer les métriques ; consigner les résultats dans

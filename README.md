@@ -115,7 +115,8 @@ Tout le code est dans `OpenCello/` (SwiftUI, macOS 14+) :
 ### Son de violoncelle des replays
 
 - **Par défaut** : échantillonneur `AVAudioUnitSampler` + banque DLS fournie par macOS
-  (`gs_instruments.dls`, programme General MIDI 42 « Cello »), sans fichier à embarquer.
+  (`gs_instruments.dls`, programme General MIDI 42 « Cello »), sans fichier à embarquer,
+  avec **EQ de caisse + réverbération de salle**.
 - **Meilleure qualité** : déposer un SoundFont personnel dans
   `~/Library/Application Support/OpenCello/Instruments/cello.sf2` ; il est chargé en priorité.
 - **Repli** : synthèse PCM physique (harmoniques, formants de caisse, souffle d'archet) si

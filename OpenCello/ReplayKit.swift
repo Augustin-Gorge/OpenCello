@@ -560,6 +560,9 @@ final class ReplayAudioEngine: ObservableObject {
     private let engine = AVAudioEngine()
     private let player = AVAudioPlayerNode()
     private let sampler = AVAudioUnitSampler()
+    private let instrumentMixer = AVAudioMixerNode()
+    private let eq = AVAudioUnitEQ(numberOfBands: 2)
+    private let reverb = AVAudioUnitReverb()
     private let sampleRate = ReplaySynth.defaultSampleRate
     private var sequencer: AVAudioSequencer?
     private var configured = false
@@ -600,10 +603,30 @@ final class ReplayAudioEngine: ObservableObject {
         guard !configured else { return }
         engine.attach(player)
         engine.attach(sampler)
+        engine.attach(instrumentMixer)
+        engine.attach(eq)
+        engine.attach(reverb)
+
+        // Chaîne : instrument → EQ de caisse → réverbération de salle → mixage.
         if let format = AVAudioFormat(standardFormatWithSampleRate: sampleRate, channels: 1) {
-            engine.connect(player, to: engine.mainMixerNode, format: format)
+            engine.connect(player, to: instrumentMixer, format: format)
         }
-        engine.connect(sampler, to: engine.mainMixerNode, format: nil)
+        engine.connect(sampler, to: instrumentMixer, format: nil)
+        engine.connect(instrumentMixer, to: eq, format: nil)
+        engine.connect(eq, to: reverb, format: nil)
+        engine.connect(reverb, to: engine.mainMixerNode, format: nil)
+
+        let low = eq.bands[0]
+        low.filterType = .lowShelf
+        low.frequency = 220
+        low.gain = 2.0
+        let high = eq.bands[1]
+        high.filterType = .highShelf
+        high.frequency = 3200
+        high.gain = -1.5
+        reverb.loadFactoryPreset(.mediumHall)
+        reverb.wetDryMix = 14
+
         configured = true
         loadInstrument()
     }

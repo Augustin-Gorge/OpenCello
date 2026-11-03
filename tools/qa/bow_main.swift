@@ -89,5 +89,28 @@ struct BowTest {
         ) {
             print("EVAL contact05:", String(format: "%.2f", evaluation.contact), "zoneOK", evaluation.zoneOK)
         }
+
+        let vectorizer = BowVectorizer()
+        func vector(offset: CGFloat, contact: Double, time: TimeInterval) -> BowVector {
+            let evaluation = BowEvaluation(
+                angleDeviation: 2,
+                contact: contact,
+                contactPoint: CGPoint(x: 0.5, y: 0.5),
+                angleOK: true,
+                zoneOK: true,
+                line: BowLine(
+                    start: CGPoint(x: 0.4 + offset, y: 0.5),
+                    end: CGPoint(x: 0.6 + offset, y: 0.5)
+                ),
+                confidence: 0.9
+            )
+            return vectorizer.update(evaluation, timestamp: time)
+        }
+        _ = vector(offset: 0.00, contact: 0.2, time: 1.0)
+        _ = vector(offset: 0.01, contact: 0.2, time: 1.1)
+        let moving = vector(offset: 0.02, contact: 0.2, time: 1.2)
+        print("VECTOR:", moving.zone.rawValue, moving.motion.rawValue, String(format: "speed %.3f", moving.speed))
+        let bridge = vector(offset: 0.03, contact: 0.8, time: 1.3)
+        print("VECTOR zone chevalet:", bridge.zone.rawValue)
     }
 }

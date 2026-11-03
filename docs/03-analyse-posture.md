@@ -72,6 +72,8 @@ Le papier Purdue est la référence :
 
 Zones d'intérêt (définition Purdue) : **zone de jeu** = bande comprise entre le **chevalet** et le **bord inférieur de la touche** ; la perpendicularité se mesure **au point d'intersection** archet/cordes.
 
+> **Implémentation (3 novembre 2026)** : `BowGeometry` vectorise l'archet (segment, angle, point de contact, `contactPoint` entre touche et chevalet) ; `BowVectorizer` suit le vecteur entre frames pour estimer le **sens aller/retour**, la **vitesse** et les **changements de direction**. L'overlay affiche une flèche colorée par zone (orange = touche, vert = milieu, bleu = chevalet) et un point de contact. Le rapport agrège le temps passé sur la touche/au milieu/près du chevalet, l'angle moyen et les changements de direction. Le profil 2D ne permet pas de nommer poussé/tiré sans repère du talon : l'app parle de **sens aller/retour**.
+
 ## 5. Pipeline caméra (détails d'implémentation)
 
 1. **Cadrage guidé** : à la première utilisation, afficher une silhouette/zone cible à l'écran (« reculez/rapprochez-vous, tournez la caméra ») — répond au défaut « friction au setup » relevé par les experts Purdue. Deux vues possibles : **frontale** (posture générale) ou **de profil** (archet/cordes). MVP : frontale (posture) + option profil (archet).

@@ -96,6 +96,7 @@ swiftc -O -o build/qa/phase7_test \
   OpenCello/PositionTracker.swift OpenCello/TechniqueTracker.swift OpenCello/ReplayKit.swift \
   OpenCello/NoteSegmenter.swift OpenCello/SpectralAnalyzer.swift OpenCello/VibratoAnalyzer.swift \
   OpenCello/MicrophoneManager.swift OpenCello/PitchTracker.swift \
+  OpenCello/LineDetector.swift OpenCello/BowGeometry.swift \
   OpenCello/ProgressStore.swift OpenCello/ExerciseCatalog.swift OpenCello/AppSettings.swift \
   OpenCello/PostureRules.swift OpenCello/NoteFeedback.swift OpenCello/Articulation.swift \
   OpenCello/StatsKit.swift OpenCello/ReportAnalysis.swift OpenCello/ScoreFollower.swift \

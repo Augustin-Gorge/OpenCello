@@ -106,6 +106,14 @@ final class ScoreOMR: @unchecked Sendable {
         }
         stateQueue.sync { cancelled = false }
 
+        // Évite qu'App Nap ralentisse fortement Audiveris quand l'app est en
+        // arrière-plan (constaté : ~2 min au lieu de ~14 s).
+        let activity = ProcessInfo.processInfo.beginActivity(
+            options: [.userInitiated, .idleSystemSleepDisabled],
+            reason: "Conversion OMR avec Audiveris"
+        )
+        defer { ProcessInfo.processInfo.endActivity(activity) }
+
         let fm = FileManager.default
         let work = fm.temporaryDirectory
             .appendingPathComponent("opencello-omr-\(UUID().uuidString)", isDirectory: true)
@@ -132,14 +140,31 @@ final class ScoreOMR: @unchecked Sendable {
         }
 
         let source = try Self.findMusicXML(in: work, log: log)
-        try Self.copy(source, to: musicXML)
+
+        // Écriture atomique : on valide une copie temporaire avant de
+        // remplacer le MusicXML existant (une sortie Audiveris invalide ne
+        // doit jamais détruire une partition déjà valide).
+        let destinationFolder = musicXML.deletingLastPathComponent()
+        try fm.createDirectory(at: destinationFolder, withIntermediateDirectories: true)
+        let temporary = destinationFolder
+            .appendingPathComponent(".opencello-omr-\(UUID().uuidString).musicxml")
+        defer { try? fm.removeItem(at: temporary) }
+        if fm.fileExists(atPath: temporary.path) {
+            try fm.removeItem(at: temporary)
+        }
+        try fm.copyItem(at: source, to: temporary)
 
         let document = try XMLDocument(
-            contentsOf: musicXML,
+            contentsOf: temporary,
             options: [.nodeLoadExternalEntitiesNever]
         )
         guard document.rootElement()?.name == "score-partwise" else {
             throw OMRServiceError.noOutput(log: log)
+        }
+        if fm.fileExists(atPath: musicXML.path) {
+            _ = try fm.replaceItemAt(musicXML, withItemAt: temporary)
+        } else {
+            try fm.moveItem(at: temporary, to: musicXML)
         }
         return log
     }
@@ -156,6 +181,7 @@ final class ScoreOMR: @unchecked Sendable {
         let process = Process()
         process.executableURL = executable
         process.arguments = arguments
+        process.qualityOfService = .userInitiated
         let handle = try FileHandle(forWritingTo: logURL)
         process.standardOutput = handle
         process.standardError = handle
@@ -265,19 +291,6 @@ final class ScoreOMR: @unchecked Sendable {
             throw OMRServiceError.noOutput(log: log)
         }
         return best
-    }
-
-    private static func copy(_ source: URL, to destination: URL) throws {
-        let fm = FileManager.default
-        try fm.createDirectory(
-            at: destination.deletingLastPathComponent(),
-            withIntermediateDirectories: true
-        )
-        if source.standardizedFileURL == destination.standardizedFileURL { return }
-        if fm.fileExists(atPath: destination.path) {
-            try fm.removeItem(at: destination)
-        }
-        try fm.copyItem(at: source, to: destination)
     }
 
     private static func size(of url: URL) -> Int {

@@ -292,7 +292,7 @@ struct PieceView: View {
             allowsMultipleSelection: false
         ) { result in
             if case .success(let urls) = result, let url = urls.first {
-                engine.importScore(from: url)
+                engine.importMusicXML(from: url)
             }
         }
         .fileImporter(

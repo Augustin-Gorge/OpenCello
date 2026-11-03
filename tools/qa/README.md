@@ -78,6 +78,7 @@ swiftc -O -o build/qa/phase7_test \
   OpenCello/PositionTracker.swift OpenCello/TechniqueTracker.swift OpenCello/ReplayKit.swift \
   OpenCello/NoteSegmenter.swift OpenCello/SpectralAnalyzer.swift OpenCello/VibratoAnalyzer.swift \
   OpenCello/MicrophoneManager.swift OpenCello/PitchTracker.swift \
+  OpenCello/LineDetector.swift OpenCello/BowGeometry.swift \
   OpenCello/ProgressStore.swift OpenCello/ExerciseCatalog.swift OpenCello/AppSettings.swift \
   OpenCello/PostureRules.swift OpenCello/NoteFeedback.swift OpenCello/Articulation.swift \
   OpenCello/StatsKit.swift OpenCello/ReportAnalysis.swift OpenCello/ScoreFollower.swift \
@@ -146,7 +147,24 @@ python3 tools/qa/omr_pipeline.py partition.pdf --out build/qa/omr_out
 
 # Rendu + comparaison seulement (sans Ollama)
 python3 tools/qa/omr_pipeline.py partition.pdf --out build/qa/omr_out --skip-llm
+
+# Service de conversion utilisé par l'app (Audiveris externe requis) : PDF → MusicXML
+swiftc -O -o build/qa/omr_service_test OpenCello/ScoreOMR.swift tools/qa/omr_service_test.swift
+./build/qa/omr_service_test build/qa/bwv1007_p1.pdf /tmp/omr_service.musicxml
+# → 41 mesures, 232 861 octets, ~14 s sur une page ; PDF IMSLP complet 5 pages ~78 s
+
+# Debug app : ouvrir directement l'atelier d'une partition
+open build/Build/Products/Debug/OpenCello.app --args --score-studio "/chemin/partition.musicxml"
+
+# Debug app : charger une œuvre IMSLP, télécharger un PDF et convertir (Audiveris)
+open build/Build/Products/Debug/OpenCello.app --args \
+  --imslp-work "Cello Suite No.1 in G major, BWV 1007 (Bach, Johann Sebastian)" \
+  --imslp-download BWV1007.pdf --omr
 ```
+
+L'aperçu intégré utilise **swift-sheet-music** (SPM MIT, macOS 15) ; l'édition est
+déléguée à **MuseScore 4** (GPL, externe) : MusicXML → `.mscz`, puis reconversion
+automatique à chaque ⌘S. Audiveris (AGPL) et MuseScore ne sont jamais empaquetés.
 
 Sorties : `score.musicxml` (validé XSD MusicXML 4.0) et `score.json` ; tout le
 récit (erreurs détectées, éditions appliquées, comparaisons) va sur la

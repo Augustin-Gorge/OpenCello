@@ -25,6 +25,14 @@ struct BowRecord: Codable {
     let frames: Int
     let goodAngle: Int
     let goodZone: Int
+    // Vectorisation de l'archet (v1.1) : optionnel pour relire l'historique.
+    var meanAngleDeviation: Double? = nil
+    var meanContact: Double? = nil
+    var meanSpeed: Double? = nil
+    var tastoRatio: Double? = nil
+    var middleRatio: Double? = nil
+    var ponticelloRatio: Double? = nil
+    var directionChanges: Int? = nil
 }
 
 // MARK: - Main gauche, positions et techniques (v1.1)
@@ -268,6 +276,8 @@ struct SessionRecord: Codable, Identifiable {
     var replayMoments: [ReplayMoment]? = nil
     // Ancien champ Markdown : conservé uniquement pour relire l'historique v1.0.
     var reportMarkdown: String? = nil
+    /// Vidéo locale opt-in de la séance (aucun envoi).
+    var videoPath: String? = nil
 
     /// Décodage manuel (dans l'extension ci-dessous) : les champs optionnels
     /// ajoutés après la v1.0 doivent être lus avec `decodeIfPresent`.
@@ -337,6 +347,7 @@ extension SessionRecord {
         technique = try container.decodeIfPresent(TechniqueRecord.self, forKey: .technique)
         replayMoments = try container.decodeIfPresent([ReplayMoment].self, forKey: .replayMoments)
         reportMarkdown = try container.decodeIfPresent(String.self, forKey: .reportMarkdown)
+        videoPath = try container.decodeIfPresent(String.self, forKey: .videoPath)
     }
 }
 

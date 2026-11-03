@@ -74,9 +74,12 @@ struct ContentView: View {
             if !engine.settings.hasSeenOnboarding {
                 showOnboarding = true
             }
+            #if DEBUG
+            applyDebugLaunchArguments()
+            #endif
         }
         .sheet(isPresented: $showSettings) {
-            SettingsView(settings: engine.settings) {
+            SettingsView(settings: engine.settings, camera: engine.camera) {
                 engine.applySettings()
             }
         }
@@ -89,6 +92,31 @@ struct ContentView: View {
             HelpView()
         }
     }
+
+    #if DEBUG
+    /// Arguments de test Debug : `--piece` ouvre le mode morceau,
+    /// `--imslp-work "<titre>"` y charge aussi la liste des PDF IMSLP.
+    private func applyDebugLaunchArguments() {
+        let arguments = CommandLine.arguments
+        if arguments.contains("--piece") {
+            engine.switchMode(to: .piece)
+        }
+        if let index = arguments.firstIndex(of: "--imslp-download"),
+           arguments.indices.contains(index + 1) {
+            engine.debugAutoDownloadName = arguments[index + 1]
+        }
+        if arguments.contains("--omr") {
+            engine.debugAutoConvert = true
+        }
+        if let index = arguments.firstIndex(of: "--imslp-work"),
+           arguments.indices.contains(index + 1) {
+            engine.switchMode(to: .piece)
+            engine.selectIMSLPTitle(
+                IMSLPWork(title: arguments[index + 1], snippet: nil)
+            )
+        }
+    }
+    #endif
 }
 
 // MARK: - Séance libre plein écran
@@ -446,14 +474,35 @@ struct FreeSessionView: View {
                         .font(.title3.monospacedDigit())
                         .foregroundStyle(feedback.zoneOK ? .green : .orange)
                 }
+                if let vector = engine.bowVector {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Zone").font(.caption2).foregroundStyle(.secondary)
+                        Text(vector.zone.rawValue)
+                            .font(.callout.weight(.semibold))
+                            .foregroundStyle(vector.zone == .middle ? .green : .orange)
+                    }
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Sens").font(.caption2).foregroundStyle(.secondary)
+                        Text(vector.motion.rawValue)
+                            .font(.callout.monospacedDigit())
+                            .foregroundStyle(.secondary)
+                    }
+                }
                 Spacer()
                 Text(feedback.angleOK && feedback.zoneOK ? "OK" : "À corriger")
                     .font(.caption.bold())
                     .foregroundStyle(feedback.angleOK && feedback.zoneOK ? .green : .orange)
             }
-            Text(String(format: "Confiance %.0f %% · zone chevalet-touche", feedback.confidence * 100))
-                .font(.caption2)
-                .foregroundStyle(.secondary)
+            if let vector = engine.bowVector {
+                Text(String(format: "Vitesse %.2f · contact %.0f %% · confiance %.0f %%",
+                            vector.speed, vector.contact * 100, vector.confidence * 100))
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            } else {
+                Text(String(format: "Confiance %.0f %% · zone chevalet-touche", feedback.confidence * 100))
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
         }
     }
 
@@ -690,6 +739,42 @@ struct BowOverlay: View {
                         path.addLine(to: point(feedback.line.end))
                         let color: Color = feedback.angleOK && feedback.zoneOK ? .green : .orange
                         context.stroke(path, with: .color(color), lineWidth: 3)
+                    }
+
+                    if let vector = engine.bowVector {
+                        let color: Color
+                        switch vector.zone {
+                        case .fingerboard: color = .orange
+                        case .middle: color = .green
+                        case .bridge: color = .blue
+                        }
+                        var path = Path()
+                        path.move(to: point(vector.start))
+                        path.addLine(to: point(vector.end))
+                        context.stroke(path, with: .color(color), lineWidth: 4)
+
+                        // Pointe de flèche : sens du mouvement de l'archet.
+                        let a = point(vector.start)
+                        let b = point(vector.end)
+                        let angle = atan2(b.y - a.y, b.x - a.x)
+                        let head: CGFloat = 12
+                        var arrow = Path()
+                        arrow.move(to: b)
+                        arrow.addLine(to: CGPoint(
+                            x: b.x - head * cos(angle - .pi / 6),
+                            y: b.y - head * sin(angle - .pi / 6)
+                        ))
+                        arrow.move(to: b)
+                        arrow.addLine(to: CGPoint(
+                            x: b.x - head * cos(angle + .pi / 6),
+                            y: b.y - head * sin(angle + .pi / 6)
+                        ))
+                        context.stroke(arrow, with: .color(color), lineWidth: 3)
+
+                        // Point de contact réel entre touche et chevalet.
+                        let contact = point(vector.contactPoint)
+                        let dot = Path(ellipseIn: CGRect(x: contact.x - 5, y: contact.y - 5, width: 10, height: 10))
+                        context.fill(dot, with: .color(color))
                     }
 
                     for calibrationPoint in engine.bowCalibrationPoints {

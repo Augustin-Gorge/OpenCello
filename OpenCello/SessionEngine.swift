@@ -74,6 +74,11 @@ final class SessionEngine: ObservableObject {
     @Published var lastNoteFeedback: NoteFeedback?
     @Published var recommendedExerciseIDs: [String] = []
 
+    #if DEBUG
+    var debugAutoDownloadName: String?
+    var debugAutoConvert = false
+    #endif
+
     // Mode profil (archet/cordes)
     @Published var analysisMode: AnalysisMode = .posture
     @Published var bowReference: BowReference?
@@ -81,6 +86,7 @@ final class SessionEngine: ObservableObject {
     @Published var bowCalibrationPoints: [CGPoint] = []
     @Published var bowLines: [BowLine] = []
     @Published var bowFeedback: BowEvaluation?
+    @Published var bowVector: BowVector?
     @Published var bowAlert: String?
     @Published var lastArticulation: Articulation?
 
@@ -104,6 +110,7 @@ final class SessionEngine: ObservableObject {
 
     // Phase 7 (v1.1) : main gauche, positions, techniques, replays.
     private let leftHandAnalyzer = LeftHandAnalyzer()
+    private let bowVectorizer = BowVectorizer()
     private let positionTracker = PositionTracker()
     private let techniqueTracker = TechniqueTracker()
     private var currentHandMetrics: LeftHandMetrics?
@@ -113,6 +120,7 @@ final class SessionEngine: ObservableObject {
     private var pendingGlideVoluntary = false
     private var pitchSamples: [PitchSample] = []
     private var pieceSessionStart: TimeInterval = 0
+    private var sessionVideoURL: URL?
 
     init() {
         camera.onStatus = { [weak self] text in
@@ -208,6 +216,8 @@ final class SessionEngine: ObservableObject {
         recentNoteStarts = []
         lastArticulation = nil
         motionAnalyzer.reset()
+        bowVectorizer.reset()
+        bowVector = nil
         leftHandAnalyzer.thresholds = PostureRules.handThresholds(for: settings.profile)
         leftHandAnalyzer.reset()
         positionTracker.reset()
@@ -221,6 +231,12 @@ final class SessionEngine: ObservableObject {
         phase = .running
         camera.analysisMode = analysisMode
         camera.start()
+        if settings.recordSessionVideo, let url = SessionVideoStore.makeURL() {
+            sessionVideoURL = url
+            camera.startRecording(to: url)
+        } else {
+            sessionVideoURL = nil
+        }
         mic.start()
     }
 
@@ -264,13 +280,7 @@ final class SessionEngine: ObservableObject {
             noteCents: report.noteCents,
             noteStability: report.noteStability,
             piece: nil,
-            bow: report.bowFrames > 0
-                ? BowRecord(
-                    frames: report.bowFrames,
-                    goodAngle: report.bowGoodAngle,
-                    goodZone: report.bowGoodZone
-                )
-                : nil,
+            bow: report.bowRecord(),
             meanHNR: report.meanHNR,
             meanCentroid: report.meanCentroid,
             meanRMSVariation: report.meanRMSVariation,
@@ -283,7 +293,8 @@ final class SessionEngine: ObservableObject {
             meanVibratoExtent: report.meanVibratoExtent,
             hand: hand,
             positionStats: positionStats,
-            technique: technique
+            technique: technique,
+            videoPath: sessionVideoURL?.path
         )
         progress.add(record)
         refreshRecommendationsFromHistory()
@@ -305,6 +316,7 @@ final class SessionEngine: ObservableObject {
         rms = 0
         lastNoteFeedback = nil
         bowFeedback = nil
+        bowVector = nil
         bowAlert = nil
     }
 
@@ -327,6 +339,7 @@ final class SessionEngine: ObservableObject {
         analysisMode = mode
         camera.analysisMode = mode
         bowFeedback = nil
+        bowVector = nil
         bowAlert = nil
         bowLines = []
         if mode == .bow {
@@ -344,7 +357,9 @@ final class SessionEngine: ObservableObject {
         bowCalibrationPoints = []
         bowCalibrationActive = true
         bowFeedback = nil
+        bowVector = nil
         bowAlert = nil
+        bowVectorizer.reset()
         camera.start()
     }
 
@@ -402,15 +417,16 @@ final class SessionEngine: ObservableObject {
             angleTolerance: 10
         ) else {
             bowFeedback = nil
+            bowVector = nil
             bowAlert = "Archet non détecté — cadrez de profil"
             return
         }
 
+        let vector = bowVectorizer.update(evaluation, timestamp: frame.timestamp)
         bowFeedback = evaluation
+        bowVector = vector
         if phase == .running {
-            report.bowFrames += 1
-            if evaluation.angleOK { report.bowGoodAngle += 1 }
-            if evaluation.zoneOK { report.bowGoodZone += 1 }
+            report.addBow(evaluation, vector: vector, directionChanges: bowVectorizer.directionChanges)
         }
 
         if !evaluation.angleOK {
@@ -492,7 +508,17 @@ final class SessionEngine: ObservableObject {
             }
             if files.isEmpty {
                 imslpFilesError = "Aucun PDF n'est listé sur cette page IMSLP."
+            } else {
+                message = "\(files.count) fichier(s) PDF listé(s) — "
+                    + "privilégiez les éditions « Domaine public »."
             }
+            #if DEBUG
+            if let name = debugAutoDownloadName,
+               let file = imslpFiles.first(where: { $0.name == name }) {
+                debugAutoDownloadName = nil
+                downloadIMSLPFile(file)
+            }
+            #endif
         } catch {
             imslpFiles = []
             imslpFilesError = "Liste des PDF indisponible : \(error.localizedDescription)"
@@ -509,6 +535,15 @@ final class SessionEngine: ObservableObject {
             message = "Sélectionnez d'abord une œuvre IMSLP."
             return
         }
+
+        // Un PDF déjà présent n'est pas retéléchargé (IMSLP peut être
+        // momentanément indisponible) : on réutilise le fichier local.
+        let cached = ScoreLibrary.pdfURL(workTitle: workTitle, fileName: file.name)
+        if FileManager.default.fileExists(atPath: cached.path) {
+            adoptPDF(cached, fileName: file.name)
+            return
+        }
+
         imslpDownloadingIndex = index
         message = "Téléchargement de \(file.name)…"
         Task {
@@ -519,20 +554,30 @@ final class SessionEngine: ObservableObject {
                     workTitle: workTitle,
                     fileName: file.name
                 )
-                currentPDF = pdf
-                currentMusicXML = ScoreLibrary.existingMusicXML(for: pdf)
-                if let xml = currentMusicXML {
-                    importScore(from: xml)
-                    omrState = .ready(xml)
-                    message = "PDF téléchargé ; MusicXML déjà présent et chargé."
-                } else {
-                    omrState = .idle
-                    message = "PDF téléchargé (\(file.name)). Conversion en MusicXML possible."
-                }
+                adoptPDF(pdf, fileName: file.name)
             } catch {
                 message = "Téléchargement impossible : \(error.localizedDescription)"
             }
             imslpDownloadingIndex = nil
+        }
+    }
+
+    private func adoptPDF(_ pdf: URL, fileName: String) {
+        currentPDF = pdf
+        currentMusicXML = ScoreLibrary.existingMusicXML(for: pdf)
+        if let xml = currentMusicXML {
+            importScore(from: xml)
+            omrState = .ready(xml)
+            message = "PDF disponible ; MusicXML déjà présent et chargé."
+        } else {
+            omrState = .idle
+            message = "PDF disponible (\(fileName)). Conversion en MusicXML possible."
+            #if DEBUG
+            if debugAutoConvert {
+                debugAutoConvert = false
+                convertCurrentPDF()
+            }
+            #endif
         }
     }
 
@@ -599,6 +644,27 @@ final class SessionEngine: ObservableObject {
         ScoreOMR.shared.cancel()
         omrState = .idle
         message = "Annulation demandée."
+    }
+
+    /// Import utilisateur d'un MusicXML : copie d'abord dans la bibliothèque
+    /// de l'app (accès en écriture durable), puis chargement pour le suivi.
+    func importMusicXML(from url: URL) {
+        let accessing = url.startAccessingSecurityScopedResource()
+        defer { if accessing { url.stopAccessingSecurityScopedResource() } }
+        do {
+            let data = try Data(contentsOf: url)
+            let title = url.deletingPathExtension().lastPathComponent
+            let destination = try ScoreLibrary.storeMusicXML(
+                data: data,
+                workTitle: title,
+                fileName: url.lastPathComponent
+            )
+            imslpWorkTitle = title
+            currentPDF = nil
+            importScore(from: destination)
+        } catch {
+            message = "Import du MusicXML impossible : \(error.localizedDescription)"
+        }
     }
 
     func importScore(from url: URL) {
@@ -682,6 +748,12 @@ final class SessionEngine: ObservableObject {
 
         camera.analysisMode = .posture
         camera.start()
+        if settings.recordSessionVideo, let url = SessionVideoStore.makeURL() {
+            sessionVideoURL = url
+            camera.startRecording(to: url)
+        } else {
+            sessionVideoURL = nil
+        }
         report.reset(startedAt: Date())
         leftHandAnalyzer.thresholds = PostureRules.handThresholds(for: settings.profile)
         leftHandAnalyzer.reset()
@@ -753,7 +825,8 @@ final class SessionEngine: ObservableObject {
                 hand: hand,
                 positionStats: positionStats,
                 technique: technique,
-                replayMoments: replays.isEmpty ? nil : replays
+                replayMoments: replays.isEmpty ? nil : replays,
+                videoPath: sessionVideoURL?.path
             )
             progress.add(record)
             refreshRecommendationsFromHistory()

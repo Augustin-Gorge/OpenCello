@@ -4,6 +4,7 @@ import AppKit
 
 struct SettingsView: View {
     @ObservedObject var settings: AppSettings
+    @ObservedObject var camera: CameraManager
     var onChange: () -> Void
 
     @Environment(\.dismiss) private var dismiss
@@ -34,6 +35,38 @@ struct SettingsView: View {
                 }
             }
             .formStyle(.grouped)
+
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Caméra").font(.headline)
+                HStack {
+                    Picker("Source", selection: Binding(
+                        get: { camera.selectedCameraID ?? "" },
+                        set: { camera.selectCamera($0.isEmpty ? nil : $0) }
+                    )) {
+                        Text("Automatique").tag("")
+                        ForEach(camera.cameras) { option in
+                            Text(option.name).tag(option.id)
+                        }
+                    }
+                    .frame(maxWidth: 340)
+                    Button("Rafraîchir") { camera.refreshCameras() }
+                }
+                Text("Pour la position exacte, choisis une caméra 3/4 avant-gauche (iPhone en caméra de continuité ou webcam externe), pas la webcam plein face.")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Vidéo des séances").font(.headline)
+                Toggle("Enregistrer la vidéo de chaque séance", isOn: $settings.recordSessionVideo)
+                Text("Opt-in : la vidéo reste dans Movies/OpenCello/Sessions, sans audio ni envoi. Désactive-la pour ne rien enregistrer.")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                Button("Ouvrir le dossier vidéos") {
+                    try? FileManager.default.createDirectory(at: SessionVideoStore.directory, withIntermediateDirectories: true)
+                    NSWorkspace.shared.open(SessionVideoStore.directory)
+                }
+            }
 
             VStack(alignment: .leading, spacing: 4) {
                 Text("Tolérance de justesse : \(Int(settings.intonationTolerance)) cents")
@@ -77,12 +110,13 @@ struct SettingsView: View {
 
             Spacer()
 
-            Text("OpenCello v1.0 — MVP local")
+            Text("OpenCello v1.1 — MVP local")
                 .font(.caption2)
                 .foregroundStyle(.secondary)
         }
         .padding(20)
-        .frame(width: 560, height: 520)
+        .frame(width: 600, height: 680)
+        .onAppear { camera.refreshCameras() }
         .onChange(of: settings.profile) { _, _ in
             onChange()
         }

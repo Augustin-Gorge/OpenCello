@@ -57,7 +57,7 @@ L'application est l'**équivalent open source** des coachs vidéo type *Celloped
 
 ## 5. Non-objectifs (pour rester « simple »)
 
-- Pas de reconnaissance polyphonique complète, pas de partition interactive dans un premier temps.
+- Pas de reconnaissance polyphonique complète, pas d'éditeur de notation intégré : l'édition de partition est déléguée à **MuseScore** (outil externe open source), jamais réimplémentée dans l'app.
 - Pas de remplacement du professeur : l'app est un **complément** de travail personnel.
 - Pas de diagnostic médical : l'app signale des risques, elle ne soigne pas.
 

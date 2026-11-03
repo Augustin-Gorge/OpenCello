@@ -56,12 +56,14 @@
 |---|---|---|---|
 | **Ollama** (serveur + `format: json_schema`) | MIT | Go/C++ | **Choix** : moteur local du pipeline OMR — constrained decoding par schéma JSON (`docs/16`) ; modèles vision (`qwen2.5-vl`, …) et texte, chacun sous sa propre licence |
 | **Audiveris** | **AGPL-3.0** ⚠️ | Java | **Première passe OMR** : PDF → MusicXML/MXL, mature, installé (`/Applications/Audiveris.app`) ; **outil externe en sous-processus uniquement** (jamais lié/distribué : le cœur reste MIT) ; mesuré 97,6 % sur notre fixture |
+| **MuseScore 4** | **GPL-3.0** ⚠️ | C++/Qt | **Éditeur de partition de référence** : toutes les fonctions d'édition (notes, accords, liaisons, nuances, articulations, doigtés, mise en page, lecture). **Outil externe**, jamais embarqué : l'app ouvre le `.mscz` via `NSWorkspace` et utilise la CLI `mscore` pour l'aller-retour MusicXML ↔ MSCZ. `brew install --cask musescore` |
+| **swift-sheet-music** (`jiyimeta/swift-sheet-music`) | **MIT** (code) + Bravura **SIL OFL** | Swift | **Aperçu intégré** MusicXML/.mxl/MSCX en SwiftUI (`SheetMusicUI`), modèle typé et mise en page CoreText ; épinglé **4.27.0** ; ne sait pas **exporter** MusicXML (d'où l'édition déléguée à MuseScore) ; viewer macOS 15 |
 | **PDF2Muse** (enveloppe `oemer`) | MIT (mais `homr` optionnel **AGPL-3.0**) | Python | 2ᵉ candidat de comparaison ; projet jeune, qualité à confirmer par mesure |
 | **LilyPond** | **GPL-3.0** ⚠️ | C++/Scheme | **Outil de développement uniquement** (jamais distribué avec l'app) : grave les fixtures OMR à vérité terrain exacte (`tools/qa/fixtures/*.ly`) — `brew install lilypond` |
 | **MusicXML 4.0 XSD** (W3C) | W3C FSA | — | Validation finale des sorties du pipeline (vendus dans `tools/qa/musicxml_xsd/`) |
 | **OMR-NED** | voir repo | Python | Protocole d'étalonnage (alignement note à note sur dataset SMB) pour choisir modèle/outil |
 
-Règle de compatibilité : le pipeline (`tools/qa`, MIT) ne fait **que lancer** ces outils installés par l'utilisateur et lire leurs fichiers de sortie — pas de lien, pas de distribution, pas de fork.
+Règle de compatibilité : l'app et le pipeline (`tools/qa`, MIT) ne font **que lancer** ces outils installés par l'utilisateur et lire leurs fichiers de sortie — pas de lien, pas de distribution, pas de fork. L'app est MIT ; MuseScore (GPL-3.0), Audiveris (AGPL-3.0) et LilyPond (GPL-3.0) restent des **programmes séparés**, lancés par fichiers/CLI, jamais empaquetés. La police Bravura embarquée par le viewer est sous SIL OFL (redistribution autorisée avec sa notice).
 
 ## 7. Matrice de décision pour notre MVP
 

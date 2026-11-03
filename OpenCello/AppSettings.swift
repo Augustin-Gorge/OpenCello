@@ -42,6 +42,10 @@ final class AppSettings: ObservableObject {
     @Published var hasSeenOnboarding: Bool {
         didSet { defaults.set(hasSeenOnboarding, forKey: Key.onboarding) }
     }
+    /// Opt-in explicite : enregistre la vidéo locale de la séance (aucun envoi).
+    @Published var recordSessionVideo: Bool {
+        didSet { defaults.set(recordSessionVideo, forKey: Key.recordVideo) }
+    }
 
     private let defaults = UserDefaults.standard
 
@@ -51,6 +55,7 @@ final class AppSettings: ObservableObject {
         static let intonation = "settings.intonationTolerance"
         static let stability = "settings.stabilityTolerance"
         static let onboarding = "settings.hasSeenOnboarding"
+        static let recordVideo = "settings.recordSessionVideo"
     }
 
     init() {
@@ -60,5 +65,6 @@ final class AppSettings: ObservableObject {
         intonationTolerance = defaults.object(forKey: Key.intonation) as? Double ?? 25
         stabilityTolerance = defaults.object(forKey: Key.stability) as? Double ?? 15
         hasSeenOnboarding = defaults.bool(forKey: Key.onboarding)
+        recordSessionVideo = defaults.bool(forKey: Key.recordVideo)
     }
 }

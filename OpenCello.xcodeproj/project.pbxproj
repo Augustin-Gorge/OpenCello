@@ -374,6 +374,8 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCameraUsageDescription = "OpenCello utilise la camera pour analyser votre posture pendant la pratique. Toutes les donnees restent sur votre Mac.";
+				INFOPLIST_KEY_NSCameraUseContinuityCameraDeviceType = YES;
+				INFOPLIST_KEY_NSDocumentsFolderUsageDescription = "OpenCello enregistre vos rapports de seance dans Documents/OpenCello. Toutes les donnees restent sur votre Mac.";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "OpenCello - MIT";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "OpenCello utilise le microphone pour analyser votre son (intonation, timbre). Toutes les donnees restent sur votre Mac.";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -398,6 +400,8 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCameraUsageDescription = "OpenCello utilise la camera pour analyser votre posture pendant la pratique. Toutes les donnees restent sur votre Mac.";
+				INFOPLIST_KEY_NSCameraUseContinuityCameraDeviceType = YES;
+				INFOPLIST_KEY_NSDocumentsFolderUsageDescription = "OpenCello enregistre vos rapports de seance dans Documents/OpenCello. Toutes les donnees restent sur votre Mac.";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "OpenCello - MIT";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "OpenCello utilise le microphone pour analyser votre son (intonation, timbre). Toutes les donnees restent sur votre Mac.";
 				LD_RUNPATH_SEARCH_PATHS = (

@@ -2,10 +2,13 @@
 
 ## Prérequis
 
-- macOS 14 (Sonoma) ou plus récent
+- macOS 14 (Sonoma) ou plus récent — l'**aperçu intégré** de partition nécessite macOS 15
 - Xcode 15 ou plus récent (gratuit sur le Mac App Store)
 - Une webcam (ou un iPhone en caméra de continuité) et un micro
-- Une connexion réseau **uniquement** pour la recherche IMSLP (l'analyse reste 100 % locale) et pour le **premier build** (téléchargement de la librairie de graphiques **Liveline** via Swift Package Manager ; ensuite le build est hors ligne)
+- Une connexion réseau **uniquement** pour la recherche IMSLP (l'analyse reste 100 % locale) et pour le **premier build** (téléchargement des paquets Swift **Liveline** et **swift-sheet-music** via Swift Package Manager ; ensuite le build est hors ligne)
+- **Audiveris** pour la conversion PDF → MusicXML (AGPL-3.0, outil **externe** jamais empaqueté) : `https://audiveris.org` ou `/Applications/Audiveris.app`
+- **MuseScore 4** pour l'édition de partition (GPL-3.0, outil **externe** jamais empaqueté) : `brew install --cask musescore` ou `https://musescore.org`
+- Le cœur de l'app reste **MIT** : ces deux outils sont lancés par fichiers/CLI et ne sont pas distribués avec OpenCello.
 
 ## Lancer depuis Xcode
 
@@ -35,18 +38,18 @@ open build/Build/Products/Debug/OpenCello.app
 ## Mode « Morceau »
 
 1. Onglet **Morceau**.
-2. **Chercher une œuvre sur IMSLP** (ex. « Saint-Saëns Cello Sonata ») → **Ouvrir sur IMSLP** pour le PDF.
-3. Importer un **MusicXML** de la partie violoncelle :
-   - MuseScore : Fichier → Exporter → MusicXML (non compressé `.musicxml`) ;
-   - l'app accepte `.musicxml` et `.xml` (pas encore `.mxl`) ;
-   - ou cliquer **Gamme de démo** pour tester immédiatement.
-4. Choisir la **partie** (l'app présélectionne « Cello/Violoncelle »), régler le **tempo de référence**.
-5. **Démarrer le suivi** : note attendue, note entendue, écart en cents, écart rythmique (ms), mesure, progression, **position + doigt estimés** avec leur confiance, aperçu caméra pour cadrer la main gauche ; le bouton **Revoir ça** ouvre le replay du dernier moment.
-6. **Arrêter** : rapport « Morceau » (notes reconnues, % justes, écarts moyens, tempo estimé, positions/déplacements, piqué/glissé, replays) dans l'onglet **Rapports**.
+2. **Chercher une œuvre sur IMSLP** (ex. « Saint-Saëns Cello Sonata »), puis sélectionner l'œuvre : l'app liste ses **fichiers PDF** avec le statut de copyright.
+3. **Télécharger** une édition (domaine public privilégié). Si le MusicXML n'existe pas encore, cliquer **Convertir en MusicXML** : Audiveris (externe) extrait la partition, le MusicXML est écrit dans la bibliothèque de l'app. On peut aussi **importer un PDF** ou un **MusicXML** existant, ou cliquer **Gamme de démo**.
+4. **Voir / modifier** : l'aperçu intégré affiche la partition. **Modifier dans MuseScore** crée le `.mscz` voisin, l'ouvre dans MuseScore, et chaque ⌘S est reconverti automatiquement en MusicXML puis rechargé dans l'app.
+5. Choisir la **partie** (l'app présélectionne « Cello/Violoncelle »), régler le **tempo de référence**.
+6. **Démarrer le suivi** : note attendue, note entendue, écart en cents, écart rythmique (ms), mesure, progression, **position + doigt estimés** avec leur confiance, aperçu caméra pour cadrer la main gauche ; le bouton **Revoir ça** ouvre le replay du dernier moment.
+7. **Arrêter** : rapport « Morceau » (notes reconnues, % justes, écarts moyens, tempo estimé, positions/déplacements, piqué/glissé, replays) dans l'onglet **Rapports**.
 
 ### Format MusicXML attendu
 
 Sous-ensemble « score-partwise » : parties multiples, `divisions`, notes/silences/accords, liaisons, `backup`/`forward`, tempo `sound`, `<glissando>`/`<slide>` et `<fingering>` (référence facultative). Les reprises/voltas ne sont pas encore gérées.
+
+L'import direct d'un `.mxl` **utilisateur** n'est pas encore supporté ; exporter en `.musicxml`. En revanche, le `.mxl` produit par Audiveris est décompressé automatiquement par l'app. L'aperçu intégré nécessite macOS 15 ; sur macOS 14, MuseScore reste disponible pour voir et éditer.
 
 ## Mode « Exercices »
 
@@ -111,7 +114,7 @@ swiftc -O -o build/qa/seed_demo OpenCello/ProgressStore.swift OpenCello/StatsKit
 - YIN naïf O(n²) (suffisant pour l'instant, à optimiser vDSP pour de longues séances).
 - Vue **non miroir** (alignement Vision/image).
 - Pas de sandbox à ce stade ; écriture dans `~/Documents/OpenCello/`. Si sandbox activé plus tard : ajouter l'entitlement réseau client pour IMSLP.
-- Mode morceau : import PDF via le **pipeline OMR local** (`tools/qa/omr_pipeline.py`, `docs/16`) — intégration dans l'app en Phase 8 ; `.mxl` non supporté, reprises/voltas ignorées par le suivi, accords traités séquentiellement, tempo de référence constant.
+- Mode morceau : conversion PDF → MusicXML **dans l'app** via **Audiveris** (externe, AGPL) ; édition **déléguée à MuseScore** (externe, GPL) ; aperçu intégré macOS 15 ; import direct `.mxl` utilisateur non supporté ; reprises/voltas ignorées par le suivi, accords traités séquentiellement, tempo de référence constant. Le pipeline QA (`tools/qa/omr_pipeline.py`) garde la boucle IA de réparation et l'étalonnage.
 - Les seuils (posture, justesse, rythme) sont des valeurs initiales à calibrer sur des musiciens réels.
 
 ## Tests de développement
@@ -163,6 +166,10 @@ swiftc -O -o build/qa/omr_compat_test OpenCello/MusicXMLParser.swift OpenCello/P
   OpenCello/ScoreFollower.swift tools/qa/omr_follower_compat.swift
 ./build/qa/omr_compat_test <fichier.musicxml>
 
+# Service de conversion utilisé par l'app (Audiveris externe requis)
+swiftc -O -o build/qa/omr_service_test OpenCello/ScoreOMR.swift tools/qa/omr_service_test.swift
+./build/qa/omr_service_test build/qa/bwv1007_p1.pdf /tmp/omr_service.musicxml
+
 # Pipeline OMR complet (PDF → MusicXML, Ollama requis : ollama pull qwen2.5vl:7b)
 python3 tools/qa/omr_pipeline.py partition.pdf --out build/qa/omr_out
 ```
@@ -172,6 +179,6 @@ python3 tools/qa/omr_pipeline.py partition.pdf --out build/qa/omr_out
 1. Calibrer les seuils sur 2-3 violoncellistes (posture, justesse, rythme, recommandations).
 2. Règles sonores temps réel B3-B8 + tempéraments historiques.
 3. Fusion posture × son (C1-C5) dans les alertes et le rapport.
-4. Étalonner l'OMR sur corpus et porter le pipeline dans l'app (`ScoreOMR`, Phase 8) ; support `.mxl`.
+4. Étalonner l'OMR sur 10 partitions IMSLP (critère ≥ 90 % de notes correctes) ; l'intégration app (conversion Audiveris, aperçu, édition MuseScore) est faite ; ajouter l'import direct `.mxl` utilisateur.
 5. Calibrer la détection archet/cordes sur vidéos réelles (Phase 4) et entraîner les articulations (Phase 5).
 6. Métronome intégré + bourdon pour E4-01.

@@ -84,20 +84,24 @@ App native **SwiftUI**, macOS 14+, Swift 5.9+, cible Apple Silicon (fonctionne a
 
 ### 2.7 Stockage (SwiftData)
 - `Session` (début/fin, profil, exercice pratiqué, BPM cible), `SessionStats` (agrégats 1 s : métriques posture + son), `ErrorEvent` (début/fin, classe, confiance), `Capture` (JPEG annoté, optionnel, local), `ExerciseRun`.
-- **Pas de vidéo brute ni d'audio brut conservés** par défaut (privacy by design). Option d'export ponctuel si l'utilisateur le demande (pour son professeur), avec bandeau explicite.
+- **Pas de vidéo brute ni d'audio brut conservés** par défaut (privacy by design). **Exception opt-in explicite** : « Enregistrer la vidéo de chaque séance » copie la vidéo caméra (sans audio) dans `~/Movies/OpenCello/Sessions/`, pour revoir l'évolution ; désactivé par défaut, aucun envoi, chemin stocké dans le rapport. Les captures/PDF restent ponctuels.
 
 ### 2.8 Modules v1.1 — Phase 7 (implémentés, voir `docs/10`)
 - `HandPoseAnalyzer` : `VNDetectHumanHandPoseRequest` (2 mains max), conversion des 21 points Vision en `HandFrame` indépendant de Vision.
 - `LeftHandAnalyzer` : angle de la main (P11), trajectoires et souplesse des doigts (P13), doigt presseur (bout le plus bas), pouce en **hypothèse** (A18), indice de position (P14), mobilité du coude (A20) ; règles A17-A20 **rapport uniquement** (pas d'alerte HUD).
 - `PositionTracker` : numéro de position (fusion audio + caméra, `docs/03` §8.1), détection des déplacements (durée du portamento, justesse/stabilité d'arrivée, direction), **assignation position + doigt à chaque note appariée du suivi de partition** (`docs/13` §7), **matrice doigt × position × direction** agrégée par session et dans le profil (`docs/03` §8.3). Confiance affichée ; position `nil` si indéterminée.
 - `TechniqueTracker` : suivi des techniques particulières (piqué, glissé) — séries de notes piquées (égalité des durées/énergies, B17), transitions glissées volontaires vs parasites (B14) — stockées par profil dans `ProgressStore`.
+- `BowGeometry` + `BowVectorizer` : vectorisation de l'archet (segment, angle, point de contact touche↔chevalet, zone, vitesse, sens aller/retour, changements de direction) ; overlay flèche + point de contact ; agrégats dans `BowRecord` et le rapport. Le profil 2D ne permet pas de nommer poussé/tiré sans repère du talon.
+- `CameraManager` : sélection de caméra (intégrée / externe / iPhone continuité) et enregistrement vidéo opt-in dans `~/Movies/OpenCello/Sessions/` (vidéo seule, pas d'audio).
 - `ReplayKit` : construction de « moments » (indices partition + statistiques, quelques Ko), **piano-roll Canvas** reconstruit depuis les stats, version « ce que tu as fait » vs « ce que ça devrait être » et **lecture par échantillonneur de violoncelle** : le violoncelle General MIDI fourni par macOS (`gs_instruments.dls`, programme 42) par défaut, ou un **SoundFont personnel** `~/Library/Application Support/OpenCello/Instruments/cello.sf2` ; chaîne d'effets **EQ de caisse + réverbération de salle** ; repli sur une synthèse PCM physique (harmoniques + formants de caisse + souffle d'archet). Les nuances (`p`, `mf`, `f`…), articulations (`staccato`, `accent`, `tenuto`, `marcato`, `slur`), durées et glissandos du MusicXML pilotent vélocité et durée. **Aucun échantillon commercial n'est embarqué** : Spitfire Solo Cello, Embertone Blakus Cello, Native Instruments Stradivari Cello, Chris Hein Solo Cello, Emotional Cello, Cinesamples Tina Guo et Orchestral Tools Berlin Solo Strings sont des bibliothèques sous licence, non redistribuables dans une app MIT. `ReplayView` présente le moment (session : bouton « Revoir ça » ; rapport : liste des replays).
 - Tests : `tools/qa/phase7_main.swift` (main gauche synthétique, positions, glissé, piqué, replays, persistance, MusicXML, suivi). Les seuils restent des valeurs de départ, non validées par des violoncellistes.
 
-### 2.9 `ScoreOMR` (Phase 8, pipeline validé dans `tools/qa/` — voir `docs/18`)
-- Import PDF → MusicXML **automatique et local** : rendu des pages (PDFKit, déjà utilisé), appel d'**Ollama** sur `localhost` (URLSession async) avec **constrained decoding** (schémas JSON `omr_schema.json`), boucles de transcription/fusion/réparation, validation XSD, conversion JSON→MusicXML.
-- Outils de comparaison optionnels détectés automatiquement : **Audiveris** (AGPL, sous-processus externe, jamais embarqué) et **PDF2Muse**.
-- La logique existe et est testée en Python (`tools/qa/omr_pipeline.py`) ; le portage Swift réutilisera les mêmes schémas, prompts et seuils.
+### 2.9 `ScoreOMR` / `ScoreStudio` (Phase 8, implémenté — voir `docs/18`)
+- `ScoreLibrary.swift` : bibliothèque locale `~/Library/Application Support/OpenCello/Scores/<œuvre>/` — le PDF et son MusicXML converti vivent côte à côte (même nom de base). Les PDF IMSLP téléchargés et les MusicXML/PDF importés y sont copiés pour garantir un accès en écriture durable.
+- `ScoreOMR.swift` : conversion PDF → MusicXML par **Audiveris** (AGPL, sous-processus externe, jamais embarqué), export `.mxl`, décompression, contrôle de racine et **écriture atomique** du MusicXML. Aucun appel Ollama dans l'app : la boucle IA de réparation reste l'outillage QA (`tools/qa/omr_pipeline.py`). Le PDF déjà présent n'est pas retéléchargé ; le MusicXML déjà présent n'est pas reconverti (bouton « Voir / modifier »).
+- `SessionEngine` : liste et télécharge les PDF d'une œuvre IMSLP, gère l'import PDF/MusicXML, l'état de conversion (`OMRState`), et recharge le `Score` de suivi.
+- `ScoreStudioModel.swift` + `ScoreStudioView.swift` : aperçu SwiftUI via **swift-sheet-music** (SPM MIT, macOS 15) ; **édition déléguée à MuseScore** (GPL, externe) — MusicXML → `.mscz`, surveillance du fichier, reconversion `.mscz` → MusicXML après chaque ⌘S, puis rafraîchissement de l'aperçu et du `Score`. Sur macOS 14, l'aperçu intégré est indisponible mais l'édition MuseScore reste possible.
+- `MusicXMLParser` reste le parseur du suivi ; l'aperçu utilise le modèle du paquet. Aucune édition de notation n'est réimplémentée dans l'app (les ~80 commandes du paquet ne sont pas exposées) : MuseScore fournit toutes les fonctions et reste l'outil reconnu.
 
 ## 3. Threads et performances
 - 3 files : capture (AVFoundation, temps réel), analyse vision (DISPATCH_QUEUE_PRIORITY_HIGH, 15 fps), analyse audio (temps réel, latence bornée). RuleEngine sur file dédiée (concurrence minimale), SwiftData sur main/background actor.
@@ -111,7 +115,7 @@ App native **SwiftUI**, macOS 14+, Swift 5.9+, cible Apple Silicon (fonctionne a
 - Conformité RGPD triviale : aucune donnée personnelle ne quitte la machine.
 
 ## 5. Distribution
-- Xcode project + **SPM** pour les dépendances. Règle : **dépendances d'abord** — assembler des briques existantes (Liveline pour les graphiques radar/anneaux, etc.) plutôt que réécrire ; chaque dépendance est journalisée avec sa licence.
+- Xcode project + **SPM** pour les dépendances. Règle : **dépendances d'abord** — assembler des briques existantes (Liveline pour les graphiques radar/anneaux, `swift-sheet-music` pour l'aperçu MusicXML, etc.) plutôt que réécrire ; chaque dépendance est journalisée avec sa licence. `swift-sheet-music` est épinglé à **4.27.0** (MIT) ; la première compilation nécessite le réseau pour résoudre le paquet.
 - Notarisation + signature (développeur Apple) pour une distribution « directe » ; App Store en option.
 - Licence : **MIT** pour le code ; contenu des exercices : CC BY-SA ; ⚠️ point de vigilance AGPL (Ultralytics/Essentia) documenté dans `docs/07`.
 

@@ -143,6 +143,10 @@ une voix pourtant correcte (m11 v1). La monotonie porte sur le nombre d'erreurs,
 sur la fidélité musicale ; la suite consiste à restreindre les éditions à la
 mesure/voix fautive et à contrôler la fidélité mesure par mesure.
 
+Le convertisseur préserve désormais **`<clef>`** (`sign`, `line`, `clef-octave-change`)
+à la lecture et à l'émission. Sans cela, l'aperçu de l'app affichait tout en clef de
+sol ; vérifié sur la page BWV (clef de fa) et sur la fixture volta.
+
 Protocole de comparaison : chaque candidat est relu par `musicxml_to_document`
 (parser inverse, sous-ensemble) puis comparé : validité XSD, nb parties/mesures/notes,
 **alignement note à note** (similarité des séquences hauteur+durée, `difflib`, par
@@ -165,6 +169,7 @@ tools/qa/
 ├── make_test_pdf.py         # fixture PDF minimale (tests de rendu)
 ├── omr_test.py              # 35 tests (rendu, XSD, round-trip, règles, éditions, fusion, API)
 ├── omr_follower_compat.swift# vérifie qu'un MusicXML passe dans MusicXMLParser + ScoreFollower
+├── omr_service_test.swift   # harnais du service Audiveris de l'app (ScoreOMR.swift)
 ├── build_volta_fixture.sh   # grave fixtures/volta_score.ly avec LilyPond → build/qa/volta_score.pdf
 ├── fixtures/volta_score.ly  # fixture gravée : volta 1/2, liaison entre mesures, double-corde (+ vérité terrain JSON)
 ├── imslp_fetch.py           # listing QA des PDF d'une page IMSLP + téléchargement (flux sm_dl_wait)
@@ -191,6 +196,59 @@ Options utiles : `--audiveris-first` (première passe OMR structuré, recommand�
 - Le suivi des reprises/voltas par l'app reste à faire (le MusicXML généré les contient déjà — cf. `docs/13`).
 - Un PDF vectoriel **déjà issu d'un éditeur** est parfois mieux traité en extrayant directement son texte/FontForge qu'en OMR ; hors périmètre pour l'instant.
 
-## 10. Intégration prévue dans l'app (Phase 8)
+## 10. Intégration dans l'app (Phase 8, implémentée)
 
-Module `ScoreOMR.swift` : détection d'Ollama (`GET /api/tags`), bouton « Importer un PDF » dans l'onglet Morceau → rendu des pages (PDFKit natif) → appels HTTP localhost (URLSession, async) avec les mêmes schémas → mêmes boucles portées en Swift → import du MusicXML dans le flux existant. Audiveris/PDF2Muse restent **optionnels** (chemin détecté automatiquement). Aucune donnée ne quitte la machine ; le sandbox n'autorise que `localhost`.
+Le pipeline Python reste l'outillage d'étalonnage et de réparation ; l'app a une
+implémentation **Swift sans Python ni Ollama** :
+
+- **Bibliothèque locale** — `ScoreLibrary.swift` : `~/Library/Application Support/OpenCello/Scores/<œuvre>/`
+  contient le PDF et son MusicXML frère (même nom de base). Un PDF IMSLP déjà
+  téléchargé est réutilisé ; un MusicXML/PDF importé est copié dans la bibliothèque
+  pour rester éditable.
+- **Conversion** — `ScoreOMR.swift` : sous-processus
+  `/Applications/Audiveris.app/Contents/MacOS/Audiveris -batch -transcribe -export -output <tmp> <pdf>`
+  (ou `PATH`/`~/Applications`), récupération du `.mxl`, décompression `ditto`,
+  `META-INF` ignoré, contrôle `score-partwise`, puis **écriture atomique** du MusicXML.
+  Annulation par `terminate`, délai de sécurité de 20 min.
+- **UI** — `SessionEngine` liste/télécharge les PDF IMSLP (`IMSLPClient.listScoreFiles`
+  / `downloadScoreFile`), affiche le copyright et gère `currentPDF`, `currentMusicXML`
+  et `OMRState`. `PieceView` propose « Convertir en MusicXML » si le MusicXML est
+  absent, « Voir / modifier » sinon, ainsi que l'import PDF/MusicXML et l'annulation.
+  Le MusicXML existant n'est jamais reconverti sans action explicite.
+- **Aperçu** — `ScoreStudioView` + **swift-sheet-music** (SPM MIT, épinglé 4.27.0) :
+  `ScoreView`/`LayoutEngine`, aperçu SwiftUI, macOS 15.
+- **Édition** — **MuseScore** (GPL, externe) : bouton « Modifier dans MuseScore » →
+  `mscore -o <mscz> <musicxml>` si nécessaire, ouverture du `.mscz`, surveillance du
+  mtime, reconversion `mscore -o <musicxml> <mscz>` après stabilisation, validation par
+  `MusicXMLParser` + parseur du paquet, remplacement atomique, rechargement de l'aperçu
+  et du `Score` de suivi. Aucune fonction d'édition de notation n'est réimplémentée.
+- **Licences** : Audiveris (AGPL-3.0) et MuseScore (GPL-3.0) sont des programmes
+  séparés, jamais empaquetés ; l'app MIT ne fait que les lancer et lire leurs fichiers.
+
+Mesures (2026-11-03) :
+
+| Essai | Résultat |
+|---|---|
+| Page 1 extraite (41 mesures), service de l'app | **14 s**, 232 861 octets |
+| PDF IMSLP complet (5 pages), CLI | **78 s**, 233 013 octets, 41 mesures reconnues |
+| PDF IMSLP complet, app | **~90 s**, même contenu |
+| Aller-retour MuseScore (MusicXML → MSCZ → MusicXML) | 41 mesures / **600 notes conservées**, `.mscz` 70 Ko |
+| Transposition dans MuseScore + ⌘S | réimportée automatiquement (« Modifications MuseScore importées ») |
+| Sortie Audiveris brute dans le parseur de l'app | **599 notes**, `SUIVI: true` |
+
+Limites de l'intégration :
+
+- L'app n'exécute **pas** la boucle IA de réparation : elle utilise la sortie Audiveris
+  brute (les erreurs de durées doivent être relues dans MuseScore). Le pipeline QA
+  reste la référence pour l'étalonnage.
+- L'aperçu intégré nécessite **macOS 15** ; sur macOS 14, MuseScore reste utilisable
+  pour voir/éditer mais il n'y a pas d'aperçu dans l'app.
+- **MuseScore doit être installé** pour l'édition complète (l'app détecte son absence
+  et propose le téléchargement).
+- L'import direct d'un `.mxl` utilisateur n'est pas encore supporté ; seul le `.mxl`
+  produit par Audiveris est décompressé en interne.
+- Le PDF complet de 5 pages n'a produit que 41 mesures : les autres pages ne
+  contiennent pas de musique reconnue (pages de titre/blanches ou contenu non reconnu) ;
+  à vérifier sur d'autres éditions.
+- Aucun test automatisé de l'UI : validation par captures d'écran et parcours manuel
+  (conversion, viewer, édition MuseScore, réimport).

@@ -25,6 +25,13 @@ final class SessionReport {
     var bowFrames = 0
     var bowGoodAngle = 0
     var bowGoodZone = 0
+    var bowContactSum = 0.0
+    var bowAngleSum = 0.0
+    var bowSpeedSum = 0.0
+    var bowTastoFrames = 0
+    var bowMiddleFrames = 0
+    var bowBridgeFrames = 0
+    var bowDirectionChanges = 0
     var vibratoSamples = 0
     var sumVibratoRate = 0.0
     var sumVibratoExtent = 0.0
@@ -113,6 +120,13 @@ final class SessionReport {
         bowFrames = 0
         bowGoodAngle = 0
         bowGoodZone = 0
+        bowContactSum = 0
+        bowAngleSum = 0
+        bowSpeedSum = 0
+        bowTastoFrames = 0
+        bowMiddleFrames = 0
+        bowBridgeFrames = 0
+        bowDirectionChanges = 0
         vibratoSamples = 0
         sumVibratoRate = 0
         sumVibratoExtent = 0
@@ -186,6 +200,39 @@ final class SessionReport {
         guard elbowMobility < threshold else { return }
         handRuleOccurrences["A20", default: 0] += 1
         handRuleSeconds["A20", default: 0] += 0.5
+    }
+
+    /// Accumule une frame d'archet vectorisée.
+    func addBow(_ evaluation: BowEvaluation, vector: BowVector, directionChanges: Int) {
+        bowFrames += 1
+        if evaluation.angleOK { bowGoodAngle += 1 }
+        if evaluation.zoneOK { bowGoodZone += 1 }
+        bowContactSum += evaluation.contact
+        bowAngleSum += evaluation.angleDeviation
+        bowSpeedSum += vector.speed
+        switch vector.zone {
+        case .fingerboard: bowTastoFrames += 1
+        case .middle: bowMiddleFrames += 1
+        case .bridge: bowBridgeFrames += 1
+        }
+        bowDirectionChanges = max(bowDirectionChanges, directionChanges)
+    }
+
+    func bowRecord() -> BowRecord? {
+        guard bowFrames > 0 else { return nil }
+        let total = Double(max(1, bowFrames))
+        return BowRecord(
+            frames: bowFrames,
+            goodAngle: bowGoodAngle,
+            goodZone: bowGoodZone,
+            meanAngleDeviation: bowAngleSum / total,
+            meanContact: bowContactSum / total,
+            meanSpeed: bowSpeedSum / total,
+            tastoRatio: Double(bowTastoFrames) / total,
+            middleRatio: Double(bowMiddleFrames) / total,
+            ponticelloRatio: Double(bowBridgeFrames) / total,
+            directionChanges: bowDirectionChanges
+        )
     }
 
     func addPosition(_ record: NotePositionRecord) {

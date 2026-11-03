@@ -325,7 +325,13 @@ private struct ScoreCanvas15: View {
     }
 
     private func scrollToTop(_ proxy: ScrollViewProxy) {
+        proxy.scrollTo("top", anchor: .top)
+        // Le document peut être posé après le premier passage de layout :
+        // on réaffirme l'ancrage une fois le contenu monté.
         DispatchQueue.main.async {
+            proxy.scrollTo("top", anchor: .top)
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
             proxy.scrollTo("top", anchor: .top)
         }
     }

@@ -72,11 +72,14 @@
 - **Critère de sortie** : sur une gamme en 3 octaves + 1 morceau importé : déplacements détectés ≥ 90 %, glissé volontaire jamais signalé parasite sur passages avec glissando écrit, replays vérifiés par 2-3 violoncellistes ; seuils calibrés (`docs/11`). **Non atteint** : aucun test avec violoncellistes réels ni validation vidéo à ce jour ; les seuils restent des valeurs de départ.
 
 ## Phase 8 — Import de partitions PDF → MusicXML (OMR local)
-- [x] Pipeline OMR **outillé et testé** dans `tools/qa/` : rendu PDFKit, transcription vision Ollama avec **constrained decoding** (schémas JSON), fusion déterministe, **boucles de validation/réparation**, conversion JSON → MusicXML 4.0 (XSD conforme), parser inverse et **comparaison Audiveris/PDF2Muse** (`docs/18-omr-local.md`).
+- [x] Pipeline OMR **outillé et testé** dans `tools/qa/` : rendu PDFKit, **Audiveris-first** (sous-processus AGPL externe), boucles de validation/réparation monotones avec Ollama, conversion JSON → MusicXML 4.0 (XSD conforme), parser inverse et **comparaison Audiveris/PDF2Muse** (`docs/18-omr-local.md`).
+- [x] **Module app `ScoreOMR.swift`** : bouton « Convertir en MusicXML » sur un PDF IMSLP/importé, sous-processus Audiveris, `.mxl` décompressé, écriture atomique, import dans le suivi ; si le MusicXML existe déjà, il est ouvert sans reconversion.
+- [x] **Bibliothèque locale** (`ScoreLibrary.swift`) : PDF + MusicXML appartenant à l'app, PDF déjà téléchargé réutilisé, imports copiés pour rester éditables.
+- [x] **UI de l'œuvre** : liste des PDF IMSLP avec statut de copyright, téléchargement, import PDF/MusicXML, carte de conversion, état d'avancement et annulation.
+- [x] **Voir et modifier** : aperçu intégré (`swift-sheet-music`, MIT) et édition **déléguée à MuseScore** (GPL, externe) avec aller-retour `.mscz` ↔ MusicXML automatique, rechargement de l'aperçu et du suivi ; aperçu intégré macOS 15 (macOS 14 : MuseScore seul).
 - [ ] Étalonnage sur corpus (OMR-NED / partitions IMSLP maison) : choix du modèle vision par mesure.
-- [ ] Module app `ScoreOMR.swift` : bouton « Importer un PDF » → pipeline en Swift (URLSession localhost + subprocess), import dans le suivi.
-- [ ] Support `.mxl` (décompression ZIP) et suivi des reprises/voltas.
-- **Critère de sortie** : sur 10 partitions IMSLP variées, ≥ 90 % de notes correctes après boucles (mesuré par alignement note à note), sans intervention manuelle.
+- [ ] Support de l'import direct `.mxl` par l'app (le `.mxl` d'Audiveris est déjà décompressé ; un `.mxl` utilisateur reste refusé) et suivi des reprises/voltas.
+- **Critère de sortie** : sur 10 partitions IMSLP variées, ≥ 90 % de notes correctes après boucles (mesuré par alignement note à note), sans intervention manuelle. **Non atteint** : le pipeline est mesuré sur la fixture volta et une page réelle, pas encore sur 10 partitions.
 
 ## Risques majeurs et parades
 | Risque | Parade |
@@ -86,7 +89,7 @@
 | F0 grave instable | YIN fenêtré adapté + validation croisée continue |
 | Charge cognitive du temps réel | Modes léger/focus/silencieux (dès P1) |
 | Licences (AGPL Ultralytics/Essentia) | Alternatives Apache-2.0/MIT ; cœur app MIT |
-| Périmètre qui dérape | Chaque phase a une sortie utilisable ; le non-essentiel est repoussé (pas de partition interactive, pas de cloud) |
+| Périmètre qui dérape | Chaque phase a une sortie utilisable ; le non-essentiel est repoussé (pas d'éditeur de notation intégré — édition déléguée à MuseScore —, pas de cloud) |
 
 ## Idées hors périmètre initial (à réévaluer en v2)
 - Estimation des paramètres d'archet **depuis le seul audio** (Perez Carrillo 2012).

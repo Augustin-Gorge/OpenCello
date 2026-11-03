@@ -64,6 +64,11 @@ final class ScoreStudioModel: ObservableObject {
         detectMuseScore()
         load()
         syncIfNeeded()
+        // Si un `.mscz` existe déjà, on reprend la surveillance sans
+        // obliger l'utilisateur à recliquer « Modifier ».
+        if museScoreApp != nil, hasEditFile {
+            beginWatching()
+        }
     }
 
     func load() {
@@ -194,16 +199,47 @@ final class ScoreStudioModel: ObservableObject {
         NSWorkspace.shared.activateFileViewerSelecting([hasEditFile ? msczURL : url])
     }
 
-    /// Convertit le MusicXML en `.mscz` si nécessaire (via la CLI de MuseScore).
+    /// Prépare le `.mscz` d'édition si nécessaire.
+    ///
+    /// Le `.mscz` est d'abord produit **par swift-sheet-music** à partir du
+    /// modèle déjà affiché : le MusicXML brut d'Audiveris est souvent refusé
+    /// par l'import de MuseScore (avertissements de durées), et le fichier
+    /// source n'est ainsi jamais exposé à l'importeur. Repli : CLI MuseScore
+    /// sur une **copie temporaire** du MusicXML, jamais sur l'original.
     private func ensureEditFile(app: URL) async throws -> URL {
         let fm = FileManager.default
-        if fm.fileExists(atPath: msczURL.path) { return msczURL }
+        if fm.fileExists(atPath: msczURL.path) {
+            // Le MusicXML a été régénéré (nouvelle conversion Audiveris) :
+            // le `.mscz` existant est périmé et doit être recréé.
+            if let xmlDate = modificationDate(of: url),
+               let editDate = modificationDate(of: msczURL),
+               xmlDate > editDate.addingTimeInterval(1) {
+                try? fm.removeItem(at: msczURL)
+            } else {
+                return msczURL
+            }
+        }
+
+        if let score {
+            do {
+                try SheetMusic.exportMSCZ(score, to: msczURL)
+                msczDate = modificationDate(of: msczURL)
+                return msczURL
+            } catch {
+                // On tentera la CLI sur une copie temporaire.
+            }
+        }
+
         guard let cli = Self.museScoreCLI(for: app) else {
             throw StudioError.cliMissing
         }
+        let temporary = fm.temporaryDirectory
+            .appendingPathComponent("opencello-import-\(UUID().uuidString).musicxml")
+        defer { try? fm.removeItem(at: temporary) }
+        try fm.copyItem(at: url, to: temporary)
         let (status, log) = try await Self.runCLI(
             cli,
-            arguments: ["-o", msczURL.path, url.path]
+            arguments: ["-f", "-o", msczURL.path, temporary.path]
         )
         guard status == 0, fm.fileExists(atPath: msczURL.path) else {
             throw StudioError.conversionFailed(log)
@@ -301,7 +337,7 @@ final class ScoreStudioModel: ObservableObject {
             do {
                 let (code, log) = try await Self.runCLI(
                     cli,
-                    arguments: ["-o", temporary.path, msczURL.path]
+                    arguments: ["-f", "-o", temporary.path, msczURL.path]
                 )
                 guard code == 0, FileManager.default.fileExists(atPath: temporary.path) else {
                     throw StudioError.conversionFailed(log)
@@ -366,9 +402,16 @@ final class ScoreStudioModel: ObservableObject {
         let process = Process()
         process.executableURL = executable
         process.arguments = arguments
+        process.qualityOfService = .userInitiated
         process.standardOutput = handle
         process.standardError = handle
         process.standardInput = FileHandle.nullDevice
+
+        // Une autorisation macOS non accordée peut bloquer la CLI : on ne
+        // laisse pas l'atelier attendre indéfiniment.
+        DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + 180) {
+            if process.isRunning { process.terminate() }
+        }
 
         let status: Int32 = try await withCheckedThrowingContinuation { continuation in
             process.terminationHandler = { finished in

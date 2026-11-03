@@ -601,6 +601,61 @@ OpenCello/
 - Le rendu de portée intégré dépend de swift-sheet-music (macOS 15) ; macOS 14 garde le piano-roll. MuseScore reste un outil externe d'édition/validation, pas une dépendance runtime.
 **Suite** : recruter 2-3 violoncellistes en cadre serré, annoter les positions/doigts, mesurer l'exactitude réelle ; ajouter éventuellement un sélecteur de corde manuel quand le MusicXML n'en contient pas.
 
+### 2026-11-03 — Atelier de partition : conversion PDF → MusicXML, aperçu intégré et édition MuseScore
+
+**Objectif** : répondre à la demande « un bouton pour convertir un PDF en MusicXML s'il n'existe pas déjà, puis une interface pour voir et modifier la partition » avec une base **robuste et reconnue**, sans réimplémenter un éditeur de notation incomplet.
+**Fait** :
+- **Décision de périmètre** : l'éditeur XML maison (`MusicXMLDocument.swift`, hauteur/altération/durée/silence) a été **abandonné et supprimé** : il n'aurait jamais couvert toutes les fonctions et aurait fait courir après chaque ajout. L'édition est **déléguée à MuseScore 4** (GPL-3.0, outil externe jamais empaqueté), référence open source du domaine ; l'app ne réimplémente aucune commande de notation.
+- **Aperçu intégré** : ajout SPM de **swift-sheet-music** (`jiyimeta/swift-sheet-music`, épinglé **4.27.0**, code MIT, police Bravura SIL OFL) — produits `SheetMusic`, `SheetMusicCore`, `SheetMusicLayout`, `SheetMusicUI`. `ScoreView`/`LayoutEngine` gravent le MusicXML en SwiftUI ; `ScoreHitTester` n'est pas utilisé (pas d'édition intégrée). Le viewer nécessite **macOS 15** ; sur macOS 14, l'app affiche un message et MuseScore reste utilisable.
+- **Bibliothèque locale** (`ScoreLibrary.swift`) : `~/Library/Application Support/OpenCello/Scores/<œuvre>/` avec PDF et MusicXML frères (même nom de base). Un PDF IMSLP déjà téléchargé est réutilisé sans réseau ; un PDF ou MusicXML importé est copié dans la bibliothèque pour rester éditable (accès en écriture durable).
+- **Conversion Audiveris** (`ScoreOMR.swift`) : sous-processus
+  `/Applications/Audiveris.app/Contents/MacOS/Audiveris -batch -transcribe -export -output <tmp> <pdf>`,
+  récupération du `.mxl`, décompression `ditto`, `META-INF` ignoré, contrôle de la racine `score-partwise`, **écriture atomique** (une sortie invalide ne détruit jamais un MusicXML valide), annulation et délai de sécurité. `beginActivity(.userInitiated)` + QoS pour éviter App Nap.
+- **UI IMSLP/PDF** (`SessionEngine`, `PieceView`) : liste des PDF d'une œuvre avec statut de copyright (domaine public en premier), téléchargement, import PDF/MusicXML, carte « Convertir en MusicXML » (ou « Voir / modifier » si le MusicXML existe déjà — aucune reconversion silencieuse), progression, annulation, messages d'erreur. Le MusicXML déjà présent est chargé sans reconversion ; « Reconvertir » reste une action explicite.
+- **Atelier** (`ScoreStudioModel`, `ScoreStudioView`) : aperçu ; bouton **« Modifier dans MuseScore »** (⇧⌘E) ; conversion MusicXML → `.mscz` via `mscore -o` si nécessaire ; ouverture du `.mscz` ; surveillance du mtime ; reconversion `.mscz` → MusicXML après chaque ⌘S (délai anti-écriture partielle) ; validation par `MusicXMLParser` **et** le parseur du paquet ; remplacement atomique ; rechargement de l'aperçu et du `Score` de suivi. Le `.mscz` est recréé si le MusicXML a été régénéré. Si l'atelier est fermé, `flushPendingSync` tente une dernière récupération ; à la réouverture, `syncIfNeeded` compare les dates.
+- **Préservation de la clef** dans le convertisseur QA (`omr_json_to_musicxml.py`) : lecture/émission de `<clef>` (sign/line/clef-octave-change). Sans cela, l'aperçu affichait tout en clef de sol ; vérifié en clef de fa sur BWV et la fixture volta.
+- **Tests Debug** : arguments `--score-studio <fichier>`, `--piece`, `--imslp-work "<titre>"`, `--imslp-download <fichier>`, `--omr` (compilés en Debug uniquement) pour automatiser les parcours sans accessibilité UI.
+**Fichiers** : `OpenCello/ScoreLibrary.swift`, `ScoreOMR.swift`, `ScoreStudioModel.swift`, `ScoreStudioView.swift` (nouveaux) ; `SessionEngine.swift`, `PieceView.swift`, `ContentView.swift`, `OpenCelloApp.swift` ; `OpenCello.xcodeproj/project.pbxproj`, `Package.resolved` ; `tools/qa/omr_service_test.swift`, `tools/qa/omr_json_to_musicxml.py` ; `docs/07`, `docs/08`, `docs/10`, `docs/13`, `docs/18`, `PRINCIPE.md`, `BUILD.md`, `README.md`, `tools/qa/README.md`.
+**Tests** :
+- `xcodebuild … build` → **BUILD SUCCEEDED**, **aucune warning Swift** (seul l'avertissement outil `appintentsmetadataprocessor`).
+- `swiftc -O -o build/qa/omr_service_test OpenCello/ScoreOMR.swift tools/qa/omr_service_test.swift && ./build/qa/omr_service_test build/qa/bwv1007_p1.pdf /tmp/omr_atomic.musicxml` → **41 mesures, 1 partie, 232 861 octets, 13,9 s**.
+- Même service sur le PDF IMSLP complet **5 pages** (`BWV1007.pdf`, 320 283 o) : **78 s en CLI**, **~90 s dans l'app**, 233 013 octets, 41 mesures reconnues (les autres pages ne produisent pas de musique reconnue).
+- **Aller-retour MuseScore** : MusicXML → `.mscz` (70 Ko) → MusicXML, **41 mesures / 600 notes conservées** ; une transposition réelle dans MuseScore suivie de ⌘S a été réimportée automatiquement (statut « Modifications MuseScore importées », dernière synchro 16:55:50) et l'aperçu s'est mis à jour.
+- `omr_follower_compat` sur la sortie Audiveris brute → **599 notes**, `SUIVI: true` ; `omr_test.py` → **35 OK, 0 échec** ; `omr_evaluate.py` volta → **97,6 %**.
+- Téléchargement IMSLP dans l'app : `BWV1007.pdf` **320 283 o** écrit dans la bibliothèque ; liste de l'œuvre avec badges « Domaine public » ; capture de l'écran Morceau vérifiée.
+- Vérifications visuelles : viewer en **mesure 1**, clef de fa, 41 mesures ; panneau « MuseScore 4.7.6 détecté » ; conversion, PDF card et boutons « Voir / modifier » ; MuseScore ouvert avec le `.mscz` et partition affichée.
+- Import MusicXML via le sélecteur de fichiers **non exercé par automatisation** (la copie bibliothèque et le chargement sont couverts par le build ; à vérifier manuellement).
+**Limites / risques** :
+- **MuseScore est requis** pour l'édition complète (GPL, externe) ; l'app ne fournit pas d'éditeur intégré. C'est le prix de la robustesse et des fonctions complètes.
+- L'aperçu intégré nécessite **macOS 15** ; sur macOS 14, MuseScore reste disponible pour voir/éditer mais il n'y a pas d'aperçu dans l'app.
+- La conversion utilise la **sortie Audiveris brute** : pas de boucle IA de réparation dans l'app (contrairement au pipeline QA), donc des durées fausses peuvent subsister ; la relecture dans MuseScore est nécessaire.
+- L'import direct d'un `.mxl` utilisateur reste non supporté ; seul le `.mxl` d'Audiveris est décompressé.
+- Le PDF complet de 5 pages n'a produit que 41 mesures : les autres pages sont probablement blanches/titre ou non reconnues ; à vérifier sur d'autres éditions avant de généraliser.
+- L'aller-retour MuseScore peut reformater le MusicXML (mise en page, orthographe) ; le `.mscz` est un intermédiaire, pas une seconde source de vérité.
+- `swift-sheet-music` 4.27.0 est un paquet récent (MIT, auteur unique) ; il est isolé dans le viewer et remplaçable, tandis que MuseScore reste l'éditeur reconnu. La police Bravura (SIL OFL) est embarquée par le paquet.
+- Aucun test automatisé de l'UI : validation par captures et parcours manuel. La première exécution peut déclencher une **autorisation macOS** (Documents) pour le sous-processus ; la description TCC a été ajoutée.
+**Suite** : tester 10 partitions IMSLP variées et mesurer le taux de notes correctes (critère Phase 8) ; ajouter l'import direct `.mxl` et, si utile, un aperçu PDF de secours sur macOS 14 ; valider le parcours MuseScore avec des utilisateurs ; éventuellement exposer la réparation IA du pipeline QA comme action explicite « Réparer avec l'IA ».
+
+### 2026-11-03 — Sélecteur de caméra, vidéo de séance opt-in et vectorisation de l'archet
+
+**Objectif** : permettre de choisir la caméra (face / 3/4 / iPhone continuité), enregistrer la vidéo de la séance sans passer par un lecteur externe, et étudier la direction/orientation de l'archet — notamment la tendance à jouer trop près de la touche.
+**Fait** :
+- **Sélecteur de caméra** : `CameraManager` expose `cameras` / `selectedCameraID` (DiscoverySession intégrée + externe + continuité), mémorise le choix et redémarre la session proprement. Réglages : source, rafraîchissement, rappel du cadrage **3/4 avant-gauche** pour la position exacte. Clé Info.plist `NSCameraUseContinuityCameraDeviceType` ajoutée.
+- **Vidéo de séance opt-in** : `AVCaptureMovieFileOutput` enregistre la caméra (vidéo seule, sans audio) dans `~/Movies/OpenCello/Sessions/seance_AAAA-MM-JJ_HHMMSS.mov`. Toggle dans Réglages, désactivé par défaut ; `SessionRecord.videoPath` conserve le chemin et `ReportView` propose « Ouvrir la vidéo ». Aucun envoi, aucun enregistrement si le toggle est off.
+- **Archet vectorisé** : `BowGeometry` renvoie aussi le **point de contact** entre touche et chevalet ; `BowVectorizer` suit le segment entre frames et estime le **sens aller/retour**, la **vitesse**, les **changements de direction** et la **zone** (touche / milieu / chevalet). L'overlay dessine une flèche colorée + le point de contact ; le HUD affiche zone et sens ; le rapport agrège contact moyen, répartition touche/milieu/chevalet, angle moyen, vitesse et changements de direction. Si la majorité est sur la touche, le rapport conseille d'avancer vers le milieu puis le chevalet.
+- **Limite assumée** : en profil 2D, l'app ne peut pas nommer poussé/tiré sans repère du talon ; elle parle de **sens aller/retour**. La vidéo enregistrée est muette (l'audio reste analysé par le micro, non stocké).
+**Fichiers** : `CameraManager.swift`, `AppSettings.swift`, `SettingsView.swift`, `ContentView.swift`, `SessionEngine.swift`, `SessionReport.swift`, `ProgressStore.swift`, `ReportView.swift`, `BowGeometry.swift`, `tools/qa/bow_main.swift`, `AGENTS.md`, `tools/qa/README.md`, `README.md`, `docs/03`, `docs/08`, `docs/14`.
+**Tests** :
+- `xcodebuild … build` → **BUILD SUCCEEDED**, aucune warning Swift.
+- `bow_test` → `VECTOR: sur la touche sens aller speed 0.051` et `VECTOR zone chevalet: près du chevalet`.
+- `phase7_test` → `PHASE7: OK` ; `v1_test` → 29 exercices + PDF/pack OK.
+- **Non exécuté** : enregistrement caméra réel et sélection de caméra dans l'UI (nécessite une session caméra interactive) ; à vérifier au premier lancement.
+**Limites / risques** :
+- L'enregistrement vidéo peut produire des fichiers volumineux ; pas de purge automatique dans cette version.
+- Le changement de caméra interrompt la session ; l'enregistrement est refusé pendant un enregistrement en cours.
+- La direction aller/retour est une estimation 2D, pas la distinction poussé/tiré ; l'angle et le contact restent les mesures les plus fiables.
+**Suite** : tester le sélecteur et l'enregistrement en conditions réelles, ajouter une purge/limite de taille, puis valider la vectorisation de l'archet sur des vidéos de profil annotées (zone touche/chevalet).
+
 ---
 
 ## 14. Leçons retenues

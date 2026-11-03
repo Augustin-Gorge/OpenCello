@@ -63,6 +63,10 @@ struct ReportView: View {
                 if let replays = record.replayMoments, !replays.isEmpty {
                     replaysSection(replays)
                 }
+                if let videoPath = record.videoPath,
+                   FileManager.default.fileExists(atPath: videoPath) {
+                    videoSection(videoPath)
+                }
                 if let bow = record.bow, bow.frames > 0 {
                     bowSection(bow)
                 }
@@ -600,13 +604,54 @@ struct ReportView: View {
         }
     }
 
+    private func videoSection(_ path: String) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("Vidéo de la séance").font(.headline)
+            Text(URL(fileURLWithPath: path).lastPathComponent)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            Button {
+                NSWorkspace.shared.open(URL(fileURLWithPath: path))
+            } label: {
+                Label("Ouvrir la vidéo", systemImage: "play.rectangle")
+            }
+            .buttonStyle(.bordered)
+            Text("Enregistrement local opt-in — aucune vidéo n'est envoyée.")
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+        }
+        .padding(10)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(RoundedRectangle(cornerRadius: 10).fill(Color(nsColor: .controlBackgroundColor).opacity(0.65)))
+    }
+
     private func bowSection(_ bow: BowRecord) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: 6) {
             Text("Archet (profil)").font(.headline)
             Text("Angle conforme : \(Int(Double(bow.goodAngle) / Double(bow.frames) * 100)) % · zone conforme : \(Int(Double(bow.goodZone) / Double(bow.frames) * 100)) %")
                 .font(.callout)
+            if let contact = bow.meanContact {
+                Text(String(format: "Contact moyen : %.0f %% · touche %.0f %% · milieu %.0f %% · chevalet %.0f %%",
+                            contact * 100,
+                            (bow.tastoRatio ?? 0) * 100,
+                            (bow.middleRatio ?? 0) * 100,
+                            (bow.ponticelloRatio ?? 0) * 100))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            if let speed = bow.meanSpeed {
+                Text(String(format: "Vitesse moyenne %.2f · %d changement(s) de direction · angle moyen %.0f°",
+                            speed, bow.directionChanges ?? 0, bow.meanAngleDeviation ?? 0))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            if let contact = bow.meanContact, contact < 0.33 {
+                Text("Tu joues majoritairement sur la touche : avance le point de contact vers le milieu puis le chevalet, en gardant le même angle.")
+                    .font(.caption)
+                    .foregroundStyle(.orange)
+            }
             Text("\(bow.frames) frames analysés · seuils : ±10° et zone 10-90 %")
-                .font(.caption)
+                .font(.caption2)
                 .foregroundStyle(.secondary)
         }
         .padding(10)

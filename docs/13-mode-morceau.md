@@ -8,11 +8,12 @@ Objectif : jouer un morceau et savoir **où l'on en est**, si l'on est **juste**
 
 1. Ouvrir l'onglet **Morceau**.
 2. Chercher une œuvre sur IMSLP (champ de recherche).
-3. Cliquer **Ouvrir sur IMSLP** pour consulter/télécharger la partition PDF (dans le navigateur — IMSLP exige l'acceptation du disclaimer et le respect des licences).
-4. Importer un **MusicXML** de la partie violoncelle (export MuseScore/Finale/Sibelius), **importer un PDF** (pipeline OMR local : voir `docs/18-omr-local.md`) — ou charger la **gamme de démonstration**.
-5. Choisir la partie (l'app présélectionne celle dont le nom contient « cello/violoncelle »), régler le **tempo de référence**.
-6. **Démarrer le suivi** et jouer : l'app affiche la note attendue, la note entendue, l'écart en cents, l'écart rythmique en ms, la mesure, la progression — ainsi que la **position**, le **doigt** et la **confiance** estimés pour chaque note (§7).
-7. À l'arrêt : rapport « Morceau » **dans l'app** avec justesse moyenne, rythme moyen, notes hors partition, tempo estimé — et la répartition **position/doigt**, les techniques (piqué, glissé) et les replays (§7).
+3. Choisir une œuvre : l'app affiche la liste de ses **fichiers PDF** avec le statut de copyright (domaine public privilégié). **Télécharger** une édition, ou **Ouvrir sur IMSLP** pour le navigateur (disclaimer et licences).
+4. Si aucun MusicXML n'existe pour ce PDF, cliquer **Convertir en MusicXML** (Audiveris externe, voir `docs/18-omr-local.md`). Sinon, le MusicXML est ouvert directement. On peut aussi **importer un PDF** ou un **MusicXML** existant, ou charger la **gamme de démonstration**.
+5. **Voir / modifier** : l'aperçu intégré affiche la partition ; **Modifier dans MuseScore** ouvre le `.mscz` correspondant. Chaque ⌘S dans MuseScore est reconverti en MusicXML et rechargé dans l'app.
+6. Choisir la partie (l'app présélectionne celle dont le nom contient « cello/violoncelle »), régler le **tempo de référence**.
+7. **Démarrer le suivi** et jouer : l'app affiche la note attendue, la note entendue, l'écart en cents, l'écart rythmique en ms, la mesure, la progression — ainsi que la **position**, le **doigt** et la **confiance** estimés pour chaque note (§7).
+8. À l'arrêt : rapport « Morceau » **dans l'app** avec justesse moyenne, rythme moyen, notes hors partition, tempo estimé — et la répartition **position/doigt**, les techniques (piqué, glissé) et les replays (§7).
 
 ## 2. APIs IMSLP utilisées
 
@@ -42,8 +43,10 @@ La liste complète des œuvres est beaucoup plus lourde (plusieurs dizaines de M
 Un PDF scanné n'est pas lisible par la machine. Pour suivre la partition, il faut une **représentation symbolique** : hauteurs, durées, mesures.
 
 - **MusicXML** (`.musicxml`, `.xml`) : standard ouvert, exporté par tous les éditeurs (MuseScore : Fichier → Exporter → MusicXML).
-- **`.mxl`** (MusicXML compressé) : pas encore supporté (nécessite une décompression ZIP) — exporter en `.musicxml` non compressé.
-- **PDF → MusicXML** : pipeline OMR **local** construit et testé (`tools/qa/omr_pipeline.py`, décrit dans `docs/18-omr-local.md`) : rendu PDFKit, transcription par modèle vision Ollama avec **constrained decoding**, boucles de validation/réparation, validation XSD, comparaison optionnelle avec **Audiveris** (AGPL, externe) et **PDF2Muse** (MIT). Intégration dans l'app : Phase 8.
+- **`.mxl`** (MusicXML compressé) : l'import direct par l'app n'est pas encore supporté ; le `.mxl` produit par Audiveris est, lui, décompressé automatiquement par `ScoreOMR`. Pour un fichier utilisateur, exporter en `.musicxml` non compressé.
+- **PDF → MusicXML dans l'app** : bouton **Convertir en MusicXML** → **Audiveris** (AGPL, sous-processus externe, jamais empaqueté) → `.mxl` décompressé → MusicXML validé et écrit atomiquement dans la bibliothèque de l'app (`docs/18-omr-local.md`). Le PDF déjà téléchargé est réutilisé ; le MusicXML déjà présent n'est pas reconverti.
+- **Aperçu et édition** : `ScoreStudioView` affiche le MusicXML avec **swift-sheet-music** (SPM MIT, macOS 15). L'édition est **déléguée à MuseScore** (GPL, externe) : l'app crée un `.mscz` voisin, l'ouvre, surveille les modifications et reconvertit en MusicXML à chaque ⌘S. Aucune fonction d'édition de notation n'est réimplémentée dans l'app.
+- **Pipeline QA** : `tools/qa/omr_pipeline.py` conserve la boucle **Audiveris-first + réparation IA** (Ollama, constrained decoding, rollback monotone) et l'évaluation note à note ; il n'est pas requis par l'app.
 - **MIDI** : autre format symbolique possible (à ajouter).
 
 L'app **peut télécharger les PDF** via `Special:ImagefromIndex/<index>` (décision du 2026-11-03) : le moteur de l'app le fait directement — `IMSLPClient.listScoreFiles(pageTitle:)` liste les PDF d'une œuvre avec leur statut de copyright (`IMSLPScoreFile.isPublicDomain`), `IMSLPClient.downloadScoreFile(index:)` télécharge celui choisi (cookies `imslpdisclaimeraccepted=yes` + `redirectPassed=1`, URL miroir extraite de l'attribut `data-id` du span `#sm_dl_wait` de la page de téléchargement IMSLP). L'UI privilégie les éditions « Copyright=Public Domain » et affiche le statut de licence ; le pipeline OMR (`docs/18-omr-local.md`) les convertit ensuite en MusicXML pour le suivi. Le harnais QA `tools/qa/imslp_download_test.swift` exerce ce flux (le jumeau Python `tools/qa/imslp_fetch.py` sert au listing rapide).
@@ -127,11 +130,15 @@ La partition (MusicXML) donne la **hauteur** attendue, mais pas le doigté : une
 
 | Limite | Impact | Solution prévue |
 |---|---|---|
-| Pas de PDF → MusicXML | Il faut exporter un MusicXML | Pipeline OMR local (Ollama + boucles, `docs/18`) en outillage QA ; intégration app en Phase 8 ; Audiveris en comparaison |
+| Conversion PDF dépend d'Audiveris | Sans outil installé, pas de PDF → MusicXML ; ~90 s pour un PDF complet de 5 pages | Détection + message d'installation ; MusicXML mis en cache ; conversion en arrière-plan annulable |
+| Aperçu intégré macOS 15 | Sur macOS 14, l'aperçu SwiftUI n'est pas disponible | Utiliser MuseScore pour voir/éditer ; le MusicXML reste synchronisé |
+| Édition déléguée à MuseScore | MuseScore (GPL) doit être installé ; l'app ne fournit pas d'édition de notation intégrée | Détection + lien d'installation ; MuseScore est l'éditeur open source de référence |
+| Aller-retour `.mscz` | MuseScore peut reformater le MusicXML (mise en page, orthographe) | L'original reste en place jusqu'au ⌘S ; le `.mscz` est recréé si le MusicXML a été régénéré |
+| OMR sans réparation IA dans l'app | Le MusicXML brut d'Audiveris peut contenir des durées fausses | Relire dans MuseScore ; le pipeline QA avec boucle de réparation reste disponible (`docs/18`) |
 | Reprises/voltas ignorées | Désalignement après une reprise | Modèle de structure (repeat/ending) + ré-ancrage |
 | Accords traités séquentiellement | Faux « hors partition » sur les double-cordes | Regrouper les notes de même onset en événements d'accord |
 | Tempo constant | Écart rythmique si l'on ralentit volontairement | Suivi de tempo continu (filtre de Kalman / DTW en ligne) |
 | Partie mal choisie | Suivi impossible | Détection automatique par ambitus + nom, aperçu des premières notes |
 | Dépend du réseau pour la recherche | Pas de recherche hors ligne | Cache local de la liste `type=2` (option) |
-| Fichier `.mxl` non supporté | Import refusé | Décompression ZIP (libz) |
+| Import direct `.mxl` utilisateur | Fichier refusé par l'app | Le `.mxl` d'Audiveris est déjà décompressé ; ajouter la décompression à l'import utilisateur |
 | Position/doigt estimés (v1.1) | Confiance variable, résolution ±1 position ; pouce en hypothèse | Afficher la confiance, ne jamais inventer une position ; calibration visuelle à venir |

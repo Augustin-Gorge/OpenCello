@@ -22,10 +22,134 @@ struct BowLine: Identifiable {
 struct BowEvaluation {
     let angleDeviation: Double
     let contact: Double
+    let contactPoint: CGPoint
     let angleOK: Bool
     let zoneOK: Bool
     let line: BowLine
     let confidence: Double
+}
+
+enum BowZone: String {
+    case fingerboard = "sur la touche"
+    case middle = "au milieu"
+    case bridge = "près du chevalet"
+
+    var colorName: String {
+        switch self {
+        case .fingerboard: return "orange"
+        case .middle: return "green"
+        case .bridge: return "blue"
+        }
+    }
+}
+
+enum BowMotion: String {
+    case forward = "sens aller"
+    case backward = "sens retour"
+    case still = "immobile"
+}
+
+/// Vecteur d'archet d'une frame : direction, angle, contact et vitesse.
+struct BowVector {
+    let start: CGPoint
+    let end: CGPoint
+    let contactPoint: CGPoint
+    let angleDeviation: Double
+    let contact: Double
+    let zone: BowZone
+    let motion: BowMotion
+    let speed: Double
+    let confidence: Double
+}
+
+/// Suit le vecteur de l'archet entre deux frames pour estimer le sens du coup
+/// (aller/retour), la vitesse et les changements de direction. Le profil est
+/// une vue 2D : on ne prétend pas distinguer poussé/tiré sans repère du talon.
+final class BowVectorizer {
+    private var previous: (midpoint: CGPoint, direction: CGVector, time: TimeInterval, speed: Double)?
+    private var committedMotion: BowMotion = .still
+    private var pendingMotion: BowMotion = .still
+    private var pendingCount = 0
+    private(set) var directionChanges = 0
+
+    func reset() {
+        previous = nil
+        committedMotion = .still
+        pendingMotion = .still
+        pendingCount = 0
+        directionChanges = 0
+    }
+
+    func update(_ evaluation: BowEvaluation, timestamp: TimeInterval) -> BowVector {
+        let dx = evaluation.line.end.x - evaluation.line.start.x
+        let dy = evaluation.line.end.y - evaluation.line.start.y
+        let length = max(0.0001, hypot(dx, dy))
+        let direction = CGVector(dx: dx / length, dy: dy / length)
+        let midpoint = CGPoint(
+            x: (evaluation.line.start.x + evaluation.line.end.x) / 2,
+            y: (evaluation.line.start.y + evaluation.line.end.y) / 2
+        )
+
+        var motion: BowMotion = .still
+        var speed = 0.0
+        if let previous, timestamp > previous.time {
+            let dt = timestamp - previous.time
+            if dt > 0.01, dt < 0.6 {
+                let move = CGVector(
+                    dx: midpoint.x - previous.midpoint.x,
+                    dy: midpoint.y - previous.midpoint.y
+                )
+                speed = hypot(move.dx, move.dy) / dt
+                let smoothed = 0.7 * previous.speed + 0.3 * speed
+                speed = smoothed
+                if speed > 0.02 {
+                    let projection = move.dx * previous.direction.dx + move.dy * previous.direction.dy
+                    let candidate: BowMotion = projection >= 0 ? .forward : .backward
+                    if candidate == pendingMotion {
+                        pendingCount += 1
+                    } else {
+                        pendingMotion = candidate
+                        pendingCount = 1
+                    }
+                    if pendingCount >= 2 {
+                        if committedMotion != .still, candidate != committedMotion {
+                            directionChanges += 1
+                        }
+                        committedMotion = candidate
+                        motion = candidate
+                    } else {
+                        motion = committedMotion
+                    }
+                } else {
+                    pendingMotion = .still
+                    pendingCount = 0
+                    motion = .still
+                }
+            }
+        }
+        previous = (midpoint, direction, timestamp, speed)
+
+        let zone: BowZone
+        if evaluation.contact < 0.33 {
+            zone = .fingerboard
+        } else if evaluation.contact > 0.67 {
+            zone = .bridge
+        } else {
+            zone = .middle
+        }
+
+        return BowVector(
+            start: evaluation.line.start,
+            end: evaluation.line.end,
+            contactPoint: evaluation.contactPoint,
+            angleDeviation: evaluation.angleDeviation,
+            contact: evaluation.contact,
+            zone: zone,
+            motion: motion,
+            speed: speed,
+            confidence: evaluation.confidence
+        )
+    }
 }
 
 enum BowGeometry {
@@ -103,9 +227,19 @@ enum BowGeometry {
         let zoneOK = best.contact >= 0.1 && best.contact <= 0.9
         let confidence = min(1, max(0, 1 - best.deviation / 45))
 
+        let clampedContact = max(0, min(1, best.contact))
+        let contactPoint = CGPoint(
+            x: bridge.x + (fingerboard.x - bridge.x) * clampedContact,
+            y: bridge.y + (fingerboard.y - bridge.y) * clampedContact
+        )
+
         return BowEvaluation(
             angleDeviation: best.deviation,
             contact: best.contact,
+            contactPoint: CGPoint(
+                x: contactPoint.x / imageSize.width,
+                y: contactPoint.y / imageSize.height
+            ),
             angleOK: angleOK,
             zoneOK: zoneOK,
             line: BowLine(start: normalizedStart, end: normalizedEnd),

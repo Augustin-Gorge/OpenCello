@@ -14,8 +14,9 @@ Application macOS open source d'aide à la pratique du violoncelle : analyse de 
 - **rapports dans l'app** : historique complet, score /100 transparent, gros chiffres, graphiques (justesse/stabilité note par note, temps en alerte), analyse commentée axe par axe, exercices recommandés ; exports PDF/JSON/pack professeur ;
 - **page Profil** (façon « fiche de joueur ») : moyennes des 10 dernières séances, flèches de tendance, courbe de forme, cumuls posture, main gauche/positions/techniques, meilleure/pire séance ;
 - **séance libre plein écran** : caméra plein cadre avec HUD temps réel — jauges de position par repère (tête, épaules, asymétrie, archet), hauteur, alertes ;
-- **mode morceau** : recherche IMSLP tolérante (accents, fautes) avec correction par lexique hybride, import MusicXML, suivi justesse/rythme/**position + doigt** ;
-- **mode profil archet** : détection de lignes (Hough), calibration chevalet → touche, angle/zone de contact (A10/A11) ;
+- **mode morceau** : recherche IMSLP tolérante (accents, fautes) avec correction par lexique hybride, **téléchargement des PDF avec statut de copyright**, **conversion PDF → MusicXML dans l'app** (Audiveris externe), **aperçu intégré** et **édition déléguée à MuseScore**, suivi justesse/rythme/**position + doigt** ;
+- **mode profil archet** : détection de lignes (Hough), calibration chevalet → touche, angle/zone de contact (A10/A11) ; **vectorisation de l'archet** (sens aller/retour, vitesse, point de contact touche/chevalet) et alerte si tu joues trop sur la touche ;
+- **caméra** : sélecteur intégrée / externe / iPhone continuité, et **enregistrement vidéo opt-in** des séances dans `Movies/OpenCello/Sessions` (vidéo seule, locale) ;
 - **vibrato** (taux/amplitude), **articulations** (heuristique 7 classes), **fluidité du geste** (jerk/mobilité, indicatif) ;
 - **main gauche (A17-A20, rapport seulement)** : angle de main, pouce en hypothèse, souplesse des doigts, coude-guide ;
 - **positions et déplacements chiffrés** : position **exacte** dès que note + corde + doigt sont connus (formule, pas de ±1), candidats la/ré/sol/do sinon, pouce en position haute, matrice doigt × position × direction, justesse d'arrivée, glissé parasite vs volontaire ;
@@ -68,7 +69,11 @@ Tout le code est dans `OpenCello/` (SwiftUI, macOS 14+) :
 | `TitleVocabulary.swift` | Lexique musical noyau + top des mots de titres IMSLP (généré) |
 | `MusicXMLParser.swift` | Parseur MusicXML (notes, silences, accords, liaisons, tempo, glissando, doigté) |
 | `ScoreFollower.swift` | Suivi de partition (appariement, cents, rythme, ré-ancrage, index des notes) |
-| `PieceView.swift` | Interface du mode morceau (position/doigt/confiance, replay) |
+| `PieceView.swift` | Interface du mode morceau (IMSLP, PDF, conversion, aperçu, position/doigt/confiance, replay) |
+| `ScoreLibrary.swift` | Bibliothèque locale : PDF + MusicXML de travail sous Application Support |
+| `ScoreOMR.swift` | Conversion PDF → MusicXML par Audiveris externe (`.mxl`, écriture atomique) |
+| `ScoreStudioModel.swift` | Aller-retour MuseScore : `.mscz` ↔ MusicXML, surveillance, réimport |
+| `ScoreStudioView.swift` | Aperçu intégré (swift-sheet-music) + panneau d'édition MuseScore |
 | `HandPoseAnalyzer.swift` | Vision Hands : 2 mains, 21 points → `HandFrame` |
 | `LeftHandAnalyzer.swift` | Main gauche : P11-P14, doigt presseur, pouce (hypothèse), coude (A17-A20) |
 | `PositionTracker.swift` | Positions 1-7 × cordes × doigts, fusion audio/caméra, agrégats de déplacement |
@@ -99,7 +104,7 @@ Tout le code est dans `OpenCello/` (SwiftUI, macOS 14+) :
 | [docs/15-vocabulaire-imslp.md](docs/15-vocabulaire-imslp.md) | Analyse de fréquence des titres IMSLP et stratégie de correction orthographique |
 | [docs/16-etude-longitudinale.md](docs/16-etude-longitudinale.md) | Protocole d'étude longitudinale (non exécutée) |
 | [docs/17-contribution-exercices.md](docs/17-contribution-exercices.md) | Schéma et règles de contribution d'exercices |
-| [docs/18-omr-local.md](docs/18-omr-local.md) | OMR local PDF → MusicXML : Ollama + constrained decoding, boucles de contrôle, comparaison Audiveris/PDF2Muse |
+| [docs/18-omr-local.md](docs/18-omr-local.md) | OMR local PDF → MusicXML : Audiveris-first, boucle IA d'étalonnage, intégration app (conversion, aperçu, édition MuseScore) |
 | [docs/19-protocole-test-cadre-fixe.md](docs/19-protocole-test-cadre-fixe.md) | Protocole de test caméra « cadre fixe » avec violoncellistes (non exécuté) |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Guide de contribution (build, tests, style, exercices) |
 
@@ -109,6 +114,7 @@ Tout le code est dans `OpenCello/` (SwiftUI, macOS 14+) :
 - Pitch : algorithme **YIN** (De Cheveigné & Kawahara, 2002) implémenté en Swift.
 - Stockage local : historique JSON dans Application Support ; les rapports s'affichent dans l'app, exports PDF/JSON à la demande. Pas de SwiftData pour l'instant.
 - Graphiques : **Swift Charts** (courbes/barres) + **Liveline** (SPM, MIT — radar/spider et anneaux, Canvas natif) ; statistiques : **Accelerate/vDSP** ; PDF : **PDFKit** (frameworks système).
+- Partitions : **Audiveris** (AGPL, externe) pour la conversion PDF → MusicXML ; **swift-sheet-music** (SPM, MIT) pour l'aperçu SwiftUI ; **MuseScore** (GPL, externe) pour l'édition — aucun éditeur de notation maison.
 - Règle du projet : **dépendances d'abord** — assembler des briques existantes plutôt que réécrire du code (`AGENTS.md`).
 - Licence cible : **MIT** (attention aux licences des briques intégrées — voir `docs/07`).
 

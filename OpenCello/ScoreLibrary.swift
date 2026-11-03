@@ -35,15 +35,22 @@ enum ScoreLibrary {
         )
     }
 
+    /// Chemin cible d'un PDF (sans écrire).
+    static func pdfURL(workTitle: String, fileName: String) -> URL {
+        var name = sanitizedComponent(fileName)
+        if !name.lowercased().hasSuffix(".pdf") { name += ".pdf" }
+        return folder(for: workTitle).appendingPathComponent(name)
+    }
+
     /// Enregistre un PDF téléchargé (IMSLP) ou importé.
     @discardableResult
     static func storePDF(data: Data, workTitle: String, fileName: String) throws -> URL {
         try ensureRoot()
-        let folder = folder(for: workTitle)
-        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
-        var name = sanitizedComponent(fileName)
-        if !name.lowercased().hasSuffix(".pdf") { name += ".pdf" }
-        let target = folder.appendingPathComponent(name)
+        let target = pdfURL(workTitle: workTitle, fileName: fileName)
+        try FileManager.default.createDirectory(
+            at: target.deletingLastPathComponent(),
+            withIntermediateDirectories: true
+        )
         try data.write(to: target, options: .atomic)
         return target
     }
@@ -64,6 +71,31 @@ enum ScoreLibrary {
     /// MusicXML associé à un PDF : même dossier, même nom de base.
     static func musicXMLURL(for pdf: URL) -> URL {
         pdf.deletingPathExtension().appendingPathExtension("musicxml")
+    }
+
+    /// Chemin cible d'un MusicXML importé (sans écrire).
+    static func musicXMLURL(workTitle: String, fileName: String) -> URL {
+        var name = sanitizedComponent(fileName)
+        let lower = name.lowercased()
+        if !lower.hasSuffix(".musicxml") && !lower.hasSuffix(".xml") {
+            name += ".musicxml"
+        }
+        return folder(for: workTitle).appendingPathComponent(name)
+    }
+
+    /// Copie un MusicXML choisi par l'utilisateur dans la bibliothèque de
+    /// l'app : le fichier devient éditable (`.mscz` frère, reconversion) même
+    /// s'il vient d'un dossier protégé par macOS.
+    @discardableResult
+    static func storeMusicXML(data: Data, workTitle: String, fileName: String) throws -> URL {
+        try ensureRoot()
+        let target = musicXMLURL(workTitle: workTitle, fileName: fileName)
+        try FileManager.default.createDirectory(
+            at: target.deletingLastPathComponent(),
+            withIntermediateDirectories: true
+        )
+        try data.write(to: target, options: .atomic)
+        return target
     }
 
     /// MusicXML déjà présent pour ce PDF, s'il existe.

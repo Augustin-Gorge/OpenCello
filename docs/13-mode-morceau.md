@@ -45,7 +45,7 @@ Un PDF scanné n'est pas lisible par la machine. Pour suivre la partition, il fa
 - **MusicXML** (`.musicxml`, `.xml`) : standard ouvert, exporté par tous les éditeurs (MuseScore : Fichier → Exporter → MusicXML).
 - **`.mxl`** (MusicXML compressé) : l'import direct par l'app n'est pas encore supporté ; le `.mxl` produit par Audiveris est, lui, décompressé automatiquement par `ScoreOMR`. Pour un fichier utilisateur, exporter en `.musicxml` non compressé.
 - **PDF → MusicXML dans l'app** : bouton **Convertir en MusicXML** → **Audiveris** (AGPL, sous-processus externe, jamais empaqueté) → `.mxl` décompressé → MusicXML validé et écrit atomiquement dans la bibliothèque de l'app (`docs/18-omr-local.md`). Le PDF déjà téléchargé est réutilisé ; le MusicXML déjà présent n'est pas reconverti.
-- **Aperçu et édition** : `ScoreStudioView` affiche le MusicXML avec **swift-sheet-music** (SPM MIT, macOS 15). L'édition est **déléguée à MuseScore** (GPL, externe) : l'app crée un `.mscz` voisin, l'ouvre, surveille les modifications et reconvertit en MusicXML à chaque ⌘S. Aucune fonction d'édition de notation n'est réimplémentée dans l'app.
+- **Aperçu et édition** : `ScoreStudioView` affiche le MusicXML avec **swift-sheet-music** (SPM MIT, macOS 15). L'édition est **déléguée à MuseScore** (GPL, externe) : l'app crée un `.mscz` voisin (`mscore -f` sur une copie temporaire, ou export du modèle en secours), l'ouvre, surveille les modifications et reconvertit en MusicXML à chaque ⌘S. Aucune fonction d'édition de notation n'est réimplémentée dans l'app.
 - **Pipeline QA** : `tools/qa/omr_pipeline.py` conserve la boucle **Audiveris-first + réparation IA** (Ollama, constrained decoding, rollback monotone) et l'évaluation note à note ; il n'est pas requis par l'app.
 - **MIDI** : autre format symbolique possible (à ajouter).
 
@@ -62,7 +62,7 @@ Sous-ensemble « score-partwise » implémenté (`MusicXMLParser.swift`) :
 - `sound tempo` → tempo par défaut ;
 - `work-title` / `movement-title` / `creator[type=composer]`.
 
-Limites assumées : changements de divisions, mesures de pickup (gérées par l'ancrage), reprises/voltas, accords (les notes d'un accord sont traitées séquentiellement — à regrouper en V2), ornements.
+Limites assumées : changements de divisions, mesures de pickup (gérées par l'ancrage), reprises/voltas, accords/doubles cordes (les notes sont groupées et signalées, mais l'audio reste monophonique — une seule note est mesurée), ornements, pizzicato (détection heuristique).
 
 ## 5. Algorithme de suivi (`ScoreFollower.swift`)
 
@@ -133,12 +133,13 @@ La partition (MusicXML) donne la **hauteur** attendue, mais pas le doigté : une
 | Conversion PDF dépend d'Audiveris | Sans outil installé, pas de PDF → MusicXML ; ~90 s pour un PDF complet de 5 pages | Détection + message d'installation ; MusicXML mis en cache ; conversion en arrière-plan annulable |
 | Aperçu intégré macOS 15 | Sur macOS 14, l'aperçu SwiftUI n'est pas disponible | Utiliser MuseScore pour voir/éditer ; le MusicXML reste synchronisé |
 | Édition déléguée à MuseScore | MuseScore (GPL) doit être installé ; l'app ne fournit pas d'édition de notation intégrée | Détection + lien d'installation ; MuseScore est l'éditeur open source de référence |
-| Aller-retour `.mscz` | MuseScore peut reformater le MusicXML (mise en page, orthographe) | L'original reste en place jusqu'au ⌘S ; le `.mscz` est recréé si le MusicXML a été régénéré |
+| Aller-retour `.mscz` | MuseScore peut reformater le MusicXML (mise en page, orthographe) ; le secours par le modèle du paquet peut perdre quelques doublons | L'original reste en place jusqu'au ⌘S ; import MuseScore `-f` prioritaire sur une copie ; le `.mscz` est recréé si le MusicXML a été régénéré |
 | OMR sans réparation IA dans l'app | Le MusicXML brut d'Audiveris peut contenir des durées fausses | Relire dans MuseScore ; le pipeline QA avec boucle de réparation reste disponible (`docs/18`) |
 | Reprises/voltas ignorées | Désalignement après une reprise | Modèle de structure (repeat/ending) + ré-ancrage |
-| Accords traités séquentiellement | Faux « hors partition » sur les double-cordes | Regrouper les notes de même onset en événements d'accord |
+| Doubles cordes / accords | Le MusicXML groupe les notes, mais l'audio (YIN) ne sort qu'une hauteur : une seule note est mesurée, le feedback signale « accord de N notes, une seule mesurée » | Détection multi-pitch (pics spectraux, annulation harmonique) + suivi d'accord dédié |
 | Tempo constant | Écart rythmique si l'on ralentit volontairement | Suivi de tempo continu (filtre de Kalman / DTW en ligne) |
 | Partie mal choisie | Suivi impossible | Détection automatique par ambitus + nom, aperçu des premières notes |
 | Dépend du réseau pour la recherche | Pas de recherche hors ligne | Cache local de la liste `type=2` (option) |
 | Import direct `.mxl` utilisateur | Fichier refusé par l'app | Le `.mxl` d'Audiveris est déjà décompressé ; ajouter la décompression à l'import utilisateur |
-| Position/doigt estimés (v1.1) | Confiance variable, résolution ±1 position ; pouce en hypothèse | Afficher la confiance, ne jamais inventer une position ; calibration visuelle à venir |
+| Position/doigt (v1.1) | Position exacte si note + corde + doigt connus ; sinon candidats. Le doigt caméra reste heuristique | `<string>`/`<fingering>` MusicXML, sélection manuelle de corde, calibration caméra 3/4 |
+| Pizzicato | Détection heuristique (attaque/decay) et lecture DLS pizzicato ; pas d'analyse d'archet pendant le pizz | Détection dédiée + retour sur le geste de la main droite |

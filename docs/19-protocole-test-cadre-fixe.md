@@ -156,6 +156,13 @@ main/avant-bras et fabrique des hypothèses de pouce. Conclusion : le **3/4
 avant-gauche** est le cadrage de référence ; le face sert de baseline « usage
 réel », le profil/top de contrôle.
 
+La prise **3/4 gauche** (108 s, 1280×720) confirme le cadrage : **100 %** de
+corps, **98,8 %** de mains, **93 %** d'angle valide (moyenne 17,4°). Mais le
+doigt presseur reste bloqué sur le **4e doigt** (82 % des frames) et le pouce
+est sur-détecté : le cadrage est bon, **l'heuristique de doigt est le verrou**
+à corriger avant de valider la position exacte. Une annotation manuelle de
+20-30 frames (doigt et position réels) est nécessaire pour calibrer ce classifieur.
+
 ## 9. Ce qui reste à faire
 
 - Recruter 2-3 violoncellistes (niveaux différents) et exécuter le script.

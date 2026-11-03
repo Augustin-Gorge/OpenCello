@@ -612,15 +612,16 @@ OpenCello/
   `/Applications/Audiveris.app/Contents/MacOS/Audiveris -batch -transcribe -export -output <tmp> <pdf>`,
   récupération du `.mxl`, décompression `ditto`, `META-INF` ignoré, contrôle de la racine `score-partwise`, **écriture atomique** (une sortie invalide ne détruit jamais un MusicXML valide), annulation et délai de sécurité. `beginActivity(.userInitiated)` + QoS pour éviter App Nap.
 - **UI IMSLP/PDF** (`SessionEngine`, `PieceView`) : liste des PDF d'une œuvre avec statut de copyright (domaine public en premier), téléchargement, import PDF/MusicXML, carte « Convertir en MusicXML » (ou « Voir / modifier » si le MusicXML existe déjà — aucune reconversion silencieuse), progression, annulation, messages d'erreur. Le MusicXML déjà présent est chargé sans reconversion ; « Reconvertir » reste une action explicite.
-- **Atelier** (`ScoreStudioModel`, `ScoreStudioView`) : aperçu ; bouton **« Modifier dans MuseScore »** (⇧⌘E) ; conversion MusicXML → `.mscz` via `mscore -o` si nécessaire ; ouverture du `.mscz` ; surveillance du mtime ; reconversion `.mscz` → MusicXML après chaque ⌘S (délai anti-écriture partielle) ; validation par `MusicXMLParser` **et** le parseur du paquet ; remplacement atomique ; rechargement de l'aperçu et du `Score` de suivi. Le `.mscz` est recréé si le MusicXML a été régénéré. Si l'atelier est fermé, `flushPendingSync` tente une dernière récupération ; à la réouverture, `syncIfNeeded` compare les dates.
+- **Atelier** (`ScoreStudioModel`, `ScoreStudioView`) : aperçu ; bouton **« Modifier dans MuseScore »** (⇧⌘E) ; préparation du `.mscz` par **import MuseScore `-f` sur une copie temporaire** du MusicXML (le XML brut d'Audiveris est refusé sans `-f` ; la source n'est jamais exposée à l'importeur), avec **secours `SheetMusic.exportMSCZ`** depuis le modèle du viewer ; ouverture du `.mscz` ; surveillance du mtime ; reconversion `.mscz` → MusicXML après chaque ⌘S (`-f`, délai anti-écriture partielle) ; validation par `MusicXMLParser` **et** le parseur du paquet ; remplacement atomique ; rechargement de l'aperçu et du `Score` de suivi. Le `.mscz` est recréé si le MusicXML a été régénéré ou si le ZIP est invalide. Si l'atelier est fermé, `flushPendingSync` tente une dernière récupération ; à la réouverture, `syncIfNeeded` compare les dates.
 - **Préservation de la clef** dans le convertisseur QA (`omr_json_to_musicxml.py`) : lecture/émission de `<clef>` (sign/line/clef-octave-change). Sans cela, l'aperçu affichait tout en clef de sol ; vérifié en clef de fa sur BWV et la fixture volta.
 - **Tests Debug** : arguments `--score-studio <fichier>`, `--piece`, `--imslp-work "<titre>"`, `--imslp-download <fichier>`, `--omr` (compilés en Debug uniquement) pour automatiser les parcours sans accessibilité UI.
-**Fichiers** : `OpenCello/ScoreLibrary.swift`, `ScoreOMR.swift`, `ScoreStudioModel.swift`, `ScoreStudioView.swift` (nouveaux) ; `SessionEngine.swift`, `PieceView.swift`, `ContentView.swift`, `OpenCelloApp.swift` ; `OpenCello.xcodeproj/project.pbxproj`, `Package.resolved` ; `tools/qa/omr_service_test.swift`, `tools/qa/omr_json_to_musicxml.py` ; `docs/07`, `docs/08`, `docs/10`, `docs/13`, `docs/18`, `PRINCIPE.md`, `BUILD.md`, `README.md`, `tools/qa/README.md`.
+**Fichiers** : `OpenCello/ScoreLibrary.swift`, `ScoreOMR.swift`, `ScoreStudioModel.swift`, `ScoreStudioView.swift` (nouveaux) ; `SessionEngine.swift`, `PieceView.swift`, `ContentView.swift`, `OpenCelloApp.swift`, `HelpView.swift` ; `OpenCello.xcodeproj/project.pbxproj`, `Package.resolved` ; `tools/qa/omr_service_test.swift`, `tools/qa/omr_json_to_musicxml.py` ; `docs/07`, `docs/08`, `docs/10`, `docs/13`, `docs/18`, `PRINCIPE.md`, `BUILD.md`, `README.md`, `tools/qa/README.md`.
 **Tests** :
-- `xcodebuild … build` → **BUILD SUCCEEDED**, **aucune warning Swift** (seul l'avertissement outil `appintentsmetadataprocessor`).
+- `xcodebuild … build` (Debug **et** Release) → **BUILD SUCCEEDED**, **aucune warning Swift** (seul l'avertissement outil `appintentsmetadataprocessor`).
 - `swiftc -O -o build/qa/omr_service_test OpenCello/ScoreOMR.swift tools/qa/omr_service_test.swift && ./build/qa/omr_service_test build/qa/bwv1007_p1.pdf /tmp/omr_atomic.musicxml` → **41 mesures, 1 partie, 232 861 octets, 13,9 s**.
 - Même service sur le PDF IMSLP complet **5 pages** (`BWV1007.pdf`, 320 283 o) : **78 s en CLI**, **~90 s dans l'app**, 233 013 octets, 41 mesures reconnues (les autres pages ne produisent pas de musique reconnue).
 - **Aller-retour MuseScore** : MusicXML → `.mscz` (70 Ko) → MusicXML, **41 mesures / 600 notes conservées** ; une transposition réelle dans MuseScore suivie de ⌘S a été réimportée automatiquement (statut « Modifications MuseScore importées », dernière synchro 16:55:50) et l'aperçu s'est mis à jour.
+- **Import MuseScore du XML brut d'Audiveris** (`mscore -f` sur copie) : `.mscz` 129 Ko, retour **599 notes**, `SUIVI: true` ; **secours `SheetMusic.exportMSCZ`** : `.mscz` 7,2 Ko, **596 notes** (quelques doublons de hauteur fusionnés par le modèle du paquet). Sans `-f`, MuseScore refuse l'import (code 40) — d'où l'option et la copie temporaire.
 - `omr_follower_compat` sur la sortie Audiveris brute → **599 notes**, `SUIVI: true` ; `omr_test.py` → **35 OK, 0 échec** ; `omr_evaluate.py` volta → **97,6 %**.
 - Téléchargement IMSLP dans l'app : `BWV1007.pdf` **320 283 o** écrit dans la bibliothèque ; liste de l'œuvre avec badges « Domaine public » ; capture de l'écran Morceau vérifiée.
 - Vérifications visuelles : viewer en **mesure 1**, clef de fa, 41 mesures ; panneau « MuseScore 4.7.6 détecté » ; conversion, PDF card et boutons « Voir / modifier » ; MuseScore ouvert avec le `.mscz` et partition affichée.
@@ -631,7 +632,7 @@ OpenCello/
 - La conversion utilise la **sortie Audiveris brute** : pas de boucle IA de réparation dans l'app (contrairement au pipeline QA), donc des durées fausses peuvent subsister ; la relecture dans MuseScore est nécessaire.
 - L'import direct d'un `.mxl` utilisateur reste non supporté ; seul le `.mxl` d'Audiveris est décompressé.
 - Le PDF complet de 5 pages n'a produit que 41 mesures : les autres pages sont probablement blanches/titre ou non reconnues ; à vérifier sur d'autres éditions avant de généraliser.
-- L'aller-retour MuseScore peut reformater le MusicXML (mise en page, orthographe) ; le `.mscz` est un intermédiaire, pas une seconde source de vérité.
+- L'aller-retour MuseScore peut reformater le MusicXML (mise en page, orthographe) ; le `.mscz` est un intermédiaire, pas une seconde source de vérité. L'import du XML brut exige `-f` et se fait sur une copie temporaire ; le secours par le modèle du paquet peut perdre quelques doublons (596 vs 599).
 - `swift-sheet-music` 4.27.0 est un paquet récent (MIT, auteur unique) ; il est isolé dans le viewer et remplaçable, tandis que MuseScore reste l'éditeur reconnu. La police Bravura (SIL OFL) est embarquée par le paquet.
 - Aucun test automatisé de l'UI : validation par captures et parcours manuel. La première exécution peut déclencher une **autorisation macOS** (Documents) pour le sous-processus ; la description TCC a été ajoutée.
 **Suite** : tester 10 partitions IMSLP variées et mesurer le taux de notes correctes (critère Phase 8) ; ajouter l'import direct `.mxl` et, si utile, un aperçu PDF de secours sur macOS 14 ; valider le parcours MuseScore avec des utilisateurs ; éventuellement exposer la réparation IA du pipeline QA comme action explicite « Réparer avec l'IA ».
@@ -655,6 +656,25 @@ OpenCello/
 - Le changement de caméra interrompt la session ; l'enregistrement est refusé pendant un enregistrement en cours.
 - La direction aller/retour est une estimation 2D, pas la distinction poussé/tiré ; l'angle et le contact restent les mesures les plus fiables.
 **Suite** : tester le sélecteur et l'enregistrement en conditions réelles, ajouter une purge/limite de taille, puis valider la vectorisation de l'archet sur des vidéos de profil annotées (zone touche/chevalet).
+
+### 2026-11-03 — Doubles cordes, pizzicato et test 3/4 gauche
+
+**Objectif** : clarifier et améliorer le traitement des doubles cordes et du pizzicato, puis exploiter la nouvelle prise **3/4 gauche**.
+**Fait** :
+- **Doubles cordes / accords** : le MusicXML groupait déjà les `<chord>` au même onset ; `ScoreFollower` calcule maintenant la taille du groupe et renvoie `chordSize`. Le feedback affiche explicitement « Accord de N notes : une seule note mesurée (double corde non séparée) ». L'audio reste **monophonique** (YIN/NoteSegmenter) : l'app ne mesure pas les deux hauteurs simultanément, ne prétend pas le faire, et le total de notes de l'accord reste visible dans les stats.
+- **Pizzicato** : ajout de `Articulation.pizzicato`, heuristique audio (attaque < 25 ms, décroissance rapide, durée 0,3-1,8 s, variation RMS, gap), parsing MusicXML `<pizzicato/>` et `<other-play>pizz.</other-play>`, durée courte dans le replay et **programme General MIDI 45 (Pizzicato Strings)** sur le canal de la note. Le feedback live peut donc afficher « Pizzicato ».
+- **Test 3/4 gauche** : `data/Vidéo 3:4 gauche.mov`, 108 s, 1280×720, 1623 frames à 15 fps. Résultats : corps **100 %**, mains **98,8 %**, angle valide **93 %** (moyenne 17,4°, max 75°). Mais doigt presseur 4 sur **82 %** des frames et pouce surestimé (53,7 %) : le cadrage est excellent, **l'heuristique de doigt est le verrou**. L'annotation manuelle de quelques frames est nécessaire pour la recalibrer.
+**Fichiers** : `Articulation.swift`, `MusicXMLParser.swift`, `ScoreFollower.swift`, `ReplayKit.swift`, `tools/qa/phase5_main.swift`, `tools/qa/phase7_main.swift`, `docs/04`, `docs/13`, `docs/19`, `docs/14`.
+**Tests** :
+- `xcodebuild … build` → **BUILD SUCCEEDED**, 0 warning Swift.
+- `phase5_test` → les 8 articulations, dont **Pizzicato OK**.
+- `phase7_test` → `PHASE7: OK` ; `MUSICXML: … pizz pizzicato` ; `CHORD: size 2 · Accord de 2 notes : une seule note mesurée`.
+- Vidéo 3/4 : métriques ci-dessus ; **pas d'annotation humaine**, donc pas de validation de la position/du doigt.
+**Limites / risques** :
+- Les doubles cordes ne sont **pas** vraiment analysées : une seule F0 ; la seconde note n'est pas contrôlée. Il faudra une détection multi-pitch (pics spectraux/annulation harmonique) et un suivi d'accord.
+- Le pizzicato est une **heuristique** ; il peut être confondu avec un staccato/spiccato très court. L'analyse d'archet n'a pas de sens pendant un pizz : ne pas interpréter « archet non détecté » comme une erreur.
+- Le doigt presseur caméra reste faux sur la prise 3/4 (4e doigt surreprésenté) ; la position exacte dépend encore du `<fingering>` MusicXML ou d'une future calibration.
+**Suite** : annoter 20-30 frames de la prise 3/4 (doigt/position réels) et recalibrer le classifieur ; ajouter multi-pitch + accords ; détection pizzicato dédiée main droite.
 
 ---
 

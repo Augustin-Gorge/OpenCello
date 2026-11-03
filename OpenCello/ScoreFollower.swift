@@ -16,6 +16,8 @@ struct FollowFeedback {
     var expectedArticulation: String?
     var expectedStringNumber: Int?
     var expectedFingering: Int?
+    /// Nombre de notes de l'accord attendu au même onset (1 = note simple).
+    var chordSize: Int?
     var progress: Double = 0
     var message = ""
     var isInTune = false
@@ -54,6 +56,7 @@ final class ScoreFollower {
     let bpm: Double
 
     private let notes: [ScoreNote]
+    private let chordSizes: [Int]
     private var position = 0
     private var anchorActual: TimeInterval?
     private var anchorScoreBeats: Double = 0
@@ -73,7 +76,9 @@ final class ScoreFollower {
         } else {
             part = score.parts.first ?? ScorePart(name: "", notes: [])
         }
-        self.notes = part.notes.sorted { $0.onsetBeats < $1.onsetBeats }
+        let sortedNotes = part.notes.sorted { $0.onsetBeats < $1.onsetBeats }
+        self.notes = sortedNotes
+        self.chordSizes = Self.computeChordSizes(sortedNotes)
         stats.totalNotes = notes.count
         stats.startedAt = Date()
     }
@@ -152,6 +157,7 @@ final class ScoreFollower {
         feedback.expectedArticulation = expected.scoreArticulation
         feedback.expectedStringNumber = expected.stringNumber
         feedback.expectedFingering = expected.fingering
+        feedback.chordSize = chordSizes.indices.contains(index) ? chordSizes[index] : 1
         feedback.isInTune = abs(cents) <= 25
 
         if anchorActual == nil {
@@ -189,11 +195,14 @@ final class ScoreFollower {
         stats.rhythmSamples += 1
 
         feedback.progress = notes.isEmpty ? 1 : Double(position) / Double(notes.count)
-        feedback.message = message(cents: cents, rhythmMs: rhythmMs)
+        feedback.message = message(cents: cents, rhythmMs: rhythmMs, chordSize: feedback.chordSize ?? 1)
         return feedback
     }
 
-    private func message(cents: Double, rhythmMs: Double) -> String {
+    private func message(cents: Double, rhythmMs: Double, chordSize: Int) -> String {
+        if chordSize > 1 {
+            return "Accord de \(chordSize) notes : une seule note mesurée (double corde non séparée)."
+        }
         if abs(cents) > 50 {
             return "Justesse : \(Int(cents.rounded())) cents — ajustez la main gauche."
         }
@@ -206,6 +215,23 @@ final class ScoreFollower {
             return "Juste et en place ✅"
         }
         return "Bien — continuez."
+    }
+
+    private static func computeChordSizes(_ notes: [ScoreNote]) -> [Int] {
+        var sizes = [Int](repeating: 1, count: notes.count)
+        var index = 0
+        while index < notes.count {
+            var end = index + 1
+            while end < notes.count,
+                  abs(notes[end].onsetBeats - notes[index].onsetBeats) < 0.0001,
+                  notes[end].measureIndex == notes[index].measureIndex {
+                end += 1
+            }
+            let size = end - index
+            for position in index..<end { sizes[position] = size }
+            index = end
+        }
+        return sizes
     }
 
     private func relocate() {

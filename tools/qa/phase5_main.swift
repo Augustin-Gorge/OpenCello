@@ -31,7 +31,8 @@ struct Phase5Test {
             ("staccato", ArticulationFeatures(duration: 0.15, attackTime: 0.02, tailRatio: 0.30, rmsVariation: 0.40, gapBefore: 0.05, pitchChange: 0, notesPerSecond: 2.0), .staccato),
             ("spiccato", ArticulationFeatures(duration: 0.30, attackTime: 0.05, tailRatio: 0.30, rmsVariation: 0.40, gapBefore: 0.05, pitchChange: 0, notesPerSecond: 3.0), .spiccato),
             ("sautille", ArticulationFeatures(duration: 0.12, attackTime: 0.02, tailRatio: 0.40, rmsVariation: 0.50, gapBefore: 0.02, pitchChange: 0, notesPerSecond: 8.0), .sautille),
-            ("bariolage", ArticulationFeatures(duration: 0.25, attackTime: 0.03, tailRatio: 0.50, rmsVariation: 0.30, gapBefore: 0.03, pitchChange: 3, notesPerSecond: 4.0), .bariolage)
+            ("bariolage", ArticulationFeatures(duration: 0.25, attackTime: 0.03, tailRatio: 0.50, rmsVariation: 0.30, gapBefore: 0.03, pitchChange: 3, notesPerSecond: 4.0), .bariolage),
+            ("pizzicato", ArticulationFeatures(duration: 0.80, attackTime: 0.01, tailRatio: 0.20, rmsVariation: 0.60, gapBefore: 0.10, pitchChange: 0, notesPerSecond: 1.0), .pizzicato)
         ]
 
         for (name, features, expected) in cases {

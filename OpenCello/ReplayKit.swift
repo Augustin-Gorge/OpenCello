@@ -307,6 +307,7 @@ enum ReplaySynth {
         switch articulation?.lowercased() {
         case "staccato", "spiccato": return 0.55
         case "marcato": return 0.45
+        case "pizzicato": return 0.35
         case "tenuto": return 1.05
         default: return 1.0
         }
@@ -547,6 +548,7 @@ enum ReplayStaffXML {
         case "tenuto": return "tenuto"
         case "marcato": return "strong-accent"
         case "spiccato": return "staccato"
+        case "pizzicato": return "pizzicato"
         default: return nil
         }
     }
@@ -722,6 +724,13 @@ final class ReplayAudioEngine: ObservableObject {
             let key = UInt32(max(0, min(127, note.midi)))
             let startBeat = start / secondsPerBeat
             let durationBeats = duration / secondsPerBeat
+
+            let isPizzicato = note.scoreArticulation?.lowercased().contains("pizz") == true
+            let program: UInt32 = isPizzicato ? 45 : UInt32(Self.celloProgram)
+            track.addEvent(
+                AVMIDIProgramChangeEvent(channel: channel, programNumber: program),
+                at: max(0, startBeat - 0.003)
+            )
 
             let cents = corrected ? 0 : max(-200, min(200, note.cents))
             let bend = UInt32(max(0, min(16383, Int(8192 + cents / 200 * 8192))))

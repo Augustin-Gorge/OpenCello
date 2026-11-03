@@ -618,6 +618,7 @@ struct Phase7Test {
               <note>
                 <pitch><step>E</step><octave>3</octave></pitch>
                 <duration>4</duration>
+                <notations><pizzicato/></notations>
               </note>
             </measure>
           </part>
@@ -628,13 +629,14 @@ struct Phase7Test {
             return
         }
         let notes = score.parts[0].notes
-        print("MUSICXML: \(notes.count) notes · glissando \(notes[0].glissando) · fingering \(notes[1].fingering ?? -1) · vélocité \(notes[0].velocity ?? -1) · corde \(notes[0].stringNumber ?? -1) · articulation \(notes[1].scoreArticulation ?? "—") · mesure2 début \(notes[2].measureStartBeats)")
+        print("MUSICXML: \(notes.count) notes · glissando \(notes[0].glissando) · fingering \(notes[1].fingering ?? -1) · vélocité \(notes[0].velocity ?? -1) · corde \(notes[0].stringNumber ?? -1) · articulation \(notes[1].scoreArticulation ?? "—") · pizz \(notes[2].scoreArticulation ?? "—") · mesure2 début \(notes[2].measureStartBeats)")
         check(notes.count == 3, "3 notes MusicXML")
         check(notes[0].glissando, "glissando")
         check(notes[1].fingering == 2, "fingering")
         check(notes[0].velocity == 90, "nuance mf → vélocité 90")
         check(notes[0].stringNumber == 3, "corde 3 (sol)")
         check(notes[1].scoreArticulation == "staccato", "articulation staccato")
+        check(notes[2].scoreArticulation == "pizzicato", "articulation pizzicato")
         check(notes[2].measureStartBeats == 2, "mesure 2")
         check(notes[2].onsetBeats == 2, "onset mesure 2")
     }
@@ -658,5 +660,19 @@ struct Phase7Test {
         check(indexed.map(\.index) == [1, 2, 3], "fenêtre indexée")
         check(follower.note(at: 2)?.midi == 62, "note 2")
         check(follower.notes(around: 0, radius: 1).count == 2, "notes autour de 0")
+
+        // Accord (double corde) : le MusicXML est groupé, mais l'audio reste
+        // monophonique ; le feedback doit le dire explicitement.
+        let chordNotes = [
+            ScoreNote(midi: 60, onsetBeats: 0, durationBeats: 1, measureIndex: 1, measureStartBeats: 0),
+            ScoreNote(midi: 64, onsetBeats: 0, durationBeats: 1, measureIndex: 1, measureStartBeats: 0)
+        ]
+        let chordScore = Score(title: "Accord", composer: nil, tempo: 100, parts: [ScorePart(name: "Cello", notes: chordNotes)])
+        let chordFollower = ScoreFollower(score: chordScore, partIndex: 0, bpm: 100)
+        let chordFeedback = chordFollower.process(midi: 60, onset: 0)
+        print("CHORD: size \(chordFeedback.chordSize ?? -1) · \(chordFeedback.message)")
+        check(chordFeedback.matched, "accord : une note appariée")
+        check(chordFeedback.chordSize == 2, "accord : 2 notes détectées dans le MusicXML")
+        check(chordFeedback.message.contains("Accord"), "accord : feedback explicite")
     }
 }

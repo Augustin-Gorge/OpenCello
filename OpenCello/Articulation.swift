@@ -8,6 +8,7 @@ enum Articulation: String, CaseIterable {
     case spiccato = "Spiccato"
     case sautille = "Sautillé"
     case bariolage = "Bariolage"
+    case pizzicato = "Pizzicato"
     case indetermine = "Indéterminé"
 }
 
@@ -33,6 +34,9 @@ enum ArticulationClassifier {
         }
         if features.staccatoLikely {
             return .staccato
+        }
+        if features.pizzicatoLikely {
+            return .pizzicato
         }
         if features.spiccatoLikely {
             return .spiccato
@@ -61,6 +65,15 @@ private extension ArticulationFeatures {
 
     var staccatoLikely: Bool {
         duration < 0.20 && attackTime < 0.035 && gapBefore > 0.035
+    }
+
+    var pizzicatoLikely: Bool {
+        // Pluck : attaque très brève, décroissance rapide, note qui résonne.
+        duration >= 0.30 && duration < 1.8
+            && attackTime < 0.025
+            && tailRatio < 0.35
+            && rmsVariation > 0.25
+            && gapBefore > 0.04
     }
 
     var spiccatoLikely: Bool {

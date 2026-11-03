@@ -237,7 +237,7 @@ final class MusicXMLParser: NSObject, XMLParserDelegate {
         case "p", "pp", "ppp", "pppp", "mp", "mf", "f", "ff", "fff", "ffff", "sf", "sfz":
             pendingVelocity = Self.velocity(for: elementName)
 
-        case "accent", "staccato", "tenuto", "marcato", "spiccato":
+        case "accent", "staccato", "tenuto", "marcato", "spiccato", "pizzicato":
             pendingScoreArticulation = elementName
 
         case "slur":
@@ -337,6 +337,11 @@ final class MusicXMLParser: NSObject, XMLParserDelegate {
 
         case "string":
             pendingStringNumber = Int(value)
+
+        case "other-play":
+            if value.lowercased().contains("pizz") {
+                pendingScoreArticulation = "pizzicato"
+            }
 
         case "note":
             finalizeNote()

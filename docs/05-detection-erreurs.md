@@ -2,6 +2,8 @@
 
 Chaque erreur nommée ci-dessous est reliée à **un ou plusieurs signaux mesurables** (posture : `docs/03`, son : `docs/04`), à un **seuil initial** (à calibrer), à un **niveau cible** et à des **exercices** (`docs/06`).
 
+> **Implémentation (3 novembre 2026)** : A17-A20 sont calculées par `LeftHandAnalyzer` et affichées **dans le rapport uniquement** (pas d'alerte HUD) ; B14-B18 s'appuient sur `GlideDetector`, `TechniqueTracker`, `PositionTracker` et `ArticulationClassifier`. Les seuils par profil sont centralisés dans `HandThresholds` et `AppSettings` ; ils restent des valeurs de départ, non validées par des violoncellistes.
+
 Principes généraux :
 - Une erreur n'est signalée que si elle **persiste ≥ 5 s** (anti-clignotement — Purdue) ; cooldown 20-30 s entre alertes ; au plus 2 alertes simultanées.
 - Chaque détection porte une **confiance** (qualité des landmarks, conditions) ; sous le seuil de confiance, on n'évalue pas et on le dit.
@@ -29,6 +31,10 @@ Principes généraux :
 | **A14** | Geste du bras droit saccadé (jerk élevé) | jerk des trajectoires coude/poignet ; quantité de mouvement | percentile 90 > seuil calibré | Int. → Av. |
 | **A15** | **Verrouillage** buste/tête (micro-mouvements absents) | variance des landmarks sur 10-20 s | quasi nulle en jouant | Int. → Av. (alerte douce) |
 | **A16** | Pince des genoux (hypothèse) | non mesurable caméra → **déduite** du son étouffé (B4) + posture de cuisses si visibles | — | Déb. |
+| **A17** | Main gauche « cassée » (déviation radiale/ulnaire) | angle ligne avant-bras ↔ axe 3e doigt (P11, 21 landmarks main) | > ~15° | Déb. → Int. |
+| **A18** | Pouce gauche crispé/verrouillé (hypothèse) | non visible en vue frontale → déduit de P8/P11 + B4/B14 ; toujours signalé comme hypothèse | — | Déb. → Int. |
+| **A19** | Doigts raides / levée excessive / frappe brutale | P13 : vitesse de levée-repose des bouts de doigts, flexion des IP, jerk | percentile 90 > seuil calibré | Déb. → Int. |
+| **A20** | Coude gauche ne guide pas le déplacement | mobilité du coude (P7) pendant une transition détectée (shift) | coude immobile pendant un déplacement de plus d'1 position | Int. → Av. |
 
 Note : A14/A15 s'inspirent de Rozé et al. 2020 — l'immobilité complète est un **défaut** chez l'avancé.
 
@@ -49,6 +55,11 @@ Note : A14/A15 s'inspirent de Rozé et al. 2020 — l'immobilité complète est 
 | **B11** | Accélération globale | dérive du tempo sur la séance | > +8 % vs BPM cible | Tous |
 | **B12** | Vibrato absent/irrégulier (selon niveau) | taux/ampleur de modulation F0 | hors plage [4,5-7 Hz] × [±10-50 cents] | Int. → Av. |
 | **B13** | Articulation mal exécutée (V2) | classification HHMM audio(+IMU) | proba < seuil | Int. |
+| **B14** | **Glissé parasite** (portamento non voulu) | pente continue du F0 entre deux notes liées sans glissando écrit (`docs/04` §2.8) | pente régulière > ~50 cents/s pendant > ~60-80 ms | Déb. → Int. |
+| **B15** | **Arrivée de déplacement fausse** | cents du doigt posé après un shift vs note cible | > 25 cents | Tous |
+| **B16** | **Déplacement lent / hésitant** | durée de transition (onset → onset) vs durée attendue | transition « traînante » > ~150-200 ms | Int. |
+| **B17** | **Piqué inégal** | σ des durées et des énergies des notes piquées | σ(durées) > ~10-15 % de la valeur moyenne | Int. |
+| **B18** | **Coupure de son pendant le déplacement** | creux RMS pendant une transition | > 6 dB | Déb. → Int. |
 
 ## C. Erreurs croisées (posture ↔ son) — la valeur pédagogique clé
 
@@ -59,6 +70,8 @@ Note : A14/A15 s'inspirent de Rozé et al. 2020 — l'immobilité complète est 
 | **C3** | Poignet supiné (A6) → angle d'archet → sifflement (B8) | A6 ∧ B8 |
 | **C4** | Pince des genoux (A16 hypothétique) → résonance étouffée (B4) | posture de jambes si visible ∧ B4 |
 | **C5** | Buste effondré (A3/A4) → respiration gênée, endurance ↓ (K&M) | A3 ∧ B4/B10 sur la durée |
+| **C6** | Tension main gauche (A17/A19) → glissé parasite (B14) | A17/A19 ∧ B14 → « détends la main, laisse le coude guider la descente » |
+| **C7** | Pouce crispé (A18 hypothèse) → son étouffé en positions hautes (B4) | A18 ∧ B4 sur notes aiguës → « vérifie que ton pouce glisse derrière le manche » |
 
 ## D. Hiérarchisation (pour les rapports)
 

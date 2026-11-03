@@ -35,8 +35,10 @@ App native **SwiftUI**, macOS 14+, Swift 5.9+, cible Apple Silicon (fonctionne a
 │                                     └─────────┬───────────┘    │
 │                                               ▼                │
 │                              ┌────────────────────────────┐   │
-│                              │ Rapports (MD/PDF/JSON)     │   │
-│                              │ + ExerciseEngine (reco)    │   │
+│                              │ Rapports dans l'app         │   │
+│                              │ (ReportView / ProfileView /  │   │
+│                              │  StatsKit·Accelerate)        │   │
+│                              │ + ExerciseEngine (reco)     │   │
 │                              └────────────────────────────┘   │
 └────────────────────────────────────────────────────────────────┘
 ```
@@ -73,13 +75,29 @@ App native **SwiftUI**, macOS 14+, Swift 5.9+, cible Apple Silicon (fonctionne a
 - Après exécution : évaluation automatique des critères → « atteint / en cours / pas encore », stockée par session.
 
 ### 2.6 `ReportKit`
-- Génération **Markdown** (par défaut) + export **JSON** (données) et **PDF** (SwiftUI `ImageRenderer`).
-- Contenu type : résumé, positives, top axes, courbes (Swift Charts : cents, RMS, centroid, posture par minute), captures annotées (locales), exercices proposés, note de confiance.
-- Historique : comparaisons semaine/semaine par métrique.
+- **Aucune génération Markdown** : les rapports vivent dans l'app (décision v1.1, le `.md` était peu lisible et non interactif).
+- `ReportAnalysis` : **score de séance /100** (formule transparente : justesse, stabilité, posture, continuité), commentaires hiérarchisés avec deltas vs séance précédente, exercices ciblés (via `ExerciseCatalog`), résumé de profil (moyennes, tendances, séries chronologiques).
+- `StatsKit` : briques statistiques sur **Accelerate/vDSP** (moyenne, écart-type, médiane, pente, moyenne glissante).
+- Vues : `ReportView` (gros chiffres, graphiques, analyse, exercices, exports), `ReportsView` (historique complet), `ProfileView` (page profil type « fiche de joueur » : radar, anneaux, tendances).
+- Graphiques : **Swift Charts** (courbes/barres) + **Liveline** (SPM, MIT) pour le **radar/spider** et les **anneaux** — Swift Charts n'a pas de radar sur macOS. Règle du projet : assembler des briques existantes plutôt que réécrire (`AGENTS.md`).
+- Exports ponctuels (opt-in) : PDF (PDFKit/ImageRenderer), JSON, pack professeur, export étude anonymisé.
 
 ### 2.7 Stockage (SwiftData)
 - `Session` (début/fin, profil, exercice pratiqué, BPM cible), `SessionStats` (agrégats 1 s : métriques posture + son), `ErrorEvent` (début/fin, classe, confiance), `Capture` (JPEG annoté, optionnel, local), `ExerciseRun`.
 - **Pas de vidéo brute ni d'audio brut conservés** par défaut (privacy by design). Option d'export ponctuel si l'utilisateur le demande (pour son professeur), avec bandeau explicite.
+
+### 2.8 Modules v1.1 — Phase 7 (implémentés, voir `docs/10`)
+- `HandPoseAnalyzer` : `VNDetectHumanHandPoseRequest` (2 mains max), conversion des 21 points Vision en `HandFrame` indépendant de Vision.
+- `LeftHandAnalyzer` : angle de la main (P11), trajectoires et souplesse des doigts (P13), doigt presseur (bout le plus bas), pouce en **hypothèse** (A18), indice de position (P14), mobilité du coude (A20) ; règles A17-A20 **rapport uniquement** (pas d'alerte HUD).
+- `PositionTracker` : numéro de position (fusion audio + caméra, `docs/03` §8.1), détection des déplacements (durée du portamento, justesse/stabilité d'arrivée, direction), **assignation position + doigt à chaque note appariée du suivi de partition** (`docs/13` §7), **matrice doigt × position × direction** agrégée par session et dans le profil (`docs/03` §8.3). Confiance affichée ; position `nil` si indéterminée.
+- `TechniqueTracker` : suivi des techniques particulières (piqué, glissé) — séries de notes piquées (égalité des durées/énergies, B17), transitions glissées volontaires vs parasites (B14) — stockées par profil dans `ProgressStore`.
+- `ReplayKit` : construction de « moments » (indices partition + statistiques, quelques Ko), **piano-roll Canvas** reconstruit depuis les stats, version « ce que tu as fait » vs « ce que ça devrait être » et **synthèse PCM locale** (sinusoïde + harmoniques + ADSR via `AVAudioEngine`) — pas de SoundFont, pas de MIDI externe. `ReplayView` présente le moment (session : bouton « Revoir ça » ; rapport : liste des replays).
+- Tests : `tools/qa/phase7_main.swift` (main gauche synthétique, positions, glissé, piqué, replays, persistance, MusicXML, suivi). Les seuils restent des valeurs de départ, non validées par des violoncellistes.
+
+### 2.9 `ScoreOMR` (Phase 8, pipeline validé dans `tools/qa/` — voir `docs/18`)
+- Import PDF → MusicXML **automatique et local** : rendu des pages (PDFKit, déjà utilisé), appel d'**Ollama** sur `localhost` (URLSession async) avec **constrained decoding** (schémas JSON `omr_schema.json`), boucles de transcription/fusion/réparation, validation XSD, conversion JSON→MusicXML.
+- Outils de comparaison optionnels détectés automatiquement : **Audiveris** (AGPL, sous-processus externe, jamais embarqué) et **PDF2Muse**.
+- La logique existe et est testée en Python (`tools/qa/omr_pipeline.py`) ; le portage Swift réutilisera les mêmes schémas, prompts et seuils.
 
 ## 3. Threads et performances
 - 3 files : capture (AVFoundation, temps réel), analyse vision (DISPATCH_QUEUE_PRIORITY_HIGH, 15 fps), analyse audio (temps réel, latence bornée). RuleEngine sur file dédiée (concurrence minimale), SwiftData sur main/background actor.
@@ -93,7 +111,7 @@ App native **SwiftUI**, macOS 14+, Swift 5.9+, cible Apple Silicon (fonctionne a
 - Conformité RGPD triviale : aucune donnée personnelle ne quitte la machine.
 
 ## 5. Distribution
-- Xcode project (SPM uniquement pour les dépendances ; MVP : zéro dépendance externe).
+- Xcode project + **SPM** pour les dépendances. Règle : **dépendances d'abord** — assembler des briques existantes (Liveline pour les graphiques radar/anneaux, etc.) plutôt que réécrire ; chaque dépendance est journalisée avec sa licence.
 - Notarisation + signature (développeur Apple) pour une distribution « directe » ; App Store en option.
 - Licence : **MIT** pour le code ; contenu des exercices : CC BY-SA ; ⚠️ point de vigilance AGPL (Ultralytics/Essentia) documenté dans `docs/07`.
 

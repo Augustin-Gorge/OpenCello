@@ -5,25 +5,31 @@ import Vision
 
 struct ContentView: View {
     @EnvironmentObject private var engine: SessionEngine
-    @State private var mode: AppMode = .free
     @State private var showSettings = false
     @State private var showOnboarding = false
     @State private var showHelp = false
 
+    private var modeBinding: Binding<AppMode> {
+        Binding(
+            get: { engine.appMode },
+            set: { engine.switchMode(to: $0) }
+        )
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 12) {
-                Picker("Mode", selection: $mode) {
+                Picker("Mode", selection: modeBinding) {
                     ForEach(AppMode.allCases, id: \.self) { item in
                         Text(item.rawValue).tag(item)
                     }
                 }
                 .pickerStyle(.segmented)
-                .frame(maxWidth: 460)
+                .frame(maxWidth: 620)
 
                 Spacer()
 
-                if mode == .piece && engine.pieceRunning {
+                if engine.appMode == .piece && engine.pieceRunning {
                     Text("Suivi en cours")
                         .font(.caption)
                         .foregroundStyle(.secondary)
@@ -50,21 +56,20 @@ struct ContentView: View {
 
             Divider()
 
-            switch mode {
+            switch engine.appMode {
             case .free:
                 FreeSessionView()
             case .piece:
                 PieceView()
             case .exercises:
                 ExercisesView()
-            case .progress:
+            case .reports:
                 ReportsView()
+            case .profile:
+                ProfileView()
             }
         }
         .frame(minWidth: 980, minHeight: 640)
-        .onChange(of: mode) { _, newMode in
-            engine.switchMode(to: newMode)
-        }
         .onAppear {
             if !engine.settings.hasSeenOnboarding {
                 showOnboarding = true
@@ -86,72 +91,140 @@ struct ContentView: View {
     }
 }
 
+// MARK: - Séance libre plein écran
+
+/// La caméra occupe toute la zone de travail ; les contrôles et le feedback
+/// en temps réel flottent par-dessus (HUD), façon « miroir augmenté ».
 struct FreeSessionView: View {
     @EnvironmentObject private var engine: SessionEngine
+    @State private var showLivePanel = true
 
     var body: some View {
-        HSplitView {
-            previewPane
-            sidebar
-        }
-        .frame(minWidth: 980, minHeight: 600)
-    }
+        ZStack {
+            Color.black
 
-    // MARK: - Aperçu caméra
-
-    private var previewPane: some View {
-        ZStack(alignment: .topLeading) {
             CameraPreview(
                 camera: engine.camera,
                 landmarks: engine.analysisMode == .posture ? engine.overlayLandmarks : []
             )
-            .background(Color.black)
 
             if engine.analysisMode == .bow {
                 BowOverlay()
             }
 
-            if engine.phase == .calibrating {
-                banner(text: "Calibration en cours — restez en position de jeu neutre (3 s)", color: .blue)
-                    .padding(12)
-            } else if engine.bowCalibrationActive {
-                banner(text: "Cliquez sur le chevalet, puis sur le bout de la touche", color: .blue)
-                    .padding(12)
-            } else if let bowAlert = engine.bowAlert {
-                banner(text: bowAlert, color: .orange)
-                    .padding(12)
-            } else if engine.analysisMode == .bow && engine.bowReference == nil {
-                banner(text: "Cadrez de profil, puis calibrez le chevalet et la touche", color: .gray)
-                    .padding(12)
-            } else if !engine.alerts.isEmpty {
-                VStack(alignment: .leading, spacing: 8) {
-                    ForEach(engine.alerts) { alert in
-                        AlertBanner(alert: alert)
-                    }
-                }
-                .padding(12)
+            topOverlay
+                .frame(maxHeight: .infinity, alignment: .top)
+
+            if engine.phase == .idle, !engine.bowCalibrationActive {
+                idleOverlay
             }
 
-            VStack {
-                Spacer()
-                HStack(alignment: .bottom) {
-                    Text(engine.cameraStatus)
-                        .font(.caption2)
-                        .padding(6)
-                        .background(Color.black.opacity(0.55))
-                        .foregroundColor(.white)
-                        .cornerRadius(6)
-                    Spacer()
-                    Text("vue non miroir — l'épaule droite du musicien apparaît à gauche")
-                        .font(.caption2)
-                        .padding(6)
-                        .background(Color.black.opacity(0.55))
-                        .foregroundColor(.white)
-                        .cornerRadius(6)
-                }
-                .padding(12)
+            if engine.phase == .calibrating || engine.phase == .running {
+                bottomBar
+                    .frame(maxHeight: .infinity, alignment: .bottom)
+            }
+
+            if showLivePanel, engine.phase == .running {
+                livePanel
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .trailing)
             }
         }
+        .ignoresSafeArea()
+    }
+
+    // MARK: - Bandeau supérieur (alertes + statut)
+
+    private var topOverlay: some View {
+        HStack(alignment: .top, spacing: 12) {
+            Group {
+                if engine.phase == .calibrating {
+                    banner(text: "Calibration en cours — restez en position de jeu neutre (3 s)", color: .blue)
+                } else if engine.bowCalibrationActive {
+                    banner(text: "Cliquez sur le chevalet, puis sur le bout de la touche", color: .blue)
+                } else if let bowAlert = engine.bowAlert {
+                    banner(text: bowAlert, color: .orange)
+                } else if engine.analysisMode == .bow, engine.bowReference == nil, engine.phase == .idle {
+                    banner(text: "Cadrez de profil, puis calibrez le chevalet et la touche", color: .gray)
+                } else if !engine.alerts.isEmpty {
+                    VStack(alignment: .leading, spacing: 8) {
+                        ForEach(engine.alerts) { alert in
+                            AlertBanner(alert: alert)
+                        }
+                    }
+                } else if engine.phase == .running {
+                    banner(text: "Posture et son suivis — jouez librement", color: .green.opacity(0.8))
+                }
+            }
+
+            Spacer()
+
+            VStack(alignment: .trailing, spacing: 10) {
+                HStack(spacing: 8) {
+                    if engine.phase == .running {
+                        HStack(spacing: 6) {
+                            Circle().fill(.red).frame(width: 8, height: 8)
+                            Text(engine.elapsedText)
+                                .font(.title3.monospacedDigit().weight(.semibold))
+                        }
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 6)
+                        .background(RoundedRectangle(cornerRadius: 8).fill(.black.opacity(0.55)))
+                        .foregroundStyle(.white)
+                    }
+
+                    if engine.phase == .running {
+                        Button {
+                            showLivePanel.toggle()
+                        } label: {
+                            Image(systemName: showLivePanel ? "sidebar.right" : "sidebar.right.slash")
+                        }
+                        .buttonStyle(.borderless)
+                        .foregroundStyle(.white)
+                        .padding(8)
+                        .background(Circle().fill(.black.opacity(0.55)))
+                        .help(showLivePanel ? "Masquer le panneau de position" : "Afficher le panneau de position")
+                    }
+
+                    Button {
+                        toggleFullScreen()
+                    } label: {
+                        Image(systemName: "arrow.up.left.and.arrow.down.right")
+                    }
+                    .buttonStyle(.borderless)
+                    .foregroundStyle(.white)
+                    .padding(8)
+                    .background(Circle().fill(.black.opacity(0.55)))
+                    .help("Plein écran (Échap pour revenir)")
+                }
+
+                statusChips
+            }
+        }
+        .padding(14)
+    }
+
+    private var statusChips: some View {
+        HStack(spacing: 8) {
+            chip(color: engine.cameraRunning ? .green : .gray, icon: "video", text: "Caméra")
+            chip(color: engine.micRunning ? .green : .gray, icon: "mic", text: "Micro")
+            if engine.analysisMode == .bow {
+                chip(color: engine.bowReference == nil ? .orange : .green, icon: "scope", text: engine.bowReference == nil ? "Profil non calibré" : "Profil calibré")
+            } else {
+                chip(color: engine.rules.baseline == nil ? .orange : .green, icon: "scope", text: engine.rules.baseline == nil ? "Posture non calibrée" : "Posture calibrée")
+            }
+        }
+    }
+
+    private func chip(color: Color, icon: String, text: String) -> some View {
+        HStack(spacing: 5) {
+            Circle().fill(color).frame(width: 7, height: 7)
+            Text(text)
+        }
+        .font(.caption2)
+        .padding(.horizontal, 9)
+        .padding(.vertical, 5)
+        .background(Capsule().fill(.black.opacity(0.55)))
+        .foregroundStyle(.white)
     }
 
     private func banner(text: String, color: Color) -> some View {
@@ -162,66 +235,17 @@ struct FreeSessionView: View {
             .foregroundColor(.white)
     }
 
-    // MARK: - Panneau latéral
+    // MARK: - Carte centrale (au repos)
 
-    private var sidebar: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            header
-            statusSection
-            analysisSection
-            pitchSection
-            if let feedback = engine.lastNoteFeedback {
-                lastNoteCard(feedback)
-            }
-            if engine.analysisMode == .bow {
-                if let feedback = engine.bowFeedback {
-                    bowCard(feedback)
-                } else {
-                    Text("Archet non détecté — vérifiez le cadrage de profil.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-            }
-            Divider()
-            controls
-            Divider()
-            if engine.phase == .report {
-                reportSection
-            } else {
-                helpSection
-            }
-            Spacer(minLength: 0)
-        }
-        .padding(16)
-        .frame(minWidth: 320, idealWidth: 360, maxWidth: 460)
-    }
-
-    private var header: some View {
-        HStack(alignment: .firstTextBaseline) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text("OpenCello").font(.title2.bold())
-                Text("Posture + son, en local").font(.caption).foregroundStyle(.secondary)
-            }
-            Spacer()
-            if engine.phase == .running {
-                Text(engine.elapsedText)
-                    .font(.title3.monospacedDigit())
+    private var idleOverlay: some View {
+        VStack(spacing: 14) {
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Séance libre").font(.title2.bold())
+                Text("La caméra occupe tout l'écran. Placez-vous face à elle (ou de profil pour l'archet), puis lancez-vous.")
+                    .font(.caption)
                     .foregroundStyle(.secondary)
             }
-        }
-    }
 
-    private var statusSection: some View {
-        VStack(alignment: .leading, spacing: 5) {
-            statusRow(engine.cameraRunning ? .green : .gray, text: engine.cameraStatus)
-            statusRow(engine.micRunning ? .green : .gray, text: engine.micStatus)
-            statusRow(engine.rules.baseline == nil ? .orange : .green, text: engine.baselineStatus)
-        }
-    }
-
-    private var analysisSection: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("Analyse caméra").font(.caption.bold()).foregroundStyle(.secondary)
             Picker(
                 "Analyse caméra",
                 selection: Binding(
@@ -234,33 +258,203 @@ struct FreeSessionView: View {
                 }
             }
             .pickerStyle(.segmented)
-            .disabled(engine.phase != .idle)
+            .frame(maxWidth: 320)
+
+            HStack(spacing: 12) {
+                if engine.analysisMode == .posture {
+                    Button {
+                        engine.startCalibration()
+                    } label: {
+                        Label("Calibrer la posture (3 s)", systemImage: "scope")
+                    }
+                    .buttonStyle(.borderedProminent)
+                } else {
+                    Button {
+                        engine.startBowCalibration()
+                    } label: {
+                        Label("Calibrer le profil (2 clics)", systemImage: "scope")
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+
+                Button {
+                    engine.startSession()
+                } label: {
+                    Label("Démarrer une séance", systemImage: "record.circle")
+                }
+                .buttonStyle(.bordered)
+                .disabled(engine.analysisMode == .bow && engine.bowReference == nil)
+            }
+
+            Text(engine.analysisMode == .posture
+                 ? "Asseyez-vous comme pour jouer, épaules basses, puis calibrez."
+                 : "Caméra de profil : cliquez le chevalet puis le bout de la touche avant de jouer.")
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+
+            Text("Analysé : tête en avant, épaules haussées/voûtées, asymétrie, hauteur du son (YIN) ; archet et cordes en vue profil. Tout reste sur ce Mac.")
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+        }
+        .padding(22)
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 18))
+    }
+
+    // MARK: - Barre inférieure (pendant la séance)
+
+    private var bottomBar: some View {
+        HStack(spacing: 24) {
+            phaseControls
+            Spacer()
+            pitchBlock
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 14)
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
+        .padding(16)
+    }
+
+    @ViewBuilder
+    private var phaseControls: some View {
+        switch engine.phase {
+        case .calibrating:
+            HStack(spacing: 10) {
+                ProgressView().controlSize(.small)
+                Text("Calibration…").font(.callout)
+                Button("Annuler") { engine.cancelCalibration() }
+                    .buttonStyle(.link)
+            }
+        case .running:
+            VStack(alignment: .leading, spacing: 6) {
+                Button(role: .destructive) {
+                    engine.stopSession()
+                } label: {
+                    Label("Arrêter et voir le rapport", systemImage: "stop.circle.fill")
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.large)
+                if let message = engine.message {
+                    Text(message).font(.caption).foregroundStyle(.red)
+                }
+            }
+        case .idle:
+            EmptyView()
         }
     }
 
-    private func statusRow(_ color: Color, text: String) -> some View {
-        HStack(spacing: 6) {
-            Circle().fill(color).frame(width: 7, height: 7)
-            Text(text).font(.caption).foregroundStyle(.secondary).lineLimit(2)
-        }
-    }
-
-    private var pitchSection: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("Hauteur").font(.caption.bold()).foregroundStyle(.secondary)
-            HStack(alignment: .firstTextBaseline, spacing: 10) {
+    private var pitchBlock: some View {
+        HStack(spacing: 14) {
+            VStack(alignment: .trailing, spacing: 2) {
                 Text(engine.pitchText)
-                    .font(.system(size: 34, weight: .semibold, design: .rounded).monospacedDigit())
+                    .font(.system(size: 30, weight: .semibold, design: .rounded).monospacedDigit())
                 Text(engine.pitchDetail)
                     .font(.callout)
                     .foregroundStyle(engine.pitchColor)
             }
-            ProgressView(value: engine.rms)
-                .tint(engine.rms > 0.6 ? .orange : .green)
-            Text("Niveau d'entrée micro").font(.caption2).foregroundStyle(.secondary)
+            VStack(alignment: .leading, spacing: 4) {
+                ProgressView(value: engine.rms)
+                    .tint(engine.rms > 0.6 ? .orange : .green)
+                    .frame(width: 140)
+                Text("Niveau micro").font(.caption2).foregroundStyle(.secondary)
+            }
         }
-        .padding(12)
-        .background(RoundedRectangle(cornerRadius: 12).fill(Color(nsColor: .controlBackgroundColor)))
+    }
+
+    // MARK: - Panneau « position en direct » (à droite)
+
+    private var livePanel: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text(engine.analysisMode == .bow ? "Archet en direct" : "Position en direct")
+                    .font(.headline)
+                Spacer()
+                Button {
+                    showLivePanel = false
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundStyle(.secondary)
+                }
+                .buttonStyle(.borderless)
+            }
+
+            if engine.analysisMode == .bow {
+                if let feedback = engine.bowFeedback {
+                    bowLiveCard(feedback)
+                } else {
+                    Text(engine.bowAlert ?? "Archet non détecté — cadrez de profil.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            } else if engine.livePosture.isEmpty {
+                HStack(spacing: 6) {
+                    ProgressView().controlSize(.small)
+                    Text("En attente de détection…").font(.caption).foregroundStyle(.secondary)
+                }
+            } else {
+                ForEach(engine.livePosture) { status in
+                    liveRuleRow(status)
+                }
+            }
+
+            if let feedback = engine.lastNoteFeedback {
+                lastNoteCard(feedback)
+            }
+
+            Text("Une erreur devient une alerte après 5 s persistantes · 2 alertes max · 20 s de repos entre deux alertes.")
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+        }
+        .padding(14)
+        .frame(width: 290)
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14))
+        .padding(16)
+    }
+
+    private func liveRuleRow(_ status: LiveRuleStatus) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack(spacing: 6) {
+                Image(systemName: status.violated ? "exclamationmark.triangle.fill" : "checkmark.circle.fill")
+                    .foregroundStyle(status.violated ? .orange : .green)
+                Text(status.title).font(.callout.weight(.semibold))
+                Spacer()
+                Text(status.violated ? "à corriger" : "OK")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(status.violated ? .orange : .green)
+            }
+            ProgressView(value: min(status.severity, 1))
+                .tint(status.violated ? .orange : .green)
+            if status.violated {
+                Text(status.correction)
+                    .font(.caption2)
+                    .foregroundStyle(.orange)
+            }
+        }
+    }
+
+    private func bowLiveCard(_ feedback: BowEvaluation) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(alignment: .firstTextBaseline, spacing: 14) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Angle").font(.caption2).foregroundStyle(.secondary)
+                    Text(String(format: "%.0f°", feedback.angleDeviation))
+                        .font(.title3.monospacedDigit())
+                        .foregroundStyle(feedback.angleOK ? .green : .orange)
+                }
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Contact").font(.caption2).foregroundStyle(.secondary)
+                    Text(String(format: "%.0f %%", feedback.contact * 100))
+                        .font(.title3.monospacedDigit())
+                        .foregroundStyle(feedback.zoneOK ? .green : .orange)
+                }
+                Spacer()
+                Text(feedback.angleOK && feedback.zoneOK ? "OK" : "À corriger")
+                    .font(.caption.bold())
+                    .foregroundStyle(feedback.angleOK && feedback.zoneOK ? .green : .orange)
+            }
+            Text(String(format: "Confiance %.0f %% · zone chevalet-touche", feedback.confidence * 100))
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+        }
     }
 
     private func lastNoteCard(_ feedback: NoteFeedback) -> some View {
@@ -294,151 +488,11 @@ struct FreeSessionView: View {
             }
         }
         .padding(10)
-        .background(RoundedRectangle(cornerRadius: 10).fill(Color(nsColor: .controlBackgroundColor)))
+        .background(RoundedRectangle(cornerRadius: 10).fill(Color(nsColor: .controlBackgroundColor).opacity(0.6)))
     }
 
-    private func bowCard(_ feedback: BowEvaluation) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("Archet").font(.caption.bold()).foregroundStyle(.secondary)
-            HStack(alignment: .firstTextBaseline, spacing: 14) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Angle").font(.caption2).foregroundStyle(.secondary)
-                    Text(String(format: "%.0f°", feedback.angleDeviation))
-                        .font(.title3.monospacedDigit())
-                        .foregroundStyle(feedback.angleOK ? .green : .orange)
-                }
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Contact").font(.caption2).foregroundStyle(.secondary)
-                    Text(String(format: "%.0f %%", feedback.contact * 100))
-                        .font(.title3.monospacedDigit())
-                        .foregroundStyle(feedback.zoneOK ? .green : .orange)
-                }
-                Spacer()
-                Text(feedback.angleOK && feedback.zoneOK ? "OK" : "À corriger")
-                    .font(.caption.bold())
-                    .foregroundStyle(feedback.angleOK && feedback.zoneOK ? .green : .orange)
-            }
-            Text(String(format: "Confiance %.0f %% · zone chevalet-touche", feedback.confidence * 100))
-                .font(.caption2)
-                .foregroundStyle(.secondary)
-        }
-        .padding(10)
-        .background(RoundedRectangle(cornerRadius: 10).fill(Color(nsColor: .controlBackgroundColor)))
-    }
-
-    @ViewBuilder
-    private var controls: some View {
-        switch engine.phase {
-        case .idle:
-            VStack(alignment: .leading, spacing: 8) {
-                if engine.analysisMode == .posture {
-                    Button {
-                        engine.startCalibration()
-                    } label: {
-                        Label("Calibrer la posture (3 s)", systemImage: "scope")
-                    }
-                    .buttonStyle(.borderedProminent)
-                } else {
-                    Button {
-                        engine.startBowCalibration()
-                    } label: {
-                        Label("Calibrer le profil (2 clics)", systemImage: "scope")
-                    }
-                    .buttonStyle(.borderedProminent)
-                }
-
-                Button {
-                    engine.startSession()
-                } label: {
-                    Label("Démarrer une séance", systemImage: "record.circle")
-                }
-                .buttonStyle(.bordered)
-                .disabled(engine.analysisMode == .bow && engine.bowReference == nil)
-
-                Text(engine.analysisMode == .posture
-                     ? "Asseyez-vous comme pour jouer, épaules basses, puis calibrez."
-                     : "Caméra de profil : cliquez le chevalet puis le bout de la touche avant de jouer.")
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-            }
-
-        case .calibrating:
-            HStack {
-                ProgressView().controlSize(.small)
-                Text("Calibration…").font(.caption)
-                Spacer()
-                Button("Annuler") { engine.cancelCalibration() }
-                    .buttonStyle(.link)
-            }
-
-        case .running:
-            VStack(alignment: .leading, spacing: 8) {
-                Button(role: .destructive) {
-                    engine.stopSession()
-                } label: {
-                    Label("Arrêter et générer le rapport", systemImage: "stop.circle")
-                }
-                .buttonStyle(.borderedProminent)
-                if let message = engine.message {
-                    Text(message).font(.caption).foregroundStyle(.red)
-                }
-            }
-
-        case .report:
-            VStack(alignment: .leading, spacing: 8) {
-                Button {
-                    engine.openReport()
-                } label: {
-                    Label("Ouvrir le rapport", systemImage: "doc.text")
-                }
-                .buttonStyle(.borderedProminent)
-                .disabled(engine.reportPath == nil)
-
-                Button {
-                    engine.newSession()
-                } label: {
-                    Label("Nouvelle séance", systemImage: "arrow.counterclockwise")
-                }
-                .buttonStyle(.bordered)
-            }
-        }
-    }
-
-    private var reportSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Rapport de séance").font(.caption.bold()).foregroundStyle(.secondary)
-            ScrollView {
-                Text(engine.reportMarkdown)
-                    .font(.system(size: 11, design: .monospaced))
-                    .textSelection(.enabled)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            .frame(maxHeight: 300)
-            if let path = engine.reportPath {
-                Text(path.path)
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(2)
-            }
-        }
-    }
-
-    private var helpSection: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("Ce qui est analysé").font(.caption.bold()).foregroundStyle(.secondary)
-            Text("""
-            • Tête en avant (proxy 2D)
-            • Épaules haussées / voûtées
-            • Asymétrie des épaules
-            • Hauteur du son (YIN) et cents
-            """)
-            .font(.caption)
-            .foregroundStyle(.secondary)
-
-            Text("Limites : lumière, angle caméra, bruit. Les données restent sur ce Mac.")
-                .font(.caption2)
-                .foregroundStyle(.secondary)
-        }
+    private func toggleFullScreen() {
+        NSApp.keyWindow?.toggleFullScreen(nil)
     }
 }
 

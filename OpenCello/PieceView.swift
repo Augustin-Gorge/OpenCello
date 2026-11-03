@@ -13,6 +13,9 @@ struct PieceView: View {
             followPane
                 .frame(minWidth: 420, maxWidth: .infinity)
         }
+        .sheet(item: $engine.liveReplay) { moment in
+            ReplayView(moment: moment)
+        }
     }
 
     // MARK: - Recherche IMSLP + import
@@ -195,21 +198,13 @@ struct PieceView: View {
                     statsPanel(stats)
                 }
 
-                if !engine.reportMarkdown.isEmpty && !engine.pieceRunning {
-                    Divider()
-                    HStack {
-                        Text("Rapport de la dernière séance « Morceau »").font(.caption.bold())
-                        Spacer()
-                        Button("Ouvrir") { engine.openReport() }
-                            .disabled(engine.reportPath == nil)
+                if engine.pieceStats != nil, !engine.pieceRunning {
+                    HStack(spacing: 6) {
+                        Image(systemName: "doc.text.magnifyingglass")
+                        Text("Dernier rapport enregistré — consultez l'onglet Rapports.")
                     }
-                    ScrollView {
-                        Text(engine.reportMarkdown)
-                            .font(.system(size: 11, design: .monospaced))
-                            .textSelection(.enabled)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-                    .frame(maxHeight: 220)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
                 }
             } else {
                 VStack(spacing: 14) {
@@ -286,6 +281,7 @@ struct PieceView: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 ProgressView(value: engine.pieceProgress)
+                positionRow
                 Text(feedback.message).font(.callout)
             } else if let feedback = engine.pieceFeedback {
                 Text(feedback.message).font(.callout).foregroundStyle(.orange)
@@ -293,9 +289,56 @@ struct PieceView: View {
             } else {
                 Text("En attente de la première note…").font(.callout).foregroundStyle(.secondary)
             }
+            if engine.pieceRunning {
+                HStack(alignment: .top, spacing: 10) {
+                    CameraPreview(camera: engine.camera, landmarks: engine.overlayLandmarks)
+                        .frame(width: 220, height: 124)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.secondary.opacity(0.25)))
+                    Text("Cadre la main gauche et la touche pour la position/le doigté. La caméra reste locale ; aucune vidéo n'est enregistrée.")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+            }
         }
         .padding(12)
         .background(RoundedRectangle(cornerRadius: 12).fill(Color(nsColor: .controlBackgroundColor)))
+    }
+
+    /// Position + doigt estimés (P14 + audio), avec la confiance affichée et
+    /// l'accès au replay du dernier moment apparié.
+    private var positionRow: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack(spacing: 16) {
+                if let assignment = engine.pieceAssignment {
+                    let position = assignment.position.map { "\($0)e position" } ?? "position —"
+                    let finger = assignment.finger.map { $0 == 0 ? "corde à vide" : "\($0)e doigt" } ?? "doigt —"
+                    Label(position, systemImage: "hand.point.up.left")
+                    Text(finger)
+                    Text("confiance \(Int((assignment.confidence * 100).rounded())) %")
+                        .foregroundStyle(.secondary)
+                    if assignment.isShift, let from = assignment.fromPosition {
+                        Text("\(from)e → \(assignment.position ?? 0)e")
+                            .foregroundStyle(.orange)
+                    }
+                } else {
+                    Text("Position et doigt : en attente de la première note")
+                        .foregroundStyle(.secondary)
+                }
+                if let glide = engine.pieceGlideMs, glide >= 80 {
+                    Text(String(format: "glissé %.0f ms", glide))
+                        .foregroundStyle(.orange)
+                }
+                Spacer()
+                Button("Revoir ça") { engine.replayLastMoment() }
+                    .buttonStyle(.bordered)
+                    .disabled(engine.pieceLastMoment == nil)
+            }
+            .font(.caption)
+            Text(engine.pieceHandStatus)
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+        }
     }
 
     private func statsPanel(_ stats: PieceStats) -> some View {

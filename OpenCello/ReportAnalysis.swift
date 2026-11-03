@@ -144,6 +144,9 @@ struct ReportCommentary {
     let global: String
     let posture: [CommentaryItem]
     let sound: [CommentaryItem]
+    let leftHand: [CommentaryItem]
+    let positions: [CommentaryItem]
+    let techniques: [CommentaryItem]
     let confidence: String
     let exercises: [Exercise]
 
@@ -151,6 +154,9 @@ struct ReportCommentary {
         let score = SessionScore.compute(for: record)
         let posture = postureItems(for: record, previous: previous)
         let sound = soundItems(for: record, previous: previous, settings: settings)
+        let leftHand = handItems(for: record)
+        let positions = positionItems(for: record)
+        let techniques = techniqueItems(for: record)
 
         let ruleIDs: [String] = {
             var ids = postureTopRuleIDs(for: record, limit: 3)
@@ -159,15 +165,39 @@ struct ReportCommentary {
                 if record.meanStability > settings.stabilityTolerance { ids.append("B2") }
                 if let hnr = record.meanHNR, hnr < 18 { ids.append("B7") }
             }
+            if let hand = record.hand {
+                for rule in hand.rules where rule.seconds > 2 || rule.occurrences > 0 {
+                    ids.append(rule.ruleID)
+                }
+            }
+            if let technique = record.technique {
+                if technique.piqueUnevenRuns > 0 { ids.append("B17") }
+                if technique.parasiteGlides > 0 { ids.append("B14") }
+            }
+            if let stats = record.positionStats {
+                if let arrival = stats.meanArrivalCents, abs(arrival) > 25 { ids.append("B15") }
+                if let duration = stats.meanShiftDurationMs, duration > 180 { ids.append("B16") }
+            }
             return ids
         }()
         let exercises = ExerciseCatalog.recommendations(for: ruleIDs)
 
         return ReportCommentary(
             score: score,
-            global: globalComment(record: record, score: score, posture: posture, sound: sound),
+            global: globalComment(
+                record: record,
+                score: score,
+                posture: posture,
+                sound: sound,
+                leftHand: leftHand,
+                positions: positions,
+                techniques: techniques
+            ),
             posture: posture,
             sound: sound,
+            leftHand: leftHand,
+            positions: positions,
+            techniques: techniques,
             confidence: confidenceText(for: record),
             exercises: exercises
         )
@@ -271,18 +301,224 @@ struct ReportCommentary {
         return items
     }
 
+    // MARK: - Main gauche (A17-A20)
+
+    private static func handItems(for record: SessionRecord) -> [CommentaryItem] {
+        guard let hand = record.hand else { return [] }
+        let duration = max(record.duration, 1)
+        return hand.rules
+            .filter { $0.seconds > 2 || $0.occurrences > 0 }
+            .sorted { $0.seconds > $1.seconds }
+            .prefix(3)
+            .map { rule in
+                let ratio = rule.seconds / duration
+                let level: CommentaryItem.Level
+                if rule.ruleID == "A18" {
+                    level = .watch
+                } else if ratio > 0.10 || rule.occurrences >= 3 {
+                    level = .alert
+                } else {
+                    level = .watch
+                }
+                let exercise = ExerciseCatalog.recommendations(for: [rule.ruleID], limit: 1).first
+                var detail: String
+                switch rule.ruleID {
+                case "A17":
+                    detail = String(
+                        format: "angle main/avant-bras moyen %.0f° (max %.0f°) · %d s au-delà du seuil",
+                        hand.meanAngleDegrees ?? 0,
+                        hand.maxAngleDegrees ?? 0,
+                        Int(rule.seconds)
+                    )
+                case "A18":
+                    detail = String(
+                        format: "pouce probablement crispé sur %.0f %% des frames main — hypothèse, pas une certitude",
+                        (hand.thumbHypothesisRatio ?? 0) * 100
+                    )
+                case "A19":
+                    detail = String(
+                        format: "vitesse des bouts de doigts élevée · %d s au-delà du seuil · souplesse indicative",
+                        Int(rule.seconds)
+                    )
+                default:
+                    detail = "\(rule.occurrences) déplacement(s) avec un coude qui ne guide pas assez la main"
+                }
+                return CommentaryItem(
+                    id: "hand-\(rule.ruleID)",
+                    title: rule.title,
+                    detail: detail,
+                    advice: "\(PostureRules.handCorrection(for: rule.ruleID))\(exercise.map { " Exercice ciblé : \($0.id) — \($0.title)." } ?? "")",
+                    level: level,
+                    deltaText: nil,
+                    improving: nil
+                )
+            }
+    }
+
+    // MARK: - Positions et déplacements
+
+    private static func positionItems(for record: SessionRecord) -> [CommentaryItem] {
+        let notes = record.positionStats?.samples ?? []
+        guard !notes.isEmpty else { return [] }
+        var items: [CommentaryItem] = []
+
+        if let worst = PositionAnalysis.worstShift(from: notes) {
+            let from = worst.fromPosition.map { "\($0)e" } ?? "position précédente"
+            let to = "\(worst.position)e"
+            let movement: String
+            switch worst.direction {
+            case .down: movement = "En descendant"
+            case .up: movement = "En montant"
+            case .same: movement = "Sur place"
+            }
+            let finger = worst.finger == 0 ? "corde à vide" : "\(worst.finger)e doigt"
+            let sign = worst.meanCents >= 0 ? "trop haut" : "trop bas"
+            items.append(CommentaryItem(
+                id: "position-shift",
+                title: "Arrivée de déplacement",
+                detail: String(
+                    format: "%@ de %@ vers %@, ton %@ arrive en moyenne %.0f cents %@ (%d cas).",
+                    movement, from, to, finger, abs(worst.meanCents), sign, worst.count
+                ),
+                advice: "Travaille la descente seule, lentement, avec un bourdon de sol : pose le doigt d'un coup et vérifie la note d'arrivée avant de continuer.",
+                level: worst.meanAbsCents > 35 ? .alert : .watch,
+                deltaText: nil,
+                improving: nil
+            ))
+        }
+
+        if let glide = PositionAnalysis.parasiteGlideSummary(from: notes) {
+            let ratio = Double(glide.parasite) / Double(max(1, glide.total))
+            items.append(CommentaryItem(
+                id: "position-glide",
+                title: "Glissé parasite",
+                detail: String(
+                    format: "En %de position, tu as tendance à glisser : %d déplacements sur %d arrivent avec un portamento (%.0f %%).",
+                    glide.position, glide.parasite, glide.total, ratio * 100
+                ),
+                advice: "Pose le doigt d'un coup sec pendant que le coude accompagne la main ; le glissé doit rester réservé aux glissandos écrits.",
+                level: ratio >= 0.4 ? .alert : .watch,
+                deltaText: nil,
+                improving: nil
+            ))
+        }
+
+        if let worstPosition = PositionAnalysis.meanAbsCentsByPosition(from: notes)
+            .filter({ $0.count >= 2 })
+            .max(by: { $0.cents < $1.cents }), worstPosition.cents >= 25 {
+            items.append(CommentaryItem(
+                id: "position-accuracy",
+                title: "Justesse par position",
+                detail: String(
+                    format: "En %de position, l'écart moyen est de %.0f cents sur %d notes.",
+                    worstPosition.position, worstPosition.cents, worstPosition.count
+                ),
+                advice: "Isole cette position : joue la note d'arrivée, vérifie-la à la corde à vide ou au bourdon, puis ajoute le déplacement.",
+                level: worstPosition.cents > 40 ? .alert : .watch,
+                deltaText: nil,
+                improving: nil
+            ))
+        }
+
+        return Array(items.prefix(3))
+    }
+
+    // MARK: - Techniques (piqué, glissé)
+
+    private static func techniqueItems(for record: SessionRecord) -> [CommentaryItem] {
+        guard let technique = record.technique else { return [] }
+        var items: [CommentaryItem] = []
+
+        if technique.piqueUnevenRuns > 0 {
+            let deviationValue = technique.piqueWorstDeviation ?? 0
+            let deviation = String(format: "%.0f %%", abs(deviationValue) * 100)
+            let comparison = deviationValue < 0 ? "de moins" : "de plus"
+            let index = technique.piqueWorstIndex.map { "la \($0)e note" } ?? "une note"
+            items.append(CommentaryItem(
+                id: "technique-pique",
+                title: "Piqué inégal",
+                detail: "Ton piqué est inégal : \(index) de la série dure \(deviation) \(comparison) que la moyenne (\(technique.piqueUnevenRuns) série(s) concernée(s)).",
+                advice: "Vise des notes égales en arrêtant l'archet à la même vitesse à chaque fois, puis accélère seulement quand la série est régulière.",
+                level: .watch,
+                deltaText: nil,
+                improving: nil
+            ))
+        } else if technique.piqueNotes >= 4, let regularity = technique.piqueRegularity {
+            items.append(CommentaryItem(
+                id: "technique-pique-good",
+                title: "Piqué régulier",
+                detail: String(format: "Durées et énergies stables sur %d notes piquées (régularité %.0f %%).", technique.piqueNotes, regularity * 100),
+                advice: "Continue à écouter l'égalité des notes plutôt que la vitesse : la régularité précède l'accélération.",
+                level: .good,
+                deltaText: nil,
+                improving: nil
+            ))
+        }
+
+        if technique.parasiteGlides > 0, let ratio = technique.parasiteGlideRatio {
+            items.append(CommentaryItem(
+                id: "technique-glide",
+                title: "Glissé parasite",
+                detail: String(
+                    format: "%d déplacement(s) glissé(s) sur %d (%.0f %%) sans glissando écrit.",
+                    technique.parasiteGlides,
+                    technique.parasiteGlides + technique.voluntaryGlides,
+                    ratio * 100
+                ),
+                advice: "Relâche la pression du doigt pendant le déplacement et laisse le coude guider : le portamento doit être un choix, pas un reste de main qui traîne.",
+                level: ratio >= 0.4 ? .alert : .watch,
+                deltaText: nil,
+                improving: nil
+            ))
+        } else if technique.voluntaryGlides > 0 {
+            items.append(CommentaryItem(
+                id: "technique-glide-good",
+                title: "Glissando contrôlé",
+                detail: "\(technique.voluntaryGlides) glissando(s) écrit(s) détecté(s), sans glissé parasite signalé.",
+                advice: "Garde la même pente et la même arrivée nette quand tu réintègres le passage dans le tempo.",
+                level: .good,
+                deltaText: nil,
+                improving: nil
+            ))
+        }
+
+        return items
+    }
+
     // MARK: - Commentaire global
 
-    private static func globalComment(record: SessionRecord, score: SessionScore, posture: [CommentaryItem], sound: [CommentaryItem]) -> String {
+    private static func globalComment(
+        record: SessionRecord,
+        score: SessionScore,
+        posture: [CommentaryItem],
+        sound: [CommentaryItem],
+        leftHand: [CommentaryItem],
+        positions: [CommentaryItem],
+        techniques: [CommentaryItem]
+    ) -> String {
         guard score.total > 0 else {
             return "Pas assez de signal analysé pour évaluer cette séance : vérifiez l'éclairage, l'angle de la caméra et la position du micro, puis relancez une séance."
         }
 
+        // Priorité : posture, puis main gauche, puis son, puis techniques.
+        // A18 (pouce) reste une hypothèse : il ne passe jamais en alerte.
+        let handAlerts = leftHand.filter { $0.level == .alert && !$0.id.contains("A18") }
+        let positionAlerts = positions.filter { $0.level == .alert }
+        let techniqueAlerts = techniques.filter { $0.level == .alert }
         let priority: String
-        if let worst = posture.max(by: { ($0.level == .alert ? 1 : 0) < ($1.level == .alert ? 1 : 0) }) {
+        if let worst = posture.filter({ $0.level == .alert }).first {
+            priority = "Le point prioritaire est « \(worst.title) »."
+        } else if let worst = handAlerts.first {
+            priority = "Le point prioritaire est « \(worst.title) »."
+        } else if let worst = positionAlerts.first {
             priority = "Le point prioritaire est « \(worst.title) »."
         } else if let worst = sound.filter({ $0.level == .alert }).first {
             priority = "Le point prioritaire est « \(worst.title) »."
+        } else if let worst = techniqueAlerts.first {
+            priority = "Le point prioritaire est « \(worst.title) »."
+        } else if let watch = leftHand.first {
+            let suffix = watch.id.contains("A18") && !watch.title.lowercased().contains("hypothèse") ? " (hypothèse)" : ""
+            priority = "À surveiller : « \(watch.title) »\(suffix)."
         } else {
             priority = "Aucun axe critique majeur cette fois-ci."
         }
@@ -303,6 +539,14 @@ struct ReportCommentary {
         }
         if let pitchFrames = record.pitchFrames, pitchFrames > 0, let valid = record.validPitchFrames {
             parts.append("\(Int(Double(valid) / Double(pitchFrames) * 100)) % d'échantillons de hauteur valides")
+        }
+        if let hand = record.hand, let rate = hand.detectionRate {
+            parts.append("main gauche détectée sur \(Int(rate * 100)) % des frames")
+        }
+        if let stats = record.positionStats, !stats.samples.isEmpty {
+            let measured = stats.samples.filter { $0.position != nil }.count
+            let ratio = Double(measured) / Double(stats.samples.count)
+            parts.append("position estimée pour \(Int(ratio * 100)) % des notes (±1 position)")
         }
         let head = parts.isEmpty ? "Confiance des mesures : données limitées." : "Confiance des mesures : " + parts.joined(separator: " · ") + "."
         return "\(head) Éclairage, angle de caméra et bruit ambiant peuvent dégrader la détection. Signalez les faux positifs."
@@ -344,6 +588,57 @@ struct SeriesPoint: Identifiable {
     let value: Double?
 }
 
+/// Axe d'un graphique en radar (spider) : une métrique notée de 0 à 100.
+struct RadarAxis: Identifiable {
+    let name: String
+    let value: Double
+    var id: String { name }
+}
+
+/// Répartition de notes en catégories (pour les graphiques en anneau).
+struct NoteBucket: Identifiable {
+    let label: String
+    let count: Int
+    var id: String { label }
+}
+
+/// Compteur nommé (articulations, etc.).
+struct NamedCount: Identifiable {
+    let name: String
+    let count: Int
+    var id: String { name }
+}
+
+/// Répartition justesse d'un rapport : justes / approchantes / fausses
+/// (calculée sur la série des cents note par note).
+enum NoteDistribution {
+    static func buckets(for record: SessionRecord, tolerance: Double) -> [NoteBucket] {
+        guard record.noteCount > 0 else { return [] }
+        if record.noteCents.isEmpty {
+            // Mode morceau : la série par note n'est pas stockée, on utilise les compteurs.
+            return [
+                NoteBucket(label: "Justes", count: record.inTuneNotes),
+                NoteBucket(label: "Fausses", count: max(0, record.noteCount - record.inTuneNotes))
+            ]
+        }
+        var justes = 0
+        var proches = 0
+        var fausses = 0
+        for cents in record.noteCents {
+            switch NoteAccuracy.evaluate(cents: cents, tolerance: tolerance) {
+            case .inTune: justes += 1
+            case .close: proches += 1
+            case .off: fausses += 1
+            }
+        }
+        return [
+            NoteBucket(label: "Justes", count: justes),
+            NoteBucket(label: "Approchantes", count: proches),
+            NoteBucket(label: "Fausses", count: fausses)
+        ]
+    }
+}
+
 struct PostureAggregate: Identifiable {
     let ruleID: String
     let title: String
@@ -378,9 +673,43 @@ struct ProfileSummary {
     let intonationSeries: [SeriesPoint]
     let stabilitySeries: [SeriesPoint]
     let alertSeries: [SeriesPoint]
+    let hnrSeries: [SeriesPoint]
+    let bowSeries: [SeriesPoint]
     let postureTotals: [PostureAggregate]
     let best: SessionRecord?
     let worst: SessionRecord?
+
+    // Statistiques complémentaires (fenêtre récente).
+    let totalNotes: Int
+    let averageDuration: Double?
+    let averageHNR: Double?
+    let averageVibratoRate: Double?
+    let averageVibratoExtent: Double?
+    let articulationTotals: [NamedCount]
+    let bowAngleConformity: Double?
+    let bowZoneConformity: Double?
+
+    /// Axes du graphique en radar : chaque métrique ramenée à 0-100
+    /// (plus haut = mieux), calculés sur les moyennes récentes.
+    var radar: [RadarAxis] {
+        var axes: [RadarAxis] = []
+        if let value = averageIntonation {
+            axes.append(RadarAxis(name: "Justesse", value: 100 * exp(-value / 20)))
+        }
+        if let value = averageStability {
+            axes.append(RadarAxis(name: "Stabilité", value: 100 * exp(-value / 12)))
+        }
+        if let hnr = averageHNR {
+            axes.append(RadarAxis(name: "Timbre", value: max(0, min(100, (hnr - 5) / 20 * 100))))
+        }
+        if let value = averageAlertRatio {
+            axes.append(RadarAxis(name: "Posture", value: 100 * max(0, 1 - value)))
+        }
+        if let value = averageSoundingRatio {
+            axes.append(RadarAxis(name: "Présence sonore", value: value * 100))
+        }
+        return axes
+    }
 
     static func compute(records: [SessionRecord], window: Int = 10) -> ProfileSummary {
         let chronological = records.sorted { $0.date < $1.date }
@@ -395,6 +724,21 @@ struct ProfileSummary {
         let averageSoundingRatio = StatsKit.mean(
             recent.filter { $0.mode == "Séance libre" && $0.duration > 0 }.map(\.soundingRatio)
         )
+        let averageHNR = StatsKit.mean(recent.compactMap(\.meanHNR))
+        let averageVibratoRate = StatsKit.mean(recent.compactMap(\.meanVibratoRate))
+        let averageVibratoExtent = StatsKit.mean(recent.compactMap(\.meanVibratoExtent))
+        let averageDuration = StatsKit.mean(recent.filter { $0.duration > 0 }.map(\.duration))
+
+        let bowSessions = recent.compactMap { record -> BowRecord? in
+            guard let bow = record.bow, bow.frames > 0 else { return nil }
+            return bow
+        }
+        let bowAngleConformity = bowSessions.isEmpty
+            ? nil
+            : StatsKit.mean(bowSessions.map { Double($0.goodAngle) / Double($0.frames) * 100 })
+        let bowZoneConformity = bowSessions.isEmpty
+            ? nil
+            : StatsKit.mean(bowSessions.map { Double($0.goodZone) / Double($0.frames) * 100 })
 
         // Tendances : fenêtre courante (5 séances) vs fenêtre précédente.
         let trends = trendMetrics(records: records)
@@ -414,6 +758,11 @@ struct ProfileSummary {
         let alertSeries = series { record in
             record.posture.isEmpty ? nil : record.alertRatio * 100
         }
+        let hnrSeries = series { $0.meanHNR }
+        let bowSeries = series { record in
+            guard let bow = record.bow, bow.frames > 0 else { return nil }
+            return Double(bow.goodAngle) / Double(bow.frames) * 100
+        }
 
         // Cumul posture, toutes séances confondues.
         var totals: [String: PostureAggregate] = [:]
@@ -425,6 +774,17 @@ struct ProfileSummary {
             }
         }
         let postureTotals = totals.values.sorted { $0.seconds > $1.seconds }
+
+        // Cumul des articulations, toutes séances confondues.
+        var articulation: [String: Int] = [:]
+        for record in records {
+            for (name, count) in record.articulationCounts ?? [:] {
+                articulation[name, default: 0] += count
+            }
+        }
+        let articulationTotals = articulation
+            .map { NamedCount(name: $0.key, count: $0.value) }
+            .sorted { $0.count > $1.count }
 
         // Meilleure / pire séance (parmi celles qui ont un score calculable).
         let scored = records.map { (record: $0, score: SessionScore.compute(for: $0).total) }
@@ -447,9 +807,19 @@ struct ProfileSummary {
             intonationSeries: intonationSeries,
             stabilitySeries: stabilitySeries,
             alertSeries: alertSeries,
+            hnrSeries: hnrSeries,
+            bowSeries: bowSeries,
             postureTotals: postureTotals,
             best: best,
-            worst: worst
+            worst: worst,
+            totalNotes: records.reduce(0) { $0 + $1.noteCount },
+            averageDuration: averageDuration,
+            averageHNR: averageHNR,
+            averageVibratoRate: averageVibratoRate,
+            averageVibratoExtent: averageVibratoExtent,
+            articulationTotals: articulationTotals,
+            bowAngleConformity: bowAngleConformity,
+            bowZoneConformity: bowZoneConformity
         )
     }
 

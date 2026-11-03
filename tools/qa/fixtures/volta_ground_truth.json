@@ -1,0 +1,66 @@
+{
+  "_doc": "Vérité terrain de tools/qa/fixtures/volta_score.ly (gravée par LilyPond). Format = score_document du schéma contraint (omr_schema.json). MIDI : G2=43 A2=45 B2=47 C3=48 D3=50 E3=52 F3=53 G3=55.",
+  "work_title": "Test OMR LilyPond",
+  "composer": "OpenCello QA",
+  "parts": [
+    {
+      "name": "Violoncelle",
+      "measures": [
+        {
+          "number": 1,
+          "key_fifths": 0,
+          "time_beats": 4,
+          "time_beat_type": 4,
+          "start_repeat": true,
+          "events": [
+            {"notes": [{"step": "G", "octave": 2}], "duration_beats": 1.0},
+            {"notes": [{"step": "A", "octave": 2}], "duration_beats": 1.0},
+            {"notes": [{"step": "B", "octave": 2}], "duration_beats": 1.0},
+            {"notes": [{"step": "C", "octave": 3}], "duration_beats": 1.0}
+          ]
+        },
+        {
+          "number": 2,
+          "events": [
+            {"notes": [{"step": "D", "octave": 3}], "duration_beats": 1.0},
+            {"notes": [{"step": "E", "octave": 3}], "duration_beats": 1.0},
+            {"notes": [{"step": "F", "octave": 3}], "duration_beats": 1.0},
+            {"notes": [{"step": "G", "octave": 3}], "duration_beats": 1.0}
+          ]
+        },
+        {
+          "number": 3,
+          "events": [
+            {"notes": [{"step": "D", "octave": 3}, {"step": "F", "octave": 3}], "duration_beats": 2.0},
+            {"notes": [{"step": "G", "octave": 2}], "duration_beats": 2.0}
+          ]
+        },
+        {
+          "number": 4,
+          "end_repeat": true,
+          "events": [
+            {"notes": [{"step": "C", "octave": 3}], "duration_beats": 4.0, "tie_start": true}
+          ]
+        },
+        {
+          "number": 5,
+          "ending_number": 1,
+          "ending_type": "start",
+          "events": [
+            {"notes": [{"step": "C", "octave": 3}], "duration_beats": 1.0, "tie_stop": true},
+            {"notes": [{"step": "C", "octave": 4, "is_rest": true}], "duration_beats": 1.0},
+            {"notes": [{"step": "C", "octave": 4, "is_rest": true}], "duration_beats": 2.0}
+          ]
+        },
+        {
+          "number": 6,
+          "ending_number": 2,
+          "ending_type": "stop",
+          "events": [
+            {"notes": [{"step": "D", "octave": 3}, {"step": "F", "octave": 3}], "duration_beats": 4.0}
+          ]
+        }
+      ]
+    }
+  ]
+}

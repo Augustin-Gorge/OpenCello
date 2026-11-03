@@ -6,46 +6,56 @@ Application macOS open source d'aide à la pratique du violoncelle : analyse de 
 
 ## Statut
 
-**v1.0 MVP livrée** — build vérifié (0 warning), lancement testé, données 100 % locales :
+**v1.0 MVP livrée, v1.1 (Phase 7) implémentée** — build vérifié (0 warning Swift), lancement testé, données 100 % locales :
 
 - **posture temps réel** : squelette Vision, calibration, règles A1-A4, seuils par profil (débutant/intermédiaire/avancé) ;
 - **son** : YIN (Hz, note, cents), métriques par note, carte « dernière note » (justesse B1 / stabilité B2 / HNR) ;
-- **25 exercices** avec recommandations issues des erreurs, minuteur et suivi fait/à revoir ;
-- **rapports** : graphiques (justesse par note, temps en alerte), historique, export PDF/JSON ;
-- **mode morceau** : recherche IMSLP tolérante (accents, fautes) avec correction par lexique hybride, import MusicXML, suivi justesse/rythme/position ;
+- **29 exercices** avec recommandations issues des erreurs, minuteur et suivi fait/à revoir ;
+- **rapports dans l'app** : historique complet, score /100 transparent, gros chiffres, graphiques (justesse/stabilité note par note, temps en alerte), analyse commentée axe par axe, exercices recommandés ; exports PDF/JSON/pack professeur ;
+- **page Profil** (façon « fiche de joueur ») : moyennes des 10 dernières séances, flèches de tendance, courbe de forme, cumuls posture, main gauche/positions/techniques, meilleure/pire séance ;
+- **séance libre plein écran** : caméra plein cadre avec HUD temps réel — jauges de position par repère (tête, épaules, asymétrie, archet), hauteur, alertes ;
+- **mode morceau** : recherche IMSLP tolérante (accents, fautes) avec correction par lexique hybride, import MusicXML, suivi justesse/rythme/**position + doigt** ;
 - **mode profil archet** : détection de lignes (Hough), calibration chevalet → touche, angle/zone de contact (A10/A11) ;
 - **vibrato** (taux/amplitude), **articulations** (heuristique 7 classes), **fluidité du geste** (jerk/mobilité, indicatif) ;
+- **main gauche (A17-A20, rapport seulement)** : angle de main, pouce en hypothèse, souplesse des doigts, coude-guide ;
+- **positions et déplacements chiffrés** : matrice doigt × position × direction, justesse d'arrivée, glissé parasite vs volontaire, confiance par note ;
+- **piqué et glissé** suivis au profil (B14/B17) ;
+- **replays pédagogiques** : piano-roll reconstruit depuis les statistiques, « ce que tu as fait / ce que ça devrait être », synthèse PCM locale — aucun audio brut conservé ;
 - **pack professeur** (PDF + JSON + notes), aide intégrée, export **anonymisé** pour étude, contribution d'exercices et protocole d'étude ;
 - **onboarding, réglages** (profil, diapason, tolérances) et icône d'application.
 
-Les critères externes des phases 4-6 (85 % sur les articulations, < 10 % de faux positifs, Apple Watch, notarisation, étude avec ≥ 5 testeurs) restent **non atteints** et documentés comme tels.
+Les critères externes (85 % sur les articulations, < 10 % de faux positifs, Apple Watch, notarisation, étude avec ≥ 5 testeurs, validation des nouveaux seuils par des violoncellistes) restent **non atteints** et documentés comme tels.
 
 Voir [BUILD.md](BUILD.md) pour compiler et lancer. Les phases suivantes sont décrites dans [docs/10-feuille-de-route.md](docs/10-feuille-de-route.md).
 
-## Code (v1.0 + phases 4-6)
+## Code (v1.0 + phases 4-7)
 
-Tout le code est dans `OpenCello/` (SwiftUI, macOS 14+, zéro dépendance externe) :
+Tout le code est dans `OpenCello/` (SwiftUI, macOS 14+) :
 
 | Fichier | Rôle |
 |---|---|
 | `OpenCelloApp.swift` | Point d'entrée de l'app |
-| `ContentView.swift` | Racine 4 onglets (Séance / Morceau / Exercices / Progrès) + onboarding et réglages |
+| `ContentView.swift` | Racine 5 onglets (Séance / Morceau / Exercices / Rapports / Profil), séance plein écran + HUD temps réel |
 | `SessionEngine.swift` | Orchestrateur (séance, calibration, morceau, IMSLP, historique) |
 | `CameraManager.swift` | Capture AVFoundation + inférence Vision |
 | `MicrophoneManager.swift` | Capture micro + analyse YIN |
 | `PitchTracker.swift` | Algorithme YIN + nommage des notes |
 | `PoseAnalyzer.swift` | Landmarks Vision + métriques de posture |
 | `PostureRules.swift` | Règles, baseline, seuils par profil, debounce/cooldown, compteurs |
-| `SessionReport.swift` | Statistiques, séries par note + génération Markdown |
+| `SessionReport.swift` | Statistiques agrégées de séance (posture, son, archet, vibrato, articulations, main gauche, positions) |
 | `NoteSegmenter.swift` | Segmentation en notes + métriques par note |
 | `NoteFeedback.swift` | Évaluation B1/B2 (justesse, stabilité) + feedback dernière note |
 | `SpectralAnalyzer.swift` | FFT vDSP : centroïde, flatness, ratio HF, HNR |
 | `AppSettings.swift` | Profil, diapason, tolérances, onboarding (persistés) |
-| `ExerciseCatalog.swift` | 25 exercices + moteur de recommandation |
-| `ProgressStore.swift` | Historique local des séances + exercices terminés |
-| `ReportExporter.swift` | Export PDF (PDFKit) et JSON des rapports |
+| `ExerciseCatalog.swift` | 29 exercices + moteur de recommandation |
+| `ProgressStore.swift` | Historique local des séances + exercices terminés ; modèles main gauche/positions/techniques/replays |
+| `ReportExporter.swift` | Export PDF (PDFKit), JSON, pack professeur, export étude anonymisé |
+| `StatsKit.swift` | Statistiques sur Accelerate/vDSP : moyenne, écart-type, médiane, pente, moyenne glissante |
+| `ReportAnalysis.swift` | Score de séance /100 (formule transparente), commentaires avec deltas, résumé de profil |
+| `ReportView.swift` | Rapport de séance dans l'app : gros chiffres, graphiques, analyse, exercices |
+| `ProfileView.swift` | Page Profil : moyennes, tendances, forme récente, cumuls posture |
 | `ExercisesView.swift` | Catalogue, fiches, minuteur, recommandations |
-| `ReportsView.swift` | Historique + graphiques Swift Charts + exports |
+| `ReportsView.swift` | Historique des rapports + sélection |
 | `SettingsView.swift` | Réglages et onboarding |
 | `LineDetector.swift` | Détection de lignes (Sobel + Hough) |
 | `BowGeometry.swift` | Angle archet/cordes et zone de contact (A10/A11) |
@@ -56,9 +66,15 @@ Tout le code est dans `OpenCello/` (SwiftUI, macOS 14+, zéro dépendance extern
 | `HelpView.swift` | Aide et tutoriels intégrés |
 | `IMSLPClient.swift` | Recherche IMSLP (API MediaWiki) + index compositeurs (API ISCR) + correction orthographique |
 | `TitleVocabulary.swift` | Lexique musical noyau + top des mots de titres IMSLP (généré) |
-| `MusicXMLParser.swift` | Parseur MusicXML (notes, silences, accords, liaisons, tempo) |
-| `ScoreFollower.swift` | Suivi de partition (appariement, cents, rythme, ré-ancrage) |
-| `PieceView.swift` | Interface du mode morceau |
+| `MusicXMLParser.swift` | Parseur MusicXML (notes, silences, accords, liaisons, tempo, glissando, doigté) |
+| `ScoreFollower.swift` | Suivi de partition (appariement, cents, rythme, ré-ancrage, index des notes) |
+| `PieceView.swift` | Interface du mode morceau (position/doigt/confiance, replay) |
+| `HandPoseAnalyzer.swift` | Vision Hands : 2 mains, 21 points → `HandFrame` |
+| `LeftHandAnalyzer.swift` | Main gauche : P11-P14, doigt presseur, pouce (hypothèse), coude (A17-A20) |
+| `PositionTracker.swift` | Positions 1-7 × cordes × doigts, fusion audio/caméra, agrégats de déplacement |
+| `TechniqueTracker.swift` | Piqué (B17), glissé volontaire/parasite (B14), `GlideDetector` |
+| `ReplayKit.swift` | Construction des moments, synthèse PCM locale, lecture AVAudioEngine |
+| `ReplayView.swift` | Feuille de replay pédagogique + piano-roll Canvas |
 
 ## Documentation
 
@@ -83,14 +99,16 @@ Tout le code est dans `OpenCello/` (SwiftUI, macOS 14+, zéro dépendance extern
 | [docs/15-vocabulaire-imslp.md](docs/15-vocabulaire-imslp.md) | Analyse de fréquence des titres IMSLP et stratégie de correction orthographique |
 | [docs/16-etude-longitudinale.md](docs/16-etude-longitudinale.md) | Protocole d'étude longitudinale (non exécutée) |
 | [docs/17-contribution-exercices.md](docs/17-contribution-exercices.md) | Schéma et règles de contribution d'exercices |
+| [docs/18-omr-local.md](docs/18-omr-local.md) | OMR local PDF → MusicXML : Ollama + constrained decoding, boucles de contrôle, comparaison Audiveris/PDF2Muse |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Guide de contribution (build, tests, style, exercices) |
 
 ## Choix techniques
 
 - **macOS natif** : SwiftUI + AVFoundation (caméra/micro), **Vision framework** (pose humaine, on-device), **vDSP/Accelerate** pour le DSP audio.
 - Pitch : algorithme **YIN** (De Cheveigné & Kawahara, 2002) implémenté en Swift.
-- Stockage local : historique JSON dans Application Support ; rapports Markdown/PDF/JSON. Pas de SwiftData pour l'instant.
-- Graphiques : **Swift Charts** ; PDF : **PDFKit** (frameworks système).
+- Stockage local : historique JSON dans Application Support ; les rapports s'affichent dans l'app, exports PDF/JSON à la demande. Pas de SwiftData pour l'instant.
+- Graphiques : **Swift Charts** (courbes/barres) + **Liveline** (SPM, MIT — radar/spider et anneaux, Canvas natif) ; statistiques : **Accelerate/vDSP** ; PDF : **PDFKit** (frameworks système).
+- Règle du projet : **dépendances d'abord** — assembler des briques existantes plutôt que réécrire du code (`AGENTS.md`).
 - Licence cible : **MIT** (attention aux licences des briques intégrées — voir `docs/07`).
 
 ## Licence

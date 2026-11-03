@@ -21,8 +21,11 @@ swiftc -O -o build/qa/mxml_test OpenCello/MusicXMLParser.swift OpenCello/PitchTr
 
 swiftc -O -o build/qa/v1_test OpenCello/AppSettings.swift OpenCello/ExerciseCatalog.swift \
   OpenCello/ProgressStore.swift OpenCello/ReportExporter.swift OpenCello/NoteFeedback.swift \
-  OpenCello/Articulation.swift tools/qa/v1_main.swift \
-  -framework SwiftUI -framework AppKit -framework PDFKit && ./build/qa/v1_test
+  OpenCello/Articulation.swift OpenCello/StatsKit.swift OpenCello/ReportAnalysis.swift \
+  OpenCello/PostureRules.swift OpenCello/PoseAnalyzer.swift OpenCello/HandPoseAnalyzer.swift \
+  OpenCello/LeftHandAnalyzer.swift OpenCello/PositionTracker.swift OpenCello/ScoreFollower.swift \
+  OpenCello/MusicXMLParser.swift OpenCello/PitchTracker.swift tools/qa/v1_main.swift \
+  -framework SwiftUI -framework AppKit -framework PDFKit -framework Vision && ./build/qa/v1_test
 
 swiftc -O -o build/qa/bow_test OpenCello/LineDetector.swift OpenCello/BowGeometry.swift \
   tools/qa/bow_main.swift && ./build/qa/bow_test
@@ -33,7 +36,8 @@ swiftc -O -o build/qa/phase5_test OpenCello/VibratoAnalyzer.swift OpenCello/Arti
 
 ## Style de code
 
-- Swift 5, macOS 14+, SwiftUI, **zéro dépendance externe** sans justification.
+- Swift 5, macOS 14+, SwiftUI.
+- **Dépendances d'abord** : assembler des briques existantes (packages SPM, frameworks système) plutôt que réécrire ; toute dépendance ajoutée est journalisée avec sa licence.
 - UI et messages en français ; noms de code en anglais.
 - Seuils regroupés et commentés ; éviter les constantes magiques dispersées.
 - Pas de stockage audio/vidéo brut ; pas de télémétrie ; pas de cloud.

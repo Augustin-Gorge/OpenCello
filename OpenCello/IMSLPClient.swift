@@ -54,13 +54,32 @@ struct ComposerEntry {
 enum IMSLPError: LocalizedError {
     case http
     case decoding
+    case fileUnavailable
+    case notAPDF
 
     var errorDescription: String? {
         switch self {
         case .http: return "IMSLP n'a pas répondu correctement. Vérifiez la connexion."
         case .decoding: return "Réponse IMSLP illisible."
+        case .fileUnavailable: return "Page de téléchargement IMSLP illisible ou fichier absent."
+        case .notAPDF: return "Le fichier téléchargé n'est pas un PDF."
         }
     }
+}
+
+/// Un fichier PDF proposé sur une page d'œuvre IMSLP.
+struct IMSLPScoreFile: Identifiable {
+    let name: String
+    let description: String
+    let copyright: String
+    /// Index du lien `Special:ImagefromIndex` ; nil si le repérage HTML a échoué.
+    let index: Int?
+
+    var id: String { "\(index.map(String.init) ?? "?"):\(name)" }
+
+    /// Statut « Public Domain » affiché par IMSLP (indicatif : la validité
+    /// dépend toujours de la juridiction de l'utilisateur).
+    var isPublicDomain: Bool { copyright.lowercased().contains("public domain") }
 }
 
 // MARK: - Client
@@ -360,15 +379,186 @@ final class IMSLPClient {
         }
     }
 
-    private func fetch(_ url: URL) async throws -> Data {
+    private func fetch(_ url: URL, session: URLSession = .shared, timeout: TimeInterval = 25, cookieHeader: String? = nil) async throws -> Data {
         var request = URLRequest(url: url)
         request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
-        request.timeoutInterval = 25
-        let (data, response) = try await URLSession.shared.data(for: request)
+        request.timeoutInterval = timeout
+        if let cookieHeader {
+            request.setValue(cookieHeader, forHTTPHeaderField: "Cookie")
+        }
+        let (data, response) = try await session.data(for: request)
         guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
             throw IMSLPError.http
         }
         return data
+    }
+
+    // MARK: Fichiers de partitions (PDF)
+
+    /// Session dédiée au téléchargement, avec l'en-tête `Cookie` posé
+    /// manuellement (déterministe ; la sémantique de stockage d'URLSession
+    /// n'envoie pas toujours les cookies posés à froid).
+    ///
+    /// Deux cookies traversent les écrans anti-robot d'IMSLP :
+    /// - `imslpdisclaimeraccepted=yes` : acceptation du disclaimer de copyright ;
+    /// - `redirectPassed=1` : normalement posé par le JavaScript de
+    ///   l'interstitiel IMSLP ; posé d'emblée, la page de téléchargement
+    ///   (« Subscribe / sm_dl_wait ») est servie directement par le serveur.
+    private static let downloadCookieHeader = "imslpdisclaimeraccepted=yes; redirectPassed=1"
+
+    private static let downloadSession: URLSession = {
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.httpShouldSetCookies = false
+        return URLSession(configuration: configuration)
+    }()
+
+    /// Liste les PDF d'une page d'œuvre IMSLP : métadonnées et statut de
+    /// copyright tirés du wikitext (blocs `{{#fte:imslpfile …}}`), index de
+    /// téléchargement repéré dans le HTML rendu de la page.
+    func listScoreFiles(pageTitle: String) async throws -> [IMSLPScoreFile] {
+        var components = URLComponents(string: "https://imslp.org/api.php")
+        components?.queryItems = [
+            URLQueryItem(name: "action", value: "parse"),
+            URLQueryItem(name: "page", value: pageTitle),
+            URLQueryItem(name: "prop", value: "wikitext"),
+            URLQueryItem(name: "format", value: "json")
+        ]
+        guard let wikitextURL = components?.url else { throw IMSLPError.http }
+        let wikitextData = try await fetch(wikitextURL)
+        struct WikitextEnvelope: Decodable {
+            struct Parse: Decodable {
+                struct Wikitext: Decodable {
+                    let text: String
+                    enum CodingKeys: String, CodingKey { case text = "*" }
+                }
+                let wikitext: Wikitext
+            }
+            let parse: Parse
+        }
+        guard let envelope = try? JSONDecoder().decode(WikitextEnvelope.self, from: wikitextData) else {
+            throw IMSLPError.decoding
+        }
+
+        guard let page = pageURL(for: pageTitle) else { throw IMSLPError.http }
+        let htmlData = try await fetch(page, session: Self.downloadSession, timeout: 60, cookieHeader: Self.downloadCookieHeader)
+        let html = String(decoding: htmlData, as: UTF8.self)
+
+        return Self.scoreFiles(fromWikitext: envelope.parse.wikitext.text, html: html)
+    }
+
+    /// Télécharge le PDF d'un fichier IMSLP identifié par son index
+    /// (`Special:ImagefromIndex`, fourni par `listScoreFiles`).
+    ///
+    /// IMSLP sert le fichier en deux temps : la page de téléchargement expose
+    /// l'URL réelle (miroir) dans l'attribut `data-id` du span `#sm_dl_wait`.
+    func downloadScoreFile(index: Int) async throws -> Data {
+        guard let page = URL(string: "https://imslp.org/wiki/Special:ImagefromIndex/\(index)") else {
+            throw IMSLPError.http
+        }
+        let data = try await fetch(page, session: Self.downloadSession, timeout: 60, cookieHeader: Self.downloadCookieHeader)
+        let html = String(decoding: data, as: UTF8.self)
+        guard let fileURL = Self.downloadURL(fromDownloadPage: html) else {
+            throw IMSLPError.fileUnavailable
+        }
+        let pdf = try await fetch(fileURL, session: Self.downloadSession, timeout: 300, cookieHeader: Self.downloadCookieHeader)
+        guard String(decoding: pdf.prefix(4), as: UTF8.self) == "%PDF" else {
+            throw IMSLPError.notAPDF
+        }
+        return pdf
+    }
+
+    /// Extrait l'URL du fichier (miroir) depuis la page de téléchargement
+    /// IMSLP (`<span id="sm_dl_wait" data-id="https&#58;//…">`).
+    /// Exposé (internal) pour les tests CLI.
+    static func downloadURL(fromDownloadPage html: String) -> URL? {
+        guard let span = html.range(of: "id=\"sm_dl_wait\"") else { return nil }
+        let tail = String(html[span.upperBound...])
+        guard let attribute = tail.range(of: "data-id=\"") else { return nil }
+        let rest = String(tail[attribute.upperBound...])
+        guard let end = rest.range(of: "\"") else { return nil }
+        let encoded = String(rest[rest.startIndex..<end.lowerBound])
+        let decoded = encoded
+            .replacingOccurrences(of: "&#58;", with: ":")
+            .replacingOccurrences(of: "&#47;", with: "/")
+            .replacingOccurrences(of: "&amp;", with: "&")
+        return URL(string: decoded)
+    }
+
+    /// Analyse les blocs `{{#fte:imslpfile …}}` du wikitext et rapproche chaque
+    /// nom de fichier de son index de téléchargement dans le HTML rendu
+    /// (occurrence la plus proche du nom de fichier). Exposé pour les tests.
+    static func scoreFiles(fromWikitext wikitext: String, html: String) -> [IMSLPScoreFile] {
+        var files: [IMSLPScoreFile] = []
+        var searchRange = wikitext.startIndex..<wikitext.endIndex
+        while let start = wikitext.range(of: "{{#fte:imslpfile", range: searchRange) {
+            guard let end = wikitext.range(of: "\n}}", range: start.upperBound..<wikitext.endIndex)?.lowerBound else {
+                break
+            }
+            let block = String(wikitext[start.upperBound..<end])
+            if let file = scoreFile(fromBlock: block, html: html) {
+                files.append(file)
+            }
+            if end >= wikitext.endIndex { break }
+            searchRange = end..<wikitext.endIndex
+        }
+        return files
+    }
+
+    private static func scoreFile(fromBlock block: String, html: String) -> IMSLPScoreFile? {
+        var name: String?
+        var description: String?
+        var copyright: String?
+        for line in block.split(separator: "\n") {
+            let trimmed = line.trimmingCharacters(in: .whitespaces)
+            guard trimmed.hasPrefix("|") else { continue }
+            let field = trimmed.dropFirst()
+            guard let separator = field.firstIndex(of: "=") else { continue }
+            var key = String(field[..<separator]).trimmingCharacters(in: .whitespaces)
+            // « File Name 1 » → « File Name » : on retire les chiffres finaux.
+            while let last = key.last, last.isNumber {
+                key.removeLast()
+            }
+            key = key.trimmingCharacters(in: .whitespaces)
+            let value = String(field[field.index(after: separator)...])
+                .trimmingCharacters(in: .whitespaces)
+            switch key {
+            case "File Name": name = value
+            case "File Description": description = value
+            case "Copyright": copyright = value
+            default: break
+            }
+        }
+        guard let name, name.lowercased().hasSuffix(".pdf") else { return nil }
+        return IMSLPScoreFile(
+            name: name,
+            description: description ?? "",
+            copyright: copyright ?? "",
+            index: downloadIndex(for: name, in: html)
+        )
+    }
+
+    /// Index de téléchargement d'un fichier : le lien `ImagefromIndex`
+    /// le plus proche du nom dans le HTML rendu (heuristique vérifiée).
+    private static func downloadIndex(for fileName: String, in html: String) -> Int? {
+        guard let position = html.range(of: fileName) else { return nil }
+        let lower = html.index(position.lowerBound, offsetBy: -2500, limitedBy: html.startIndex) ?? html.startIndex
+        let upper = html.index(position.upperBound, offsetBy: 500, limitedBy: html.endIndex) ?? html.endIndex
+        let window = String(html[lower..<upper])
+
+        var found: Int?
+        var cursor = window.startIndex
+        while let match = window.range(of: "ImagefromIndex/", range: cursor..<window.endIndex) {
+            let digitsStart = match.upperBound
+            var digitsEnd = digitsStart
+            while digitsEnd < window.endIndex, window[digitsEnd].isNumber {
+                digitsEnd = window.index(after: digitsEnd)
+            }
+            if digitsEnd > digitsStart, let value = Int(window[digitsStart..<digitsEnd]) {
+                found = value
+            }
+            cursor = match.upperBound
+        }
+        return found
     }
 
     func pageURL(for title: String) -> URL? {

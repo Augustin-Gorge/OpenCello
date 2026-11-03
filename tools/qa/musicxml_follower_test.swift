@@ -1,7 +1,10 @@
 import Foundation
 
-do {
-    let data = try Data(contentsOf: URL(fileURLWithPath: "tools/qa/sample.musicxml"))
+@main
+struct MusicXMLFollowerTest {
+    static func main() {
+        do {
+            let data = try Data(contentsOf: URL(fileURLWithPath: "tools/qa/sample.musicxml"))
     let score = try MusicXMLParser.parse(data: data)
     print("TITLE:", score.title)
     print("COMPOSER:", score.composer ?? "-")
@@ -25,7 +28,9 @@ do {
     print("MISS:", miss.matched, miss.message)
 
     print("STATS matched=\(follower.stats.matched)/\(follower.stats.totalNotes) inTune=\(follower.stats.inTune) out=\(follower.stats.outOfScore) meanCents=\(String(format: "%.1f", follower.stats.meanAbsCents)) meanRhythm=\(String(format: "%.0f", follower.stats.meanAbsRhythmMs)) tempo=\(follower.stats.estimatedTempo ?? -1)")
-} catch {
-    print("ERROR:", error)
-    exit(1)
+        } catch {
+            print("ERROR:", error)
+            exit(1)
+        }
+    }
 }

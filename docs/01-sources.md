@@ -164,7 +164,14 @@ Toutes les sources collectées, avec résumé et utilité pour OpenCello.
 - **jlumbroso/imslp** (Python) : https://github.com/jlumbroso/imslp — wrapper MediaWiki + API ISCR, gestion du cookie `imslpdisclaimeraccepted=yes`.
 - **josefleventon/imslp-api** (JavaScript) : https://github.com/josefleventon/imslp-api — accès direct aux listes ISCR.
 - **MusicXML** (standard W3C) : https://www.w3.org/MusicXML/ — export depuis MuseScore/Finale/Sibelius.
-- **Audiveris** (OMR open source, PDF → MusicXML) : https://github.com/Audiveris/audiveris — piste d'intégration locale pour lire les PDF IMSLP.
+- **Audiveris** (OMR open source, PDF → MusicXML) : https://github.com/Audiveris/audiveris — **AGPL-3.0**, Java, export MusicXML 3/4 (`.mxl`/`.xml`), v5.10.2 (mars 2026). Piste d'intégration **externe** (sous-processus, jamais embarqué — voir `docs/07` et `docs/16`).
+- **Ollama** (serveur local de LLM, incl. modèles vision) : https://ollama.com — MIT (les modèles ont leurs propres licences). API locale `POST /api/chat` avec **structured outputs** : `format: <schéma JSON>` = constrained decoding par grammaire (depuis déc. 2024). Utilisé par le pipeline OMR (`docs/16`).
+- **PDF2Muse** (PDF → MusicXML, CLI) : https://github.com/thedivergentai/PDF2Muse — MIT, projet « early revived » (20 ★) qui enveloppe `oemer` ; backend optionnel `homr` (AGPL-3.0) ; export MuseScore `.mscx` optionnel. Évalué en comparaison, pas intégré.
+- **OeMeR** (OMR page-level, Python/PyTorch) : https://github.com/BreezeWhite/oemer — MIT.
+- **HOMR** (OMR de bout en bout, Christian Liebhardt) : https://github.com/OMR-Research/homr — AGPL-3.0.
+- **OMR-NED benchmark** (comparaison Audiveris / HOMR / OeMeR sur le dataset SMB, métrique d'édition note-à-note) : https://github.com/... (Jupyter, mars 2026) — protocole de référence pour étalonner notre pipeline OMR.
+- **MusicXML 4.0 XSD officiels** (W3C Music Notation Community Group, licence FSA) : https://www.w3.org/2021/06/musicxml40/ — vendus dans `tools/qa/musicxml_xsd/` pour la validation locale.
+- **Constrained decoding et « semantic gap »** : Reddy et al., *Constrained Decoding Eliminates Structural Failures in Small LLMs but Reveals a Scale-Dependent Semantic Gap*, arXiv:2609.23742 (2026) — justifie nos boucles de validation après décodage contraint.
 - **MuseScore** : https://musescore.org — export MusicXML et vérification des partitions.
 
 ## E. Bases de données

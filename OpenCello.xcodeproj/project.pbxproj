@@ -39,6 +39,16 @@
 		AB0000000000000000000230 /* Articulation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000130 /* Articulation.swift */; };
 		AB0000000000000000000231 /* MotionAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000131 /* MotionAnalyzer.swift */; };
 		AB0000000000000000000232 /* HelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000132 /* HelpView.swift */; };
+		AB0000000000000000000233 /* StatsKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000133 /* StatsKit.swift */; };
+		AB0000000000000000000234 /* ReportAnalysis.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000134 /* ReportAnalysis.swift */; };
+		AB0000000000000000000235 /* ReportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000135 /* ReportView.swift */; };
+		AB0000000000000000000236 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000136 /* ProfileView.swift */; };
+		AB0000000000000000000237 /* LeftHandAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000137 /* LeftHandAnalyzer.swift */; };
+		AB0000000000000000000238 /* HandPoseAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000138 /* HandPoseAnalyzer.swift */; };
+		AB0000000000000000000239 /* PositionTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000139 /* PositionTracker.swift */; };
+		AB0000000000000000000240 /* TechniqueTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000140 /* TechniqueTracker.swift */; };
+		AB0000000000000000000241 /* ReplayKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000141 /* ReplayKit.swift */; };
+		AB0000000000000000000242 /* ReplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000142 /* ReplayView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -75,6 +85,16 @@
 		AB0000000000000000000130 /* Articulation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Articulation.swift; sourceTree = "<group>"; };
 		AB0000000000000000000131 /* MotionAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionAnalyzer.swift; sourceTree = "<group>"; };
 		AB0000000000000000000132 /* HelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpView.swift; sourceTree = "<group>"; };
+		AB0000000000000000000133 /* StatsKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsKit.swift; sourceTree = "<group>"; };
+		AB0000000000000000000134 /* ReportAnalysis.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportAnalysis.swift; sourceTree = "<group>"; };
+		AB0000000000000000000135 /* ReportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportView.swift; sourceTree = "<group>"; };
+		AB0000000000000000000136 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		AB0000000000000000000137 /* LeftHandAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeftHandAnalyzer.swift; sourceTree = "<group>"; };
+		AB0000000000000000000138 /* HandPoseAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HandPoseAnalyzer.swift; sourceTree = "<group>"; };
+		AB0000000000000000000139 /* PositionTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PositionTracker.swift; sourceTree = "<group>"; };
+		AB0000000000000000000140 /* TechniqueTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TechniqueTracker.swift; sourceTree = "<group>"; };
+		AB0000000000000000000141 /* ReplayKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplayKit.swift; sourceTree = "<group>"; };
+		AB0000000000000000000142 /* ReplayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplayView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -139,6 +159,16 @@
 				AB0000000000000000000130 /* Articulation.swift */,
 				AB0000000000000000000131 /* MotionAnalyzer.swift */,
 				AB0000000000000000000132 /* HelpView.swift */,
+				AB0000000000000000000133 /* StatsKit.swift */,
+				AB0000000000000000000134 /* ReportAnalysis.swift */,
+				AB0000000000000000000135 /* ReportView.swift */,
+				AB0000000000000000000136 /* ProfileView.swift */,
+				AB0000000000000000000137 /* LeftHandAnalyzer.swift */,
+				AB0000000000000000000138 /* HandPoseAnalyzer.swift */,
+				AB0000000000000000000139 /* PositionTracker.swift */,
+				AB0000000000000000000140 /* TechniqueTracker.swift */,
+				AB0000000000000000000141 /* ReplayKit.swift */,
+				AB0000000000000000000142 /* ReplayView.swift */,
 			);
 			path = OpenCello;
 			sourceTree = "<group>";
@@ -159,6 +189,9 @@
 			dependencies = (
 			);
 			name = OpenCello;
+			packageProductDependencies = (
+				AB0000000000000000000045 /* Liveline */,
+			);
 			productName = OpenCello;
 			productReference = AB0000000000000000000011 /* OpenCello.app */;
 			productType = "com.apple.product-type.application";
@@ -187,6 +220,9 @@
 				Base,
 			);
 			mainGroup = AB0000000000000000000002;
+			packageReferences = (
+				AB0000000000000000000044 /* XCRemoteSwiftPackageReference "liveline-swift" */,
+			);
 			productRefGroup = AB0000000000000000000003 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -243,6 +279,16 @@
 				AB0000000000000000000230 /* Articulation.swift in Sources */,
 				AB0000000000000000000231 /* MotionAnalyzer.swift in Sources */,
 				AB0000000000000000000232 /* HelpView.swift in Sources */,
+				AB0000000000000000000233 /* StatsKit.swift in Sources */,
+				AB0000000000000000000234 /* ReportAnalysis.swift in Sources */,
+				AB0000000000000000000235 /* ReportView.swift in Sources */,
+				AB0000000000000000000236 /* ProfileView.swift in Sources */,
+				AB0000000000000000000237 /* LeftHandAnalyzer.swift in Sources */,
+				AB0000000000000000000238 /* HandPoseAnalyzer.swift in Sources */,
+				AB0000000000000000000239 /* PositionTracker.swift in Sources */,
+				AB0000000000000000000240 /* TechniqueTracker.swift in Sources */,
+				AB0000000000000000000241 /* ReplayKit.swift in Sources */,
+				AB0000000000000000000242 /* ReplayView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -366,6 +412,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		AB0000000000000000000044 /* XCRemoteSwiftPackageReference "liveline-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ParthJadhav/liveline-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.7.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		AB0000000000000000000045 /* Liveline */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AB0000000000000000000044 /* XCRemoteSwiftPackageReference "liveline-swift" */;
+			productName = Liveline;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = AB0000000000000000000001 /* Project object */;
 }

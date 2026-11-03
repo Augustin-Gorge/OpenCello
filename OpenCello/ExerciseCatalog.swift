@@ -304,6 +304,26 @@ enum ExerciseCatalog {
             source: "Feuillard, exercices de croisements"
         ),
         Exercise(
+            id: "E3-07",
+            title: "Piqué égal",
+            category: "Archet",
+            level: "Intermédiaire",
+            durationMinutes: 5,
+            targetRules: ["B17", "B6", "B13"],
+            summary: "Des notes piquées de durée et d'énergie égales, avant toute accélération.",
+            instructions: [
+                "Jouer une série de 8 notes piquées au métronome, archet arrêté entre chaque note.",
+                "Repartir à la même vitesse à chaque note, sans accélérer la fin de série.",
+                "Comparer deux séries : l'app affiche l'écart-type des durées et des énergies.",
+                "Augmenter le tempo seulement quand la série est régulière."
+            ],
+            criteria: [
+                "Écart-type des durées < 12 %",
+                "Énergies comparables d'une note à l'autre"
+            ],
+            source: "Dalmazzo & Ramírez 2019 ; Ševčík, 40 Variations Op. 3"
+        ),
+        Exercise(
             id: "E4-01",
             title: "Gammes lentes avec bourdon",
             category: "Main gauche",
@@ -415,6 +435,66 @@ enum ExerciseCatalog {
                 "Stabilité < 15 cents par note"
             ],
             source: "Cossmann, Studies Op. 10 ; Ševčík"
+        ),
+        Exercise(
+            id: "E4-07",
+            title: "Déplacements ciblés",
+            category: "Main gauche",
+            level: "Intermédiaire",
+            durationMinutes: 6,
+            targetRules: ["B15", "B16", "B2"],
+            summary: "Aller-retour 1re ↔ 4e position en isolant le doigt fautif, avec la justesse d'arrivée affichée.",
+            instructions: [
+                "Jouer une note en 1re position, puis la même note en 4e position, aller-retour.",
+                "Isoler le doigt qui rate l'arrivée (souvent le 2e en descendant).",
+                "Vérifier la note d'arrivée avant de réintégrer le mouvement dans une phrase.",
+                "Comparer la justesse d'arrivée en montant et en descendant."
+            ],
+            criteria: [
+                "Justesse d'arrivée < 15 cents",
+                "Transition < 150 ms, sans glissé parasite"
+            ],
+            source: "Ševčík Op. 8 ; Feuillard, Daily Exercises"
+        ),
+        Exercise(
+            id: "E4-08",
+            title: "Glissando contrôlé puis supprimé",
+            category: "Main gauche",
+            level: "Intermédiaire",
+            durationMinutes: 5,
+            targetRules: ["B14"],
+            summary: "Distinguer un glissando volontaire d'un déplacement qui traîne.",
+            instructions: [
+                "Faire un glissando lent et volontaire sur la corde entière, avec une pente constante.",
+                "Rejouer le même déplacement sans glissé : le doigt se pose d'un coup.",
+                "Vérifier que l'app ne signale un portamento que lorsque tu l'as voulu.",
+                "Répéter en changeant de doigt et de direction."
+            ],
+            criteria: [
+                "Portamento détecté seulement quand il est prévu",
+                "Pente régulière, arrivée nette"
+            ],
+            source: "Galamian ; CelloMind (approche du déplacement)"
+        ),
+        Exercise(
+            id: "E4-09",
+            title: "Pouce et angle de main",
+            category: "Main gauche",
+            level: "Intermédiaire",
+            durationMinutes: 5,
+            targetRules: ["A17", "A18", "B4"],
+            summary: "Garder la main dans l'axe de l'avant-bras et le pouce souple derrière le manche.",
+            instructions: [
+                "Jouer une gamme lente en surveillant la ligne avant-bras ↔ 3e doigt.",
+                "Relâcher le pouce entre deux notes ; vérifier qu'il glisse sans serrer.",
+                "Monter en 4e position et écouter si le son s'étouffe (B4).",
+                "Alterner main cassée / main alignée pour sentir la différence."
+            ],
+            criteria: [
+                "Angle main/avant-bras < 15°",
+                "Aucun étouffement signalé en positions hautes"
+            ],
+            source: "Duport, Essai sur le doigté ; CelloMind"
         ),
         Exercise(
             id: "E5-01",

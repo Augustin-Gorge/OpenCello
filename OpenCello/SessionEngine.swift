@@ -8,14 +8,14 @@ enum AppMode: String, CaseIterable {
     case free = "Séance"
     case piece = "Morceau"
     case exercises = "Exercices"
-    case progress = "Progrès"
+    case reports = "Rapports"
+    case profile = "Profil"
 }
 
 enum SessionPhase {
     case idle
     case calibrating
     case running
-    case report
 }
 
 /// Orchestrateur : caméra + micro + règles + rapport.
@@ -33,9 +33,12 @@ final class SessionEngine: ObservableObject {
     @Published var alerts: [ActiveAlert] = []
     @Published var overlayLandmarks: [Landmark] = []
     @Published var baselineStatus = "Baseline posture : non calibrée"
-    @Published var reportMarkdown = ""
-    @Published var reportPath: URL?
+    @Published var livePosture: [LiveRuleStatus] = []
     @Published var message: String?
+
+    // Rapports et navigation
+    @Published var selectedReportID: UUID?
+    @Published var requestedExerciseID: String?
 
     // Mode morceau
     @Published var appMode: AppMode = .free
@@ -53,6 +56,11 @@ final class SessionEngine: ObservableObject {
     @Published var pieceFeedback: FollowFeedback?
     @Published var pieceProgress: Double = 0
     @Published var pieceStats: PieceStats?
+    @Published var pieceAssignment: PositionAssignment?
+    @Published var pieceHandStatus = "Main gauche : non détectée"
+    @Published var pieceGlideMs: Double?
+    @Published var pieceLastMoment: ReplayMoment?
+    @Published var liveReplay: ReplayMoment?
     @Published var lastNote: NoteEvent?
     @Published var lastNoteFeedback: NoteFeedback?
     @Published var recommendedExerciseIDs: [String] = []
@@ -76,6 +84,7 @@ final class SessionEngine: ObservableObject {
 
     private var calibrationSamples: [PoseMetrics] = []
     private var lastCalibrationSampleAt: TimeInterval = 0
+    private var lastLivePostureAt: TimeInterval = 0
     private var lastPitchTimestamp: TimeInterval = 0
     private var sessionStartAt: Date?
     private var follower: ScoreFollower?
@@ -83,6 +92,18 @@ final class SessionEngine: ObservableObject {
     private var previousNoteMidi: Double?
     private var recentNoteStarts: [TimeInterval] = []
     private let motionAnalyzer = MotionAnalyzer()
+
+    // Phase 7 (v1.1) : main gauche, positions, techniques, replays.
+    private let leftHandAnalyzer = LeftHandAnalyzer()
+    private let positionTracker = PositionTracker()
+    private let techniqueTracker = TechniqueTracker()
+    private var currentHandMetrics: LeftHandMetrics?
+    private var currentAssignment: PositionAssignment?
+    private var pendingFeedback: FollowFeedback?
+    private var pendingGlide: GlideInfo?
+    private var pendingGlideVoluntary = false
+    private var pitchSamples: [PitchSample] = []
+    private var pieceSessionStart: TimeInterval = 0
 
     init() {
         camera.onStatus = { [weak self] text in
@@ -117,6 +138,7 @@ final class SessionEngine: ObservableObject {
 
     func applySettings() {
         rules.apply(profile: settings.profile)
+        leftHandAnalyzer.thresholds = PostureRules.handThresholds(for: settings.profile)
     }
 
     private func refreshRecommendationsFromHistory() {
@@ -124,11 +146,17 @@ final class SessionEngine: ObservableObject {
             recommendedExerciseIDs = ExerciseCatalog.recommendations(for: []).map(\.id)
             return
         }
-        let ruleIDs = last.posture
+        var ruleIDs = last.posture
             .sorted { $0.seconds > $1.seconds }
+            .filter { $0.seconds > 2 }
             .prefix(3)
             .map(\.ruleID)
-        recommendedExerciseIDs = ExerciseCatalog.recommendations(for: Array(ruleIDs)).map(\.id)
+        if last.noteCount > 0 {
+            if last.meanAbsCents > settings.intonationTolerance { ruleIDs.append("B1") }
+            if last.meanStability > settings.stabilityTolerance { ruleIDs.append("B2") }
+            if let hnr = last.meanHNR, hnr < 18 { ruleIDs.append("B7") }
+        }
+        recommendedExerciseIDs = ExerciseCatalog.recommendations(for: ruleIDs).map(\.id)
     }
 
     var elapsedText: String {
@@ -171,6 +199,16 @@ final class SessionEngine: ObservableObject {
         recentNoteStarts = []
         lastArticulation = nil
         motionAnalyzer.reset()
+        leftHandAnalyzer.thresholds = PostureRules.handThresholds(for: settings.profile)
+        leftHandAnalyzer.reset()
+        positionTracker.reset()
+        techniqueTracker.reset()
+        currentHandMetrics = nil
+        currentAssignment = nil
+        pendingFeedback = nil
+        pendingGlide = nil
+        pendingGlideVoluntary = false
+        pitchSamples = []
         phase = .running
         camera.analysisMode = analysisMode
         camera.start()
@@ -190,10 +228,10 @@ final class SessionEngine: ObservableObject {
             report.motionSamples = metrics.samples
         }
         let summary = rules.summary()
-        let markdown = report.markdown(lines: summary, baseline: rules.baselineDescription)
-        reportMarkdown = markdown
-        reportPath = save(markdown)
 
+        let positionStats = makePositionStats()
+        let technique = techniqueTracker.record()
+        let hand = report.handRecord()
         let duration = sessionStartAt.map { Date().timeIntervalSince($0) } ?? 0
         let record = SessionRecord(
             id: UUID(),
@@ -217,34 +255,40 @@ final class SessionEngine: ObservableObject {
             noteCents: report.noteCents,
             noteStability: report.noteStability,
             piece: nil,
-            reportMarkdown: markdown,
             bow: report.bowFrames > 0
                 ? BowRecord(
                     frames: report.bowFrames,
                     goodAngle: report.bowGoodAngle,
                     goodZone: report.bowGoodZone
                 )
-                : nil
+                : nil,
+            meanHNR: report.meanHNR,
+            meanCentroid: report.meanCentroid,
+            meanRMSVariation: report.meanRMSVariation,
+            postureDetectionRate: report.detectionRate,
+            medianFrequency: report.medianFrequency,
+            validPitchFrames: report.validPitchFrames,
+            pitchFrames: report.pitchFrames,
+            articulationCounts: report.articulationCounts.isEmpty ? nil : report.articulationCounts,
+            meanVibratoRate: report.meanVibratoRate,
+            meanVibratoExtent: report.meanVibratoExtent,
+            hand: hand,
+            positionStats: positionStats,
+            technique: technique
         )
         progress.add(record)
+        refreshRecommendationsFromHistory()
 
-        let ruleIDs = summary
-            .sorted { $0.totalBadSeconds > $1.totalBadSeconds }
-            .filter { $0.totalBadSeconds > 2 }
-            .prefix(3)
-            .map(\.id)
-        recommendedExerciseIDs = ExerciseCatalog.recommendations(for: Array(ruleIDs)).map(\.id)
-
-        phase = .report
-        alerts = []
-        bowAlert = nil
+        resetSessionUI()
+        selectedReportID = record.id
+        appMode = .reports
     }
 
-    func newSession() {
+    /// Remet l'interface de la séance à zéro (après arrêt ou changement de mode).
+    private func resetSessionUI() {
         phase = .idle
-        reportMarkdown = ""
-        reportPath = nil
         alerts = []
+        livePosture = []
         overlayLandmarks = []
         pitchText = "—"
         pitchDetail = ""
@@ -255,9 +299,16 @@ final class SessionEngine: ObservableObject {
         bowAlert = nil
     }
 
-    func openReport() {
-        guard let reportPath else { return }
-        NSWorkspace.shared.open(reportPath)
+    /// Ouvre un rapport précis dans l'onglet Rapports (depuis le profil, etc.).
+    func openReportInHistory(_ id: UUID) {
+        selectedReportID = id
+        appMode = .reports
+    }
+
+    /// Ouvre la fiche d'un exercice depuis un rapport.
+    func openExercise(_ id: String) {
+        requestedExerciseID = id
+        switchMode(to: .exercises)
     }
 
     // MARK: - Mode profil (archet/cordes)
@@ -420,8 +471,6 @@ final class SessionEngine: ObservableObject {
             pieceFeedback = nil
             pieceStats = nil
             pieceProgress = 0
-            reportMarkdown = ""
-            reportPath = nil
             message = "Partition chargée : \(parsed.title)"
         } catch {
             message = "Impossible de lire la partition : \(error.localizedDescription)"
@@ -450,8 +499,6 @@ final class SessionEngine: ObservableObject {
         pieceFeedback = nil
         pieceStats = nil
         pieceProgress = 0
-        reportMarkdown = ""
-        reportPath = nil
         message = "Partition de démonstration chargée."
     }
 
@@ -466,14 +513,30 @@ final class SessionEngine: ObservableObject {
             return
         }
 
-        camera.stop()
+        camera.analysisMode = .posture
+        camera.start()
+        report.reset(startedAt: Date())
+        leftHandAnalyzer.thresholds = PostureRules.handThresholds(for: settings.profile)
+        leftHandAnalyzer.reset()
+        positionTracker.reset()
+        techniqueTracker.reset()
+        currentHandMetrics = nil
+        currentAssignment = nil
+        pendingFeedback = nil
+        pendingGlide = nil
+        pendingGlideVoluntary = false
+        pitchSamples = []
+        pieceSessionStart = CACurrentMediaTime()
+        pieceAssignment = nil
+        pieceHandStatus = "Main gauche : non détectée"
+        pieceGlideMs = nil
+        pieceLastMoment = nil
+        liveReplay = nil
         let newFollower = ScoreFollower(score: score, partIndex: selectedPartIndex, bpm: pieceBPM)
         follower = newFollower
         pieceFeedback = nil
         pieceStats = newFollower.stats
         pieceProgress = 0
-        reportMarkdown = ""
-        reportPath = nil
         pieceRunning = true
         mic.start()
     }
@@ -482,16 +545,12 @@ final class SessionEngine: ObservableObject {
         guard pieceRunning else { return }
         pieceRunning = false
         mic.stop()
+        camera.stop()
+        cameraRunning = false
 
         if let follower {
             pieceStats = follower.stats
-            let markdown = report.pieceMarkdown(
-                title: scoreTitle.isEmpty ? "Morceau" : scoreTitle,
-                stats: follower.stats,
-                bpm: pieceBPM
-            )
-            reportMarkdown = markdown
-            reportPath = save(markdown)
+            report.endedAt = Date()
 
             let duration = follower.stats.startedAt.map { Date().timeIntervalSince($0) } ?? 0
             let piece = PieceRecord(
@@ -504,6 +563,10 @@ final class SessionEngine: ObservableObject {
                 outOfScore: follower.stats.outOfScore,
                 estimatedTempo: follower.stats.estimatedTempo
             )
+            let positionStats = makePositionStats()
+            let technique = techniqueTracker.record()
+            let hand = report.handRecord()
+            let replays = ReplayBuilder.moments(from: report.positionSamples, technique: technique)
             let record = SessionRecord(
                 id: UUID(),
                 date: follower.stats.startedAt ?? Date(),
@@ -519,32 +582,80 @@ final class SessionEngine: ObservableObject {
                 noteCents: [],
                 noteStability: [],
                 piece: piece,
-                reportMarkdown: markdown
+                postureDetectionRate: report.detectionRate,
+                hand: hand,
+                positionStats: positionStats,
+                technique: technique,
+                replayMoments: replays.isEmpty ? nil : replays
             )
             progress.add(record)
-            recommendedExerciseIDs = ExerciseCatalog.recommendations(for: ["B1"]).map(\.id)
+            refreshRecommendationsFromHistory()
+            selectedReportID = record.id
+            appMode = .reports
         }
 
         pieceFeedback = nil
+        pieceAssignment = nil
+        pieceGlideMs = nil
+        pieceLastMoment = nil
+        liveReplay = nil
         follower = nil
+        positionTracker.reset()
+        techniqueTracker.reset()
+        leftHandAnalyzer.reset()
+        currentHandMetrics = nil
+        currentAssignment = nil
+        pendingFeedback = nil
+        pendingGlide = nil
+        pendingGlideVoluntary = false
+        pitchSamples = []
+    }
+
+    /// Agrège les notes de la séance en statistiques de position.
+    private func makePositionStats() -> PositionStatsRecord? {
+        let samples = report.positionSamples
+        guard !samples.isEmpty else { return nil }
+        let shifts = samples.filter(\.isShift)
+        let arrivals = shifts.compactMap(\.cents)
+        return PositionStatsRecord(
+            samples: samples,
+            shiftCount: shifts.count,
+            meanArrivalCents: arrivals.isEmpty ? nil : arrivals.reduce(0, +) / Double(arrivals.count),
+            meanShiftDurationMs: PositionAnalysis.meanShiftDurationMs(from: samples),
+            parasiteGlides: samples.filter {
+                $0.isShift && !$0.isVoluntaryGlide && ($0.glideMs ?? 0) >= 150
+            }.count,
+            voluntaryGlides: samples.filter { $0.isShift && $0.isVoluntaryGlide }.count
+        )
+    }
+
+    /// Ouvre le replay du dernier moment terminé (mode morceau).
+    func replayLastMoment() {
+        guard let moment = pieceLastMoment else {
+            message = "Aucune note appariée à revoir pour l'instant."
+            return
+        }
+        liveReplay = moment
     }
 
     private func handlePose(_ frame: PoseFrame?) {
         guard let frame else {
             overlayLandmarks = []
-            if phase == .running || phase == .calibrating {
+            if phase == .running || phase == .calibrating || pieceRunning {
                 cameraStatus = "Caméra active — personne non détectée"
             }
             return
         }
 
         overlayLandmarks = frame.landmarks
-        if phase == .running || phase == .calibrating {
+        if phase == .running || phase == .calibrating || pieceRunning {
             cameraStatus = "Suivi OK"
         }
 
         report.framesAnalyzed += 1
-        report.personDetectedFrames += 1
+        if !frame.landmarks.isEmpty {
+            report.personDetectedFrames += 1
+        }
 
         if phase == .running {
             var lookup: [VNHumanBodyPoseObservation.JointName: Landmark] = [:]
@@ -563,14 +674,64 @@ final class SessionEngine: ObservableObject {
             }
         }
 
+        if pieceRunning || phase == .running {
+            let body = bodyReference(from: frame)
+            if let metrics = leftHandAnalyzer.analyze(
+                hands: frame.hands,
+                body: body,
+                timestamp: frame.timestamp
+            ) {
+                currentHandMetrics = metrics
+                report.addHand(metrics)
+                if pieceRunning {
+                    if metrics.valid {
+                        let presser = metrics.presserFinger.map { $0 == 0 ? "corde à vide" : "\($0)e doigt" } ?? "—"
+                        let confidence = Int((metrics.presserConfidence * 100).rounded())
+                        pieceHandStatus = "Main gauche détectée · doigt presseur \(presser) (\(confidence) %)"
+                    } else {
+                        pieceHandStatus = "Main gauche partielle — angle non mesuré"
+                    }
+                }
+            } else {
+                currentHandMetrics = nil
+                report.addHandMiss(timestamp: frame.timestamp)
+                if pieceRunning {
+                    pieceHandStatus = "Main gauche : non détectée"
+                }
+            }
+        }
+
         switch phase {
         case .calibrating:
             collectCalibration(frame.metrics)
         case .running:
             alerts = rules.evaluate(frame.metrics, now: Date())
+            updateLivePosture(frame.metrics)
         default:
             break
         }
+    }
+
+    /// Repères corporels gauche issus de Vision Body, pour la main gauche.
+    private func bodyReference(from frame: PoseFrame) -> BodyReference {
+        var lookup: [VNHumanBodyPoseObservation.JointName: Landmark] = [:]
+        for landmark in frame.landmarks {
+            lookup[landmark.joint] = landmark
+        }
+        return BodyReference(
+            leftShoulder: lookup[.leftShoulder]?.point,
+            leftElbow: lookup[.leftElbow]?.point,
+            leftWrist: lookup[.leftWrist]?.point,
+            shoulderWidth: frame.metrics.valid ? frame.metrics.shoulderWidth : nil
+        )
+    }
+
+    /// Jauges de position en direct, rafraîchies à 4 Hz maximum (l'analyse tourne à ~15 fps).
+    private func updateLivePosture(_ metrics: PoseMetrics) {
+        let now = CACurrentMediaTime()
+        guard now - lastLivePostureAt >= 0.25 else { return }
+        lastLivePostureAt = now
+        livePosture = rules.liveStatus(for: metrics)
     }
 
     private func collectCalibration(_ metrics: PoseMetrics) {
@@ -591,6 +752,12 @@ final class SessionEngine: ObservableObject {
 
     private func handlePitch(_ frame: PitchFrame) {
         rms = min(1, frame.rms * 4)
+
+        if (pieceRunning || phase == .running), let frequency = frame.frequency, frequency > 0 {
+            let midi = 69 + 12 * log2(frequency / 440)
+            pitchSamples.append(PitchSample(time: frame.timestamp, midi: midi))
+            pitchSamples.removeAll { frame.timestamp - $0.time > 4 }
+        }
 
         if let frequency = frame.frequency {
             let note = NoteNamer.note(for: frequency)
@@ -624,11 +791,48 @@ final class SessionEngine: ObservableObject {
     private func handleSegment(_ output: SegmenterOutput) {
         switch output {
         case .started(let midi, let time):
-            guard pieceRunning, let follower else { return }
-            let feedback = follower.process(midi: midi, onset: time)
-            pieceFeedback = feedback
-            pieceProgress = feedback.progress
-            pieceStats = follower.stats
+            // Glissé/portamento juste avant l'attaque : il appartient au
+            // déplacement qui amène la note, pas à la note elle-même.
+            let glideWindow = pitchSamples.filter {
+                $0.time <= time + 0.02 && $0.time >= time - 1.0
+            }
+            pendingGlide = GlideDetector.detect(samples: glideWindow)
+            pendingGlideVoluntary = false
+
+            if pieceRunning, let follower {
+                let feedback = follower.process(midi: midi, onset: time)
+                pieceFeedback = feedback
+                pieceProgress = feedback.progress
+                pieceStats = follower.stats
+                pendingFeedback = feedback
+                if let index = feedback.scoreIndex, let note = follower.note(at: index) {
+                    pendingGlideVoluntary = note.glissando
+                }
+                let assignment = positionTracker.assign(
+                    midi: midi,
+                    hand: currentHandMetrics,
+                    expected: feedback
+                )
+                currentAssignment = assignment
+                pieceAssignment = assignment
+                if assignment.isShift {
+                    registerShift(
+                        assignment: assignment,
+                        glide: pendingGlide,
+                        voluntary: pendingGlideVoluntary
+                    )
+                }
+            } else if phase == .running {
+                let assignment = positionTracker.assign(
+                    midi: midi,
+                    hand: currentHandMetrics,
+                    expected: nil
+                )
+                currentAssignment = assignment
+                if assignment.isShift {
+                    registerShift(assignment: assignment, glide: pendingGlide, voluntary: false)
+                }
+            }
         case .finished(let event):
             lastNote = event
             let tolerance = settings.intonationTolerance
@@ -651,6 +855,7 @@ final class SessionEngine: ObservableObject {
             )
             let articulation = ArticulationClassifier.classify(features)
             lastArticulation = articulation
+            techniqueTracker.addNote(event, articulation: articulation, gapBefore: gapBefore)
 
             previousNoteEnd = event.endTime
             previousNoteMidi = event.midi
@@ -670,25 +875,113 @@ final class SessionEngine: ObservableObject {
                 report.addNote(event)
                 report.addArticulation(articulation.rawValue)
             }
+
+            recordPosition(event: event, articulation: articulation)
+            if pieceRunning {
+                pieceGlideMs = (event.glideDuration ?? 0) >= 0.08
+                    ? (event.glideDuration ?? 0) * 1000
+                    : nil
+            }
+            pendingFeedback = nil
+            currentAssignment = nil
+            pendingGlide = nil
+            pendingGlideVoluntary = false
         }
     }
 
-    private func save(_ markdown: String) -> URL? {
-        let fileManager = FileManager.default
-        guard let documents = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
-            return nil
+    /// Enregistre la position/le doigt de la note qui vient de finir.
+    /// En mode morceau, seules les notes appariées à la partition entrent dans
+    /// les statistiques (les notes hors partition restent comptées ailleurs).
+    private func recordPosition(event: NoteEvent, articulation: Articulation) {
+        guard let assignment = currentAssignment else { return }
+
+        if pieceRunning {
+            guard let feedback = pendingFeedback, feedback.matched, let index = feedback.scoreIndex else {
+                return
+            }
+            let record = NotePositionRecord(
+                scoreIndex: index,
+                measure: feedback.measure,
+                beat: feedback.beat,
+                expectedMidi: feedback.expectedMidi,
+                playedMidi: Int(event.midi.rounded()),
+                cents: feedback.cents ?? event.centsToNearest,
+                rhythmMs: feedback.rhythmMs,
+                onset: max(0, event.startTime - pieceSessionStart),
+                duration: event.duration,
+                position: assignment.position,
+                finger: assignment.finger,
+                fromPosition: assignment.fromPosition,
+                fromFinger: assignment.fromFinger,
+                direction: assignment.direction.rawValue,
+                confidence: assignment.confidence,
+                isShift: assignment.isShift,
+                glideMs: pendingGlide?.milliseconds,
+                glideSlope: pendingGlide?.slope,
+                isVoluntaryGlide: pendingGlideVoluntary,
+                contour: event.centsContour,
+                articulation: articulation.rawValue
+            )
+            report.addPosition(record)
+
+            if let follower {
+                pieceLastMoment = ReplayBuilder.liveMoment(
+                    feedback: feedback,
+                    event: event,
+                    assignment: assignment,
+                    indexedNotes: follower.indexedNotes(around: index, radius: 3),
+                    currentIndex: index,
+                    bpm: pieceBPM
+                )
+            }
+            return
         }
-        let directory = documents.appendingPathComponent("OpenCello/Rapports", isDirectory: true)
-        do {
-            try fileManager.createDirectory(at: directory, withIntermediateDirectories: true)
-            let formatter = DateFormatter()
-            formatter.dateFormat = "yyyyMMdd_HHmmss"
-            let url = directory.appendingPathComponent("session_\(formatter.string(from: Date())).md")
-            try markdown.write(to: url, atomically: true, encoding: .utf8)
-            return url
-        } catch {
-            message = "Impossible d'écrire le rapport : \(error.localizedDescription)"
-            return nil
+
+        guard phase == .running else { return }
+        let record = NotePositionRecord(
+            scoreIndex: nil,
+            measure: nil,
+            beat: nil,
+            expectedMidi: nil,
+            playedMidi: Int(event.midi.rounded()),
+            cents: event.centsToNearest,
+            rhythmMs: nil,
+            onset: event.startTime,
+            duration: event.duration,
+            position: assignment.position,
+            finger: assignment.finger,
+            fromPosition: assignment.fromPosition,
+            fromFinger: assignment.fromFinger,
+            direction: assignment.direction.rawValue,
+            confidence: assignment.confidence,
+            isShift: assignment.isShift,
+            glideMs: pendingGlide?.milliseconds,
+            glideSlope: pendingGlide?.slope,
+            isVoluntaryGlide: false,
+            contour: event.centsContour,
+            articulation: articulation.rawValue
+        )
+        report.addPosition(record)
+    }
+
+    /// Un déplacement avec portamento non écrit est un glissé parasite (B14) ;
+    /// si le coude n'accompagne pas, A20 est noté dans le rapport.
+    private func registerShift(
+        assignment: PositionAssignment,
+        glide: GlideInfo?,
+        voluntary: Bool
+    ) {
+        techniqueTracker.addShift(glide: glide, voluntary: voluntary)
+        guard !voluntary,
+              let glide,
+              glide.duration >= 0.15,
+              let hand = currentHandMetrics else {
+            return
         }
+        let thresholds = PostureRules.handThresholds(for: settings.profile)
+        report.addHandShift(
+            elbowMobility: hand.elbowMobility,
+            threshold: thresholds.elbowMobilityMinimum
+        )
     }
 }

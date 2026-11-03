@@ -1,6 +1,6 @@
 // pdf_render.swift — Rend chaque page d'un PDF en PNG (PDFKit, zéro dépendance externe).
 //
-// Utilisé par le pipeline OMR (docs/16) : l'app ne stocke jamais le PDF ;
+// Utilisé par le pipeline OMR (docs/18) : l'app ne stocke jamais le PDF ;
 // seules les images de pages sont rendues localement pour la transcription.
 //
 // Usage : pdf_render <input.pdf> <output_dir> [dpi=200]

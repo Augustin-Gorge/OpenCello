@@ -22,6 +22,9 @@ struct PoseMetrics {
 struct PoseFrame {
     let landmarks: [Landmark]
     let metrics: PoseMetrics
+    /// Mains détectées par Vision Hands (0-2). La main gauche est choisie par
+    /// `LeftHandAnalyzer` à partir du poignet gauche du corps.
+    var hands: [HandFrame] = []
     let timestamp: TimeInterval
 }
 
@@ -29,18 +32,23 @@ struct PoseFrame {
 /// de posture invariantes d'échelle (adaptées du modèle ErgoGuard).
 final class PoseAnalyzer {
     private let request = VNDetectHumanBodyPoseRequest()
+    private let handAnalyzer = HandPoseAnalyzer()
 
     func analyze(pixelBuffer: CVPixelBuffer, timestamp: TimeInterval) -> PoseFrame? {
+        let hands = handAnalyzer.analyze(pixelBuffer: pixelBuffer, timestamp: timestamp)
+
         let handler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer, orientation: .up, options: [:])
         do {
             try handler.perform([request])
         } catch {
-            return nil
+            return hands.isEmpty ? nil : PoseFrame(landmarks: [], metrics: PoseMetrics(), hands: hands, timestamp: timestamp)
         }
-        guard let observation = request.results?.first else { return nil }
+        guard let observation = request.results?.first else {
+            return hands.isEmpty ? nil : PoseFrame(landmarks: [], metrics: PoseMetrics(), hands: hands, timestamp: timestamp)
+        }
         let landmarks = Self.landmarks(from: observation)
         let metrics = Self.metrics(from: landmarks)
-        return PoseFrame(landmarks: landmarks, metrics: metrics, timestamp: timestamp)
+        return PoseFrame(landmarks: landmarks, metrics: metrics, hands: hands, timestamp: timestamp)
     }
 
     private static func landmarks(from observation: VNHumanBodyPoseObservation) -> [Landmark] {

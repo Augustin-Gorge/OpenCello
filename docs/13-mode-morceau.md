@@ -9,10 +9,10 @@ Objectif : jouer un morceau et savoir **où l'on en est**, si l'on est **juste**
 1. Ouvrir l'onglet **Morceau**.
 2. Chercher une œuvre sur IMSLP (champ de recherche).
 3. Cliquer **Ouvrir sur IMSLP** pour consulter/télécharger la partition PDF (dans le navigateur — IMSLP exige l'acceptation du disclaimer et le respect des licences).
-4. Importer un **MusicXML** de la partie violoncelle (export MuseScore/Finale/Sibelius) — ou charger la **gamme de démonstration**.
+4. Importer un **MusicXML** de la partie violoncelle (export MuseScore/Finale/Sibelius), **importer un PDF** (pipeline OMR local : voir `docs/18-omr-local.md`) — ou charger la **gamme de démonstration**.
 5. Choisir la partie (l'app présélectionne celle dont le nom contient « cello/violoncelle »), régler le **tempo de référence**.
-6. **Démarrer le suivi** et jouer : l'app affiche la note attendue, la note entendue, l'écart en cents, l'écart rythmique en ms, la mesure et la progression.
-7. À l'arrêt : rapport « Morceau » (Markdown) avec justesse moyenne, rythme moyen, notes hors partition, tempo estimé.
+6. **Démarrer le suivi** et jouer : l'app affiche la note attendue, la note entendue, l'écart en cents, l'écart rythmique en ms, la mesure, la progression — ainsi que la **position**, le **doigt** et la **confiance** estimés pour chaque note (§7).
+7. À l'arrêt : rapport « Morceau » **dans l'app** avec justesse moyenne, rythme moyen, notes hors partition, tempo estimé — et la répartition **position/doigt**, les techniques (piqué, glissé) et les replays (§7).
 
 ## 2. APIs IMSLP utilisées
 
@@ -43,10 +43,10 @@ Un PDF scanné n'est pas lisible par la machine. Pour suivre la partition, il fa
 
 - **MusicXML** (`.musicxml`, `.xml`) : standard ouvert, exporté par tous les éditeurs (MuseScore : Fichier → Exporter → MusicXML).
 - **`.mxl`** (MusicXML compressé) : pas encore supporté (nécessite une décompression ZIP) — exporter en `.musicxml` non compressé.
-- **PDF → MusicXML** : possible avec **Audiveris** (OMR open source), à intégrer plus tard (lancer local, import du résultat).
+- **PDF → MusicXML** : pipeline OMR **local** construit et testé (`tools/qa/omr_pipeline.py`, décrit dans `docs/18-omr-local.md`) : rendu PDFKit, transcription par modèle vision Ollama avec **constrained decoding**, boucles de validation/réparation, validation XSD, comparaison optionnelle avec **Audiveris** (AGPL, externe) et **PDF2Muse** (MIT). Intégration dans l'app : Phase 8.
 - **MIDI** : autre format symbolique possible (à ajouter).
 
-L'app **ne télécharge pas** les PDF : l'utilisateur ouvre la page IMSLP et respecte les licences (domaine public variable selon les pays et les éditions).
+L'app **peut télécharger les PDF** via `Special:ImagefromIndex/<index>` (décision du 2026-11-03) : le moteur de l'app le fait directement — `IMSLPClient.listScoreFiles(pageTitle:)` liste les PDF d'une œuvre avec leur statut de copyright (`IMSLPScoreFile.isPublicDomain`), `IMSLPClient.downloadScoreFile(index:)` télécharge celui choisi (cookies `imslpdisclaimeraccepted=yes` + `redirectPassed=1`, URL miroir extraite de l'attribut `data-id` du span `#sm_dl_wait` de la page de téléchargement IMSLP). L'UI privilégie les éditions « Copyright=Public Domain » et affiche le statut de licence ; le pipeline OMR (`docs/18-omr-local.md`) les convertit ensuite en MusicXML pour le suivi. Le harnais QA `tools/qa/imslp_download_test.swift` exerce ce flux (le jumeau Python `tools/qa/imslp_fetch.py` sert au listing rapide).
 
 ## 4. Modèle de partition et parseur
 
@@ -74,6 +74,7 @@ Limites assumées : changements de divisions, mesures de pickup (gérées par l'
 5. **Tempo estimé** : lissage exponentiel des tempos instantanés `60 × Δbeats / Δt` (affiché, utile pour voir si l'on accélère).
 6. **Ré-ancrage** : après 3 échecs consécutifs, recherche des 4 dernières classes de hauteur dans toute la partition → saut de position (récupération après erreur ou saut volontaire).
 7. **Statistiques** : notes appariées, % justes, |cents| moyen, |ms| moyen, notes hors partition.
+8. **Position et doigt (v1.1)** : chaque note appariée est annotée par `PositionTracker` (§7) — `positionEstimée` + `doigtEstimé` + confiance — et alimente la matrice doigt × position × direction (`docs/03` §8.3).
 
 Choix : le tempo de référence reste **constant** (pas de suivi de tempo continu). C'est volontaire pour le MVP : le retour rythmique est ainsi comparable d'une séance à l'autre. Le tempo estimé est affiché séparément.
 
@@ -85,14 +86,51 @@ Choix : le tempo de référence reste **constant** (pas de suivi de tempo contin
 
 Latence : le suivi réagit dès l'attaque ; les métriques de timbre arrivent à la note suivante (compromis assumé).
 
-## 7. Limites et suite
+## 7. Position et doigté par note (v1.1, implémenté)
+
+Objectif : que **chaque note jouée** pendant le suivi reçoive une **position** et un **doigt** mesurés — c'est ce qui permet des conseils précis (« ton 2e doigt en 4e position arrive 30 cents bas ») et une analyse par doigt sur le répertoire réel, pas seulement sur des gammes.
+
+> **Implémentation** : `PositionTracker` fusionne les candidats audio (corde × position × doigt), l'indice caméra (`LeftHandAnalyzer.positionHint`) et la continuité ; `SessionEngine` enregistre un `NotePositionRecord` par note appariée, avec la confiance. La caméra est active en mode morceau (`HandPoseAnalyzer` + Vision Body), et la position/le doigt sont affichés en direct dans `PieceView`. En cas d'échec de détection, la position reste `nil` et la confiance baisse — aucune valeur n'est inventée.
+
+### 7.1 Principe
+
+La partition (MusicXML) donne la **hauteur** attendue, mais pas le doigté : une même note peut se jouer sur plusieurs cordes et avec plusieurs doigts. L'app le **mesure** en fusionnant trois sources :
+
+1. **Partition** : note attendue, mesure, temps (déjà appariée par `ScoreFollower`).
+2. **Audio** : corde probable (timbre, ambitus, croisements) → candidats de doigté possibles.
+3. **Caméra (moteur visuel)** :
+   - **position de la main** sur la touche (P14, `docs/03` §8.1) → numéro de position ;
+   - **doigt presseur** : parmi les 4 bouts de doigts suivis par Vision Hands, celui qui est **le plus bas et le plus proche du plan des cordes** au moment de l'attaque (les autres doigts sont relevés ou en appui).
+4. **Fusion** : position + doigt retenus, avec une **confiance** affichée (le son tranche quand la caméra est masquée, la caméra tranche quand le son est ambigu).
+
+### 7.2 Ambiguïtés et choix
+
+- **Corde à vide vs doigté** : un la3 peut se jouer à vide ou en 4e doigt sur la corde de ré (1re position). Le timbre diffère (la corde à vide sonne plus clair) et la caméra voit la main : l'app détecte le choix réel. Jouer à vide quand un doigté est attendu n'est pas signalé comme « erreur », mais comme **choix** (« tu joues le la à vide : son plus clair, moins de vibrato possible »).
+- **Même doigt, positions différentes** : le mi4 en 2e position sur la corde de ré vs 1re position sur la corde de la — la position mesurée par la caméra tranche.
+- **Caméra indisponible** : on garde l'inférence audio seule (corde + hauteur → doigté le plus probable), avec confiance réduite et mention explicite.
+
+### 7.3 Ce que ça apporte
+
+- La **matrice doigt × position × direction** (`docs/03` §8.3) se remplit avec le répertoire joué : tendances par doigt et par position, comparaison morceau ↔ exercices.
+- Des **conseils en contexte** : « Mesure 23 : ton 2e doigt en 4e position arrive 30 cents bas à chaque reprise » — avec replay (`docs/09` §7) qui cite la mesure.
+- Les **recommandations d'exercices** ciblent le bon doigt/la bonne position (E4-07/E4-08/E4-09, `docs/06`).
+- Le **profil** suit la justesse par doigt au fil des séances (progrès mesurable par doigt).
+
+### 7.4 Limites
+
+- Les doigts sont petits à distance de caméra : l'identité du doigt presseur est une heuristique (bout le plus bas), la confiance doit être affichée honnêtement.
+- En positions hautes (pouce/thumb position), les repères changent : estimation dégradée au départ.
+- Le MusicXML ne contient généralement **pas de doigtés** : l'app mesure le doigté réel, elle ne lit pas un doigté « officiel ». Les `<technical><fingering>` du MusicXML sont désormais **parsés** comme référence facultative (`ScoreNote.fingering`), mais ne sont pas imposés.
+
+## 8. Limites et suite
 
 | Limite | Impact | Solution prévue |
 |---|---|---|
-| Pas de PDF → MusicXML | Il faut exporter un MusicXML | Intégrer **Audiveris** (OMR) en local, ou importer `.mxl`/MIDI |
+| Pas de PDF → MusicXML | Il faut exporter un MusicXML | Pipeline OMR local (Ollama + boucles, `docs/18`) en outillage QA ; intégration app en Phase 8 ; Audiveris en comparaison |
 | Reprises/voltas ignorées | Désalignement après une reprise | Modèle de structure (repeat/ending) + ré-ancrage |
 | Accords traités séquentiellement | Faux « hors partition » sur les double-cordes | Regrouper les notes de même onset en événements d'accord |
 | Tempo constant | Écart rythmique si l'on ralentit volontairement | Suivi de tempo continu (filtre de Kalman / DTW en ligne) |
 | Partie mal choisie | Suivi impossible | Détection automatique par ambitus + nom, aperçu des premières notes |
 | Dépend du réseau pour la recherche | Pas de recherche hors ligne | Cache local de la liste `type=2` (option) |
 | Fichier `.mxl` non supporté | Import refusé | Décompression ZIP (libz) |
+| Position/doigt estimés (v1.1) | Confiance variable, résolution ±1 position ; pouce en hypothèse | Afficher la confiance, ne jamais inventer une position ; calibration visuelle à venir |

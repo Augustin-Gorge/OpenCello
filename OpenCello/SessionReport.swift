@@ -1,6 +1,8 @@
 import Foundation
 
-/// Statistiques de séance et génération du rapport Markdown.
+/// Statistiques agrégées d'une séance (posture + son).
+/// La mise en forme des rapports vit dans l'app (ReportView / ProfileView) :
+/// aucune génération de fichier Markdown.
 final class SessionReport {
     var startedAt: Date?
     var endedAt: Date?
@@ -31,12 +33,63 @@ final class SessionReport {
     var motionStillness: Double?
     var motionSamples = 0
 
+    // Main gauche (Phase 7) : accumulation par frame + événements A20.
+    var handFrames = 0
+    var handDetectedFrames = 0
+    var handValidFrames = 0
+    var handAngleSum = 0.0
+    var handSignedAngleSum = 0.0
+    var handAngleMax = 0.0
+    var handFingerSpeedSum = 0.0
+    var handPresserConfidenceSum = 0.0
+    var handThumbFrames = 0
+    var handRuleSeconds: [String: Double] = [:]
+    var handRuleOccurrences: [String: Int] = [:]
+    private var handRuleActive: [String: Bool] = [:]
+    private var handLastSampleAt: TimeInterval?
+    var positionSamples: [NotePositionRecord] = []
+
+    var duration: TimeInterval {
+        guard let startedAt else { return 0 }
+        return max(0, (endedAt ?? Date()).timeIntervalSince(startedAt))
+    }
+
     var meanAbsCents: Double {
         noteCount > 0 ? sumAbsCents / Double(noteCount) : 0
     }
 
     var meanStability: Double {
         noteCount > 0 ? sumStability / Double(noteCount) : 0
+    }
+
+    var meanHNR: Double? {
+        noteCount > 0 ? sumHNR / Double(noteCount) : nil
+    }
+
+    var meanCentroid: Double? {
+        noteCount > 0 ? sumCentroid / Double(noteCount) : nil
+    }
+
+    var meanRMSVariation: Double? {
+        noteCount > 0 ? sumRMSVariation / Double(noteCount) : nil
+    }
+
+    var meanVibratoRate: Double? {
+        vibratoSamples > 0 ? sumVibratoRate / Double(vibratoSamples) : nil
+    }
+
+    var meanVibratoExtent: Double? {
+        vibratoSamples > 0 ? sumVibratoExtent / Double(vibratoSamples) : nil
+    }
+
+    /// Taux de frames où une personne a été détectée (confiance posture).
+    var detectionRate: Double? {
+        framesAnalyzed > 0 ? Double(personDetectedFrames) / Double(framesAnalyzed) : nil
+    }
+
+    /// Taux d'échantillons de hauteur valides (confiance son).
+    var validPitchRatio: Double? {
+        pitchFrames > 0 ? Double(validPitchFrames) / Double(pitchFrames) : nil
     }
 
     func reset(startedAt: Date) {
@@ -67,6 +120,102 @@ final class SessionReport {
         motionJerk = nil
         motionStillness = nil
         motionSamples = 0
+        handFrames = 0
+        handDetectedFrames = 0
+        handValidFrames = 0
+        handAngleSum = 0
+        handSignedAngleSum = 0
+        handAngleMax = 0
+        handFingerSpeedSum = 0
+        handPresserConfidenceSum = 0
+        handThumbFrames = 0
+        handRuleSeconds = [:]
+        handRuleOccurrences = [:]
+        handRuleActive = [:]
+        handLastSampleAt = nil
+        positionSamples.removeAll()
+    }
+
+    /// Accumule une frame main gauche. Les règles A17/A19 sont des indicateurs
+    /// de rapport (jamais des alertes temps réel) ; A18 reste une hypothèse.
+    func addHand(_ metrics: LeftHandMetrics) {
+        handFrames += 1
+        handDetectedFrames += 1
+        let now = metrics.timestamp
+        let delta = handLastSampleAt.map { min(max(now - $0, 0), 0.5) } ?? 0
+        handLastSampleAt = now
+
+        if metrics.valid {
+            handValidFrames += 1
+            if let angle = metrics.handAngleDegrees {
+                handAngleSum += angle
+                handAngleMax = max(handAngleMax, angle)
+            }
+            if let signed = metrics.signedHandAngleDegrees {
+                handSignedAngleSum += signed
+            }
+            if let speed = metrics.fingerSpeed {
+                handFingerSpeedSum += speed
+            }
+            handPresserConfidenceSum += metrics.presserConfidence
+            if metrics.thumbHypothesis { handThumbFrames += 1 }
+        }
+
+        for (ruleID, active) in metrics.flags {
+            let wasActive = handRuleActive[ruleID] ?? false
+            if active {
+                handRuleSeconds[ruleID, default: 0] += delta
+                if !wasActive {
+                    handRuleOccurrences[ruleID, default: 0] += 1
+                }
+            }
+            handRuleActive[ruleID] = active
+        }
+    }
+
+    /// Compte une frame sans main détectée, pour que le taux de détection
+    /// reste honnête (aucune métrique inventée).
+    func addHandMiss(timestamp: TimeInterval) {
+        handFrames += 1
+        handLastSampleAt = timestamp
+    }
+
+    /// A20 : le coude ne guide pas le déplacement. Événement ponctuel, pas une
+    /// alerte temps réel.
+    func addHandShift(elbowMobility: Double, threshold: Double) {
+        guard elbowMobility < threshold else { return }
+        handRuleOccurrences["A20", default: 0] += 1
+        handRuleSeconds["A20", default: 0] += 0.5
+    }
+
+    func addPosition(_ record: NotePositionRecord) {
+        positionSamples.append(record)
+    }
+
+    func handRecord() -> HandRecord? {
+        guard handFrames > 0 else { return nil }
+        let valid = max(1, handValidFrames)
+        let rules = ["A17", "A18", "A19", "A20"].map { ruleID in
+            HandRuleRecord(
+                ruleID: ruleID,
+                title: PostureRules.handRuleTitle(for: ruleID),
+                seconds: handRuleSeconds[ruleID] ?? 0,
+                occurrences: handRuleOccurrences[ruleID] ?? 0,
+                confidence: ruleID == "A18" ? "hypothèse" : nil
+            )
+        }
+        return HandRecord(
+            frames: handFrames,
+            validFrames: handValidFrames,
+            meanAngleDegrees: handValidFrames > 0 ? handAngleSum / Double(valid) : nil,
+            meanSignedAngleDegrees: handValidFrames > 0 ? handSignedAngleSum / Double(valid) : nil,
+            maxAngleDegrees: handValidFrames > 0 ? handAngleMax : nil,
+            meanFingerSpeed: handValidFrames > 0 ? handFingerSpeedSum / Double(valid) : nil,
+            meanPresserConfidence: handValidFrames > 0 ? handPresserConfidenceSum / Double(valid) : nil,
+            thumbHypothesisRatio: handValidFrames > 0 ? Double(handThumbFrames) / Double(valid) : nil,
+            rules: rules,
+            detectedFrames: handDetectedFrames
+        )
     }
 
     func addNote(_ event: NoteEvent) {
@@ -103,225 +252,5 @@ final class SessionReport {
         guard !frequencies.isEmpty else { return nil }
         let sorted = frequencies.sorted()
         return sorted[sorted.count / 2]
-    }
-
-    func markdown(lines: [RuleSummary], baseline: String) -> String {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "fr_FR")
-        formatter.dateFormat = "dd/MM/yyyy HH:mm"
-
-        let start = startedAt ?? Date()
-        let end = endedAt ?? Date()
-        let duration = max(0, end.timeIntervalSince(start))
-        let minutes = Int(duration) / 60
-        let seconds = Int(duration) % 60
-        let sortedLines = lines.sorted { $0.totalBadSeconds > $1.totalBadSeconds }
-
-        var postureTable = "| Repère | Temps en alerte | Occurrences |\n|---|---|---|\n"
-        for line in sortedLines {
-            postureTable += String(format: "| %@ | %.1f s | %d |\n", line.title, line.totalBadSeconds, line.occurrences)
-        }
-
-        let detectionRate = framesAnalyzed > 0
-            ? Int(round(Double(personDetectedFrames) / Double(framesAnalyzed) * 100))
-            : 0
-
-        let medianText: String
-        if let median = medianFrequency {
-            let note = NoteNamer.note(for: median)
-            medianText = String(format: "%@%d (%.1f Hz)", note.name, note.octave, median)
-        } else {
-            medianText = "aucune note stable détectée"
-        }
-
-        let soundingRatio = duration > 0 ? Int(round(soundingSeconds / duration * 100)) : 0
-
-        var noteSection = ""
-        if noteCount > 0 {
-            let inTuneRatio = Int(round(Double(inTuneNotes) / Double(noteCount) * 100))
-            noteSection = """
-
-            ### Analyse par note
-            - Notes analysées : \(noteCount)
-            - Notes justes (≤ 25 cents) : \(inTuneRatio) %
-            - Écart moyen à la note tempérée : \(String(format: "%.1f", sumAbsCents / Double(noteCount))) cents
-            - Stabilité moyenne (écart-type) : \(String(format: "%.1f", sumStability / Double(noteCount))) cents
-            - HNR moyen : \(String(format: "%.1f", sumHNR / Double(noteCount))) dB
-            - Centroïde spectral moyen : \(String(format: "%.0f", sumCentroid / Double(noteCount))) Hz
-            - Variation RMS moyenne : \(String(format: "%.0f", sumRMSVariation / Double(noteCount) * 100)) %
-            """
-        }
-
-        var bowSection = ""
-        if bowFrames > 0 {
-            let angleRatio = Int(round(Double(bowGoodAngle) / Double(bowFrames) * 100))
-            let zoneRatio = Int(round(Double(bowGoodZone) / Double(bowFrames) * 100))
-            bowSection = """
-
-            ## Archet (profil)
-            - Frames analysés : \(bowFrames)
-            - Angle conforme (±10°) : \(angleRatio) %
-            - Zone de contact conforme (10-90 %) : \(zoneRatio) %
-            """
-        }
-
-        var vibratoSection = ""
-        if vibratoSamples > 0 {
-            vibratoSection = String(
-                format: "  - Vibrato moyen : %.1f Hz · amplitude moyenne %.0f cents (sur %d notes)",
-                sumVibratoRate / Double(vibratoSamples),
-                sumVibratoExtent / Double(vibratoSamples),
-                vibratoSamples
-            )
-        }
-
-        var articulationSection = ""
-        if !articulationCounts.isEmpty {
-            let lines = articulationCounts
-                .sorted { $0.value > $1.value }
-                .map { "- \($0.key) : \($0.value)" }
-                .joined(separator: "\n")
-            articulationSection = """
-
-            ## Articulations (heuristique)
-            \(lines)
-
-            > Classification indicative, non validée sur un jeu de données de référence.
-            """
-        }
-
-        var motionSection = ""
-        if motionSamples > 0, let jerk = motionJerk, let stillness = motionStillness {
-            motionSection = String(
-                format: """
-
-                ## Fluidité du geste (indicatif)
-                - Échantillons : %d
-                - Jerk moyen : %.2f
-                - Mobilité tête/buste : %.4f
-
-                > Indicateurs non calibrés sur un panel de musiciens ; à interpréter avec prudence.
-                """,
-                motionSamples,
-                jerk,
-                stillness
-            )
-        }
-
-        var recommendations: [String] = []
-        for line in sortedLines.prefix(3) where line.totalBadSeconds > 3 {
-            recommendations.append("- **\(line.title)** : \(exerciseHint(for: line.id))")
-        }
-        if recommendations.isEmpty {
-            recommendations.append("- Aucun axe critique détecté cette fois-ci. Continuez avec des sons filés et une écoute active.")
-        }
-
-        return """
-        # Rapport de séance — OpenCello
-
-        **Date** : \(formatter.string(from: start))
-        **Durée** : \(minutes) min \(seconds) s
-        **Détection posture** : \(detectionRate) % des frames analysées
-
-        ## Posture (baseline personnelle)
-
-        \(baseline)
-
-        \(postureTable)
-
-        ## Son
-
-        - Temps sonore : \(soundingRatio) % de la séance
-        - Hauteur médiane détectée : \(medianText)
-        - Échantillons de hauteur : \(validPitchFrames) valides / \(pitchFrames)
-        - Règles : une erreur doit persister 5 s ; deux alertes maximum ; 20 s de repos entre deux alertes.
-        \(noteSection)
-        \(vibratoSection)
-        \(bowSection)
-        \(articulationSection)
-        \(motionSection)
-
-        ## Axes prioritaires et exercices
-
-        \(recommendations.joined(separator: "\n"))
-
-        ## Rappel
-
-        Ce rapport est un outil de travail, pas un diagnostic médical. Les mesures sont estimées par caméra et microphone et peuvent comporter des erreurs (éclairage, angle, bruit). Signalez les faux positifs dans l'app.
-
-        > Généré localement par OpenCello. Aucune donnée n'a quitté ce Mac.
-        """
-    }
-
-    func pieceMarkdown(title: String, stats: PieceStats, bpm: Double) -> String {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "fr_FR")
-        formatter.dateFormat = "dd/MM/yyyy HH:mm"
-
-        let start = stats.startedAt ?? Date()
-        let duration = max(0, Date().timeIntervalSince(start))
-        let minutes = Int(duration) / 60
-        let seconds = Int(duration) % 60
-        let matchedRatio = stats.totalNotes > 0
-            ? Int(round(Double(stats.matched) / Double(stats.totalNotes) * 100))
-            : 0
-        let inTuneRatio = Int(round(stats.inTuneRatio * 100))
-        let tempoText = stats.estimatedTempo.map { String(format: "%.0f BPM", $0) } ?? "—"
-
-        var advice: [String] = []
-        if stats.matched > 0, stats.meanAbsCents > 25 {
-            advice.append("- **Justesse** : travaillez la gamme lentement avec un bourdon (E4-01) et vérifiez chaque note à la corde à vide (E4-03).")
-        }
-        if stats.rhythmSamples > 0, stats.meanAbsRhythmMs > 150 {
-            advice.append("- **Rythme** : ralentissez le tempo (métronome) et travaillez par cellules de 2 mesures ; le suivi indique un écart moyen de \(Int(stats.meanAbsRhythmMs)) ms.")
-        }
-        if stats.outOfScore > max(3, stats.matched / 5) {
-            advice.append("- **Continuité** : beaucoup de notes hors partition — vérifiez la partie choisie (violoncelle) et le tempo de référence.")
-        }
-        if advice.isEmpty {
-            advice.append("- Séance cohérente avec la partition. Continuez au tempo cible puis augmentez progressivement.")
-        }
-
-        return """
-        # Rapport « Morceau » — \(title)
-
-        **Date** : \(formatter.string(from: start))
-        **Durée** : \(minutes) min \(seconds) s
-        **Tempo de référence** : \(Int(bpm)) BPM · **Tempo estimé** : \(tempoText)
-
-        ## Suivi de partition
-
-        - Notes attendues (partie) : \(stats.totalNotes)
-        - Notes reconnues : \(stats.matched) (\(matchedRatio) %)
-        - Notes justes (≤ 25 cents) : \(inTuneRatio) %
-        - Écart moyen de justesse : \(String(format: "%.1f", stats.meanAbsCents)) cents
-        - Écart rythmique moyen : \(String(format: "%.0f", stats.meanAbsRhythmMs)) ms
-        - Notes hors partition : \(stats.outOfScore)
-
-        ## Conseils
-
-        \(advice.joined(separator: "\n"))
-
-        ## Rappel
-
-        Le suivi compare chaque note détectée à la note attendue de la partition importée. Il dépend de la qualité de la détection de hauteur et de la partie choisie. Ce rapport est un outil de travail, pas un diagnostic.
-
-        > Généré localement par OpenCello. Aucune donnée n'a quitté ce Mac.
-        """
-    }
-
-    private func exerciseHint(for ruleID: String) -> String {
-        switch ruleID {
-        case "A1":
-            return "Chin tucks et hauteur du pupitre (exercice E1-03)."
-        case "A2":
-            return "Roulements d'épaules et relâchement du cou (E1-02) ; vérifiez la pique et la chaise."
-        case "A3":
-            return "Wall slides / ouverture du buste (E1-04) ; sternum levé, omoplates basses."
-        case "A4":
-            return "Laissez peser le coude droit ; étirement du trapèze supérieur (E1-02)."
-        default:
-            return "Exercices de détente et de posture (voir docs/06)."
-        }
     }
 }

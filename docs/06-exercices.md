@@ -54,6 +54,7 @@ progression: |
 | E3-04 | **Rebonds préparatoires spiccato/sautillé** : Ševčík Op. 3 (40 Variations) variantes détachées | B13 | classification articulation correcte (V2) |
 | E3-05 | **Martelé/staccato** : attaques nettes avec silence (Ševčík Op. 3) | B6, B13 | attaques détectées, HNR correct hors attaques |
 | E3-06 | **Croisements de cordes** : Feuillard n° 1-2 (gammes sur 2 cordes), bariolage lent | B6, A9 | craquements ↓ |
+| E3-07 | **Piqué égal** : notes piquées métronomées (archet arrêté entre chaque note, même vitesse de reprise), puis accélération progressive | B17 | σ(durées) < 10-15 % ; énergies comparables |
 
 ### E4. Intonation et main gauche
 | ID | Exercice | Cible | Critère app |
@@ -61,8 +62,12 @@ progression: |
 | E4-01 | **Gammes lentes avec bourdon** (drone) : jouer la gamme sur un bourdon de tonique (approche CelloMind / Cello Professor) | B1, B2 | cents moyens ↓, σ(cents) ↓ semaine après semaine |
 | E4-02 | **Doubles cordes** (Si5/octaves) pour caler la main | B1 | justesse des deux notes |
 | E4-03 | **Vérification par corde à vide** : après chaque note doigtée, jouer la corde à vide de référence | B1 | écart moyen vs corde à vide < 10 cents |
-| E4-04 | **Déplacements** (shifts) lents : Ševčík Op. 8/Op. 3, exercices de positions | B2 | σ(cents) sur les notes d'arrivée ↓ |
+| E4-04 | **Déplacements** (shifts) lents : Ševčík Op. 8/Op. 3, exercices de positions | B2, B15, B16 | σ(cents) sur les notes d'arrivée ↓ |
 | E4-05 | **Vibrato lent puis régulier** : oscillations métronomées (noire=1, 2, 3 oscillations…) | B12 | taux dans [4,5-7] Hz, ampleur stable |
+| E4-06 | **Chromatisme lent** : une octave chromatique très lente, un doigt par demi-ton (Cossmann/Ševčík) | B1, B2 | chaque demi-ton < 20 cents ; stabilité < 15 cents |
+| E4-07 | **Déplacements ciblés** : aller-retour 1re ↔ 4e puis descente 4e → 3e en isolant le doigt fautif (ex. le 2e doigt), l'app affiche la justesse d'arrivée par doigt et par direction | B15, B16 | justesse d'arrivée < 15 cents ; transition < 150 ms |
+| E4-08 | **Glissando contrôlé puis supprimé** : glissando lent volontaire à pente constante (corde entière), puis le même déplacement sans glissé | B14 | portamento détecté seulement quand prévu ; pente régulière |
+| E4-09 | **Pouce et angle de main** : gammes lentes en surveillant la ligne avant-bras ↔ main (Duport, Essai sur le doigté — pouce) | A17, A18 | P11 < 15° ; B4 non signalé en positions hautes |
 
 ### E5. Études complètes (sources domaine public — IMSLP, vérifier chaque édition)
 | Méthode | Contenu | Quand la recommander |

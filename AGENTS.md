@@ -74,8 +74,11 @@ swiftc -O -o build/qa/fuzzy_test OpenCello/IMSLPClient.swift OpenCello/TitleVoca
 
 swiftc -O -o build/qa/v1_test OpenCello/AppSettings.swift OpenCello/ExerciseCatalog.swift \
   OpenCello/ProgressStore.swift OpenCello/ReportExporter.swift OpenCello/NoteFeedback.swift \
-  OpenCello/Articulation.swift tools/qa/v1_main.swift \
-  -framework SwiftUI -framework AppKit -framework PDFKit && ./build/qa/v1_test
+  OpenCello/Articulation.swift OpenCello/StatsKit.swift OpenCello/ReportAnalysis.swift \
+  OpenCello/PostureRules.swift OpenCello/PoseAnalyzer.swift OpenCello/HandPoseAnalyzer.swift \
+  OpenCello/LeftHandAnalyzer.swift OpenCello/PositionTracker.swift OpenCello/ScoreFollower.swift \
+  OpenCello/MusicXMLParser.swift OpenCello/PitchTracker.swift tools/qa/v1_main.swift \
+  -framework SwiftUI -framework AppKit -framework PDFKit -framework Vision && ./build/qa/v1_test
 
 swiftc -O -o build/qa/bow_test OpenCello/LineDetector.swift OpenCello/BowGeometry.swift \
   tools/qa/bow_main.swift && ./build/qa/bow_test
@@ -84,7 +87,30 @@ swiftc -O -o build/qa/phase5_test OpenCello/VibratoAnalyzer.swift OpenCello/Arti
   OpenCello/MotionAnalyzer.swift tools/qa/phase5_main.swift && ./build/qa/phase5_test
 
 swiftc -O -o build/qa/posture_test OpenCello/AppSettings.swift OpenCello/PostureRules.swift \
-  OpenCello/PoseAnalyzer.swift tools/qa/posture_main.swift && ./build/qa/posture_test
+  OpenCello/PoseAnalyzer.swift OpenCello/HandPoseAnalyzer.swift OpenCello/LeftHandAnalyzer.swift \
+  tools/qa/posture_main.swift -framework Vision && ./build/qa/posture_test
+
+# Phase 7 (v1.1) : main gauche, positions, glissé/piqué, replays, persistance, MusicXML.
+swiftc -O -o build/qa/phase7_test \
+  OpenCello/LeftHandAnalyzer.swift OpenCello/HandPoseAnalyzer.swift OpenCello/PoseAnalyzer.swift \
+  OpenCello/PositionTracker.swift OpenCello/TechniqueTracker.swift OpenCello/ReplayKit.swift \
+  OpenCello/NoteSegmenter.swift OpenCello/SpectralAnalyzer.swift OpenCello/VibratoAnalyzer.swift \
+  OpenCello/MicrophoneManager.swift OpenCello/PitchTracker.swift \
+  OpenCello/ProgressStore.swift OpenCello/ExerciseCatalog.swift OpenCello/AppSettings.swift \
+  OpenCello/PostureRules.swift OpenCello/NoteFeedback.swift OpenCello/Articulation.swift \
+  OpenCello/StatsKit.swift OpenCello/ReportAnalysis.swift OpenCello/ScoreFollower.swift \
+  OpenCello/MusicXMLParser.swift OpenCello/SessionReport.swift tools/qa/phase7_main.swift \
+  -framework SwiftUI -framework AppKit -framework PDFKit -framework AVFoundation -framework Vision
+./build/qa/phase7_test
+
+# Données de démonstration pour tester l'UI (sauvegarder history.json avant !)
+swiftc -O -o build/qa/seed_demo OpenCello/ProgressStore.swift OpenCello/StatsKit.swift \
+  OpenCello/ReportAnalysis.swift OpenCello/ExerciseCatalog.swift OpenCello/AppSettings.swift \
+  OpenCello/PostureRules.swift OpenCello/PoseAnalyzer.swift OpenCello/HandPoseAnalyzer.swift \
+  OpenCello/LeftHandAnalyzer.swift OpenCello/PositionTracker.swift OpenCello/ScoreFollower.swift \
+  OpenCello/MusicXMLParser.swift OpenCello/PitchTracker.swift OpenCello/NoteFeedback.swift \
+  OpenCello/Articulation.swift tools/qa/seed_demo_data.swift \
+  -framework SwiftUI -framework Vision && ./build/qa/seed_demo
 ```
 
 - Si un test ne peut pas être exécuté (réseau, matériel, permission), l'indiquer explicitement dans le journal.
@@ -95,13 +121,15 @@ swiftc -O -o build/qa/posture_test OpenCello/AppSettings.swift OpenCello/Posture
 
 ## 3. Conventions de code
 
-- **Swift 5, macOS 14+, SwiftUI**, aucune dépendance externe sans justification écrite.
-- Fichiers plats dans `OpenCello/` pour le MVP ; noms explicites.
+- **Swift 5, macOS 14+, SwiftUI**.
+- **Dépendances d'abord** : le but est d'assembler des blocs déjà faits (librairies, packages SPM, frameworks système) pour obtenir des **primitives fortes** avec le moins de code maison possible. Plus il y a de dépendances de qualité, mieux c'est. On n'écrit du code à la main que lorsqu'aucune brique existante ne convient.
+- Toute dépendance externe ajoutée doit être notée dans le journal (origine, licence, pourquoi elle remplace du code maison).
+- Fichiers plats dans `OpenCello/` ; noms explicites.
 - UI et messages en **français** ; noms de code en anglais.
 - Seuils et constantes **centralisés** (ex. `PostureRules`) et commentés.
 - Pas de stockage de vidéo/audio brut ; uniquement des statistiques agrégées et des captures optionnelles locales.
 - Aucune télémétrie, aucun cloud, aucun compte. Seule exception réseau : la recherche IMSLP.
-- Ne jamais télécharger les PDF IMSLP ni contourner leurs licences ; l'utilisateur ouvre la page dans son navigateur.
+- Téléchargement de PDF IMSLP **autorisé** (décision du porteur du projet, 2026-11-03) : l'app comme les outils QA peuvent récupérer les PDF via `Special:ImagefromIndex/<index>` avec le cookie de disclaimer `imslpdisclaimeraccepted=yes` ; privilégier les fichiers marqués « Copyright=Public Domain » et afficher le statut de licence à l'utilisateur.
 - Vérifier les licences des briques ajoutées (voir `docs/07-solutions-open-source.md`) ; le cœur du projet reste MIT.
 
 ---
@@ -111,10 +139,10 @@ swiftc -O -o build/qa/posture_test OpenCello/AppSettings.swift OpenCello/Posture
 | Fichier | Rôle |
 |---|---|
 | `OpenCelloApp.swift` | Point d'entrée SwiftUI |
-| `ContentView.swift` | Racine (onglets Séance libre / Morceau) + vue caméra/overlay |
-| `SessionEngine.swift` | Orchestrateur : séance, calibration, morceau, IMSLP |
+| `ContentView.swift` | Racine 5 onglets + séance plein écran (HUD temps réel) + vue caméra/overlay |
+| `SessionEngine.swift` | Orchestrateur : séance, calibration, morceau, IMSLP, navigation rapports |
 | `CameraManager.swift` | AVFoundation + Vision (posture) |
-| `PoseAnalyzer.swift` | Landmarks → métriques de posture |
+| `PoseAnalyzer.swift` | Landmarks → métriques de posture + mains Vision |
 | `PostureRules.swift` | Règles, baseline, debounce/cooldown |
 | `MicrophoneManager.swift` | Micro + YIN + spectre + segmentation |
 | `PitchTracker.swift` | YIN, nommage des notes |
@@ -131,16 +159,26 @@ swiftc -O -o build/qa/posture_test OpenCello/AppSettings.swift OpenCello/Posture
 | `MotionAnalyzer.swift` | Jerk/mobilité (indicatif) |
 | `HelpView.swift` | Aide intégrée |
 | `AppSettings.swift` | Profil, diapason, tolérances, onboarding |
-| `ExerciseCatalog.swift` | 25 exercices + recommandations |
+| `ExerciseCatalog.swift` | 29 exercices + recommandations |
 | `ProgressStore.swift` | Historique local + exercices terminés |
-| `ReportExporter.swift` | Export PDF/JSON |
+| `ReportExporter.swift` | Export PDF/JSON, pack professeur, export anonymisé |
+| `StatsKit.swift` | Statistiques sur Accelerate/vDSP |
+| `ReportAnalysis.swift` | Score de séance, commentaires, résumé de profil |
+| `ReportView.swift` | Rapport de séance dans l'app (gros chiffres, graphiques, analyse, exercices) |
+| `ProfileView.swift` | Page Profil : moyennes, tendances, forme |
 | `ExercisesView.swift` | Catalogue, fiches, minuteur |
-| `ReportsView.swift` | Historique, graphiques Swift Charts, exports |
+| `ReportsView.swift` | Historique des rapports + sélection |
 | `SettingsView.swift` | Réglages et onboarding |
-| `MusicXMLParser.swift` | Import de partition |
-| `ScoreFollower.swift` | Suivi de partition (justesse/rythme) |
-| `PieceView.swift` | Interface du mode morceau |
-| `SessionReport.swift` | Statistiques + rapports Markdown |
+| `MusicXMLParser.swift` | Import de partition (dont glissando/doigté) |
+| `ScoreFollower.swift` | Suivi de partition (justesse/rythme), index des notes |
+| `PieceView.swift` | Interface du mode morceau (position/doigt/confiance, replay) |
+| `SessionReport.swift` | Statistiques agrégées de séance (dont main gauche/positions) |
+| `HandPoseAnalyzer.swift` | Vision Hands → `HandFrame` (2 mains, 21 points) |
+| `LeftHandAnalyzer.swift` | Main gauche P11-P14, doigt presseur, pouce (hypothèse), A17-A20 |
+| `PositionTracker.swift` | Positions/cordes/doigts, fusion audio-caméra, agrégats de shifts |
+| `TechniqueTracker.swift` | Piqué (B17), glissé volontaire/parasite (B14), `GlideDetector` |
+| `ReplayKit.swift` | Moments de replay + synthèse PCM locale + lecture AVAudioEngine |
+| `ReplayView.swift` | Feuille de replay + piano-roll Canvas |
 
 Tests et artefacts :
 
@@ -184,7 +222,6 @@ Une tâche n'est terminée que si :
 
 - Ne pas ajouter de dépendance cloud, de compte ou de télémétrie.
 - Ne pas stocker de vidéo/audio brut sans consentement explicite.
-- Ne pas télécharger automatiquement les PDF IMSLP.
 - Ne pas modifier les seuils pédagogiques sans le noter et sans test.
 - Ne pas supprimer un fichier de test, une fixture ou un document sans le signaler.
 - Ne pas prétendre qu'un test a réussi s'il n'a pas été lancé.

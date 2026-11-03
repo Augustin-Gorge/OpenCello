@@ -50,7 +50,20 @@
 - RepoVizz / EyesWeb (TELMI, plateformes de synchronisation multimodale) — inspirations d'architecture.
 - Dépôts de données : TELMI Open Database (CC), Dalmazzo & Ramírez (public), Philharmonia samples, URMP, Good-Sounds → `docs/11-datasets.md`.
 
-## 6. Matrice de décision pour notre MVP
+## 6. OMR et LLM local (PDF → MusicXML)
+
+| Brique | Licence | Langage | Usage |
+|---|---|---|---|
+| **Ollama** (serveur + `format: json_schema`) | MIT | Go/C++ | **Choix** : moteur local du pipeline OMR — constrained decoding par schéma JSON (`docs/16`) ; modèles vision (`qwen2.5-vl`, …) et texte, chacun sous sa propre licence |
+| **Audiveris** | **AGPL-3.0** ⚠️ | Java | **Première passe OMR** : PDF → MusicXML/MXL, mature, installé (`/Applications/Audiveris.app`) ; **outil externe en sous-processus uniquement** (jamais lié/distribué : le cœur reste MIT) ; mesuré 97,6 % sur notre fixture |
+| **PDF2Muse** (enveloppe `oemer`) | MIT (mais `homr` optionnel **AGPL-3.0**) | Python | 2ᵉ candidat de comparaison ; projet jeune, qualité à confirmer par mesure |
+| **LilyPond** | **GPL-3.0** ⚠️ | C++/Scheme | **Outil de développement uniquement** (jamais distribué avec l'app) : grave les fixtures OMR à vérité terrain exacte (`tools/qa/fixtures/*.ly`) — `brew install lilypond` |
+| **MusicXML 4.0 XSD** (W3C) | W3C FSA | — | Validation finale des sorties du pipeline (vendus dans `tools/qa/musicxml_xsd/`) |
+| **OMR-NED** | voir repo | Python | Protocole d'étalonnage (alignement note à note sur dataset SMB) pour choisir modèle/outil |
+
+Règle de compatibilité : le pipeline (`tools/qa`, MIT) ne fait **que lancer** ces outils installés par l'utilisateur et lire leurs fichiers de sortie — pas de lien, pas de distribution, pas de fork.
+
+## 7. Matrice de décision pour notre MVP
 
 | Besoin | Choix retenu | Pourquoi |
 |---|---|---|
@@ -60,3 +73,12 @@
 | Détection archet | OpenCV LSD (profil) puis YOLO-OBB Core ML (multi-angle) | progressif ; attention licence AGPL d'Ultralytics |
 | Validation | scripts Python (librosa/pyin/CREPE) + SInES web | outils de dev hors binaire |
 | Règles posture | portage ErgoGuard + heuristiques Purdue | éprouvé, simple |
+| Graphiques (courbes, barres, anneaux) | **Swift Charts** (SDK Apple) | natif, animé, zéro dépendance |
+| Graphique radar (spider) + anneaux | **Liveline** (SPM, **MIT**) | Swift Charts n'expose pas de radar sur macOS ; Liveline apporte radar + donut natifs Canvas, macOS 12+ |
+
+## 8. Graphiques
+
+| Brique | Licence | Usage |
+|---|---|---|
+| **Swift Charts** (Apple SDK) | SDK Apple (gratuit) | Courbes, barres, `RuleMark` des rapports et du profil |
+| **Liveline** (ParthJadhav/liveline-swift, v0.7.0) | **MIT** | **Dépendance SPM retenue** : `LivelineChart(radar:)` (spider) et `LivelineChart(donut:)` (anneaux avec étiquettes) — Canvas natif, pas de WebView, macOS 12+, maintenu (2026). Règle du projet : assembler des briques existantes plutôt que réécrire |

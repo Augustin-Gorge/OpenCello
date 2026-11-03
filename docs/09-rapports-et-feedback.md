@@ -59,3 +59,41 @@ Structure type (inspirée du résumé Purdue + pédagogie TELMI) :
 
 ## 6. Grille d'évaluation UX (réutilisée pour nos tests utilisateurs)
 On reprendra les 12 sous-heuristiques du papier Purdue (Clarté C1-C2, Guidance G1, Transparence S1-S3, Efficacité F1, Erreurs E1-E2, Pédagogie P1-P3), notées 0-4 en sévérité, avec au moins 2 professeurs de violoncelle et 1-2 designers — avant tout lancement public. Critères de succès : aucun défaut critique sur S3/E2, P2/P3 ≤ 1.
+
+## 7. Replay pédagogique : citer le moment exact (v1.1, implémenté)
+
+Chaque constat du rapport doit pouvoir être **rejoué** en un clic, en citant précisément le passage concerné.
+
+> **Implémentation (3 novembre 2026)** : `ReplayBuilder` produit les moments (justesse, rythme, glissé, déplacement, doigté, piqué) et `ReplayView` les présente avec un piano-roll Canvas, un sélecteur « Ce que tu as fait / Ce que ça devrait être » et une écoute locale. En session, `PieceView` expose « Revoir ça » pour le dernier moment apparié ; le rapport liste les replays de la séance. La portée gravée reste une évolution : le piano-roll fournit le repère mesure/temps/note sans dépendre d'un moteur de gravure.
+
+### Principe
+Un replay = un « moment » (indices partition + statistiques de la séance) avec **trois vues synchronisées** :
+
+1. **Le repère visuel** : piano-roll local avec la mesure/le temps cités surlignés et la grille de temps attendue (pulsation) — reconstruit depuis la partition et les statistiques.
+2. **Ce que tu as fait** : courbe de cents, onsets détectés, note jouée vs note attendue — **reconstruits depuis les statistiques stockées**, pas depuis un enregistrement audio.
+3. **Ce que ça devrait donner** : lecture de la version correcte par **synthèse PCM locale** (`AVAudioEngine`, sinusoïde + harmoniques + ADSR), au bon tempo — pas de SoundFont ni de fichier MIDI externe.
+
+### Exemples
+- **Rythme** : « Sur la blanche pointée (mesure 12), tu tiens 3,4 temps au lieu de 3 : la note suivante démarre en retard. » Le replay affiche la note surlignée pendant 3 temps pendant que tes onsets montrent le dépassement, puis joue la version correcte.
+- **Justesse après déplacement** : « En descendant de la 4e vers la 3e position (mesure 8), ton 2e doigt arrive 38 cents trop haut. » Le replay zoome sur la transition : ta courbe de cents (montée lente, arrivée haute) vs la note cible tenue.
+- **Glissé parasite** : « Mesure 5, ton déplacement vers la 3e position glisse (portamento de 210 ms). » Le replay fait entendre la pente continue, puis la version « déplacement propre » synthétisée.
+- **Articulation** : « Ton piqué est inégal : les 2e et 4e notes durent 12 % de moins. » Le replay aligne les notes piquées sur la grille pour rendre l'inégalité visible.
+
+### Privacy et stockage
+- Un « moment » ne stocke que des **indices + statistiques** (quelques Ko), jamais d'audio ni de vidéo brut — cohérent avec la règle existante (`docs/08` §2.7). Le « ce que tu as fait » est une **re-synthèse** de tes statistiques, pas ton enregistrement.
+- En temps réel, un bouton « Revoir ça » marque le dernier moment apparié et l'ouvre immédiatement ; le rapport conserve les moments calculés. **Aucun enregistrement brut n'est proposé** : le rejeu reste toujours une reconstruction.
+
+## 8. Formulations compréhensibles (v1.1)
+
+Règle : chaque correction nomme le **lieu** (position, doigt, corde, mesure/temps), donne le **chiffre** (cents, temps, %, ms) et un **conseil actionnable** — jamais de jugement, jamais de jargon sans explication.
+
+| Contexte | Formulation type |
+|---|---|
+| Glissé parasite | « En 3e position, tu as tendance à glisser : 6 déplacements sur 10 arrivent avec un portamento. Essaie de poser le doigt d'un coup sec pendant que le coude accompagne la main. » |
+| Doigt faux après un shift | « Quand tu redescends de la 4e vers la 3e position, ton 2e doigt arrive 38 cents trop haut (7 cas sur 9). Travaille la descente seule, lentement, avec un bourdon de sol. » |
+| Rythme | « Sur la blanche pointée (mesure 12), tu tiens 3,4 temps au lieu de 3 : le si bémol suivant démarre en retard. Replay → » |
+| Piqué inégal | « Ton piqué est inégal : les 2e et 4e notes durent 12 % de moins. Vise des notes égales en arrêtant l'archet à la même vitesse à chaque fois. » |
+| Main gauche | « Ta main est cassée vers l'intérieur (22°) quand tu joues sur la corde de do. Allonge le poignet dans la ligne de l'avant-bras et vérifie ton pouce. » |
+| Doigt en contexte (morceau) | « Mesure 23 : ton 2e doigt en 4e position arrive 30 cents bas à chaque reprise. Travaille ce passage isolé, puis rejoue la phrase entière. Replay → » |
+
+Conventions de vocabulaire : positions **en chiffres** (1re, 2e…), doigts **nommés** (1er, 2e doigt…), direction **explicite** (en montant / en descendant), moments cités par **mesure et temps**. En mode morceau, la position et le doigt mesurés par le moteur visuel (`docs/13` §7) s'ajoutent à la citation : « mesure 23, 2e doigt, 4e position ». Ces formulations s'appuient sur la matrice doigt × position × direction (`docs/03` §8.3) et alimentent le rapport (§3, axes prioritaires) ainsi que les replays (§7).

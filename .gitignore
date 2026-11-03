@@ -6,3 +6,5 @@ xcuserdata/
 *.xcworkspace/xcuserdata/
 .swiftpm/
 Rapports/
+__pycache__/
+*.pyc

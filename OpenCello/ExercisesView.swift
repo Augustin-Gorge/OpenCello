@@ -26,6 +26,12 @@ struct ExercisesView: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
+            .onChange(of: engine.requestedExerciseID) { _, id in
+                if let id, let exercise = ExerciseCatalog.exercise(id: id) {
+                    selectedExercise = exercise
+                    engine.requestedExerciseID = nil
+                }
+            }
 
             if !recommended.isEmpty {
                 VStack(alignment: .leading, spacing: 8) {

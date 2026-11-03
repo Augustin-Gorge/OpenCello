@@ -295,7 +295,7 @@ Top 10 : major, sonata, piano, concerto, string, symphony, minor, cello, violin,
 - Pas de détection archet/cordes (Phase 4).
 - « Tête en avant » = proxy 2D.
 - Feedback sonore temps réel B1-B8 non encore actif (métriques disponibles).
-- Mode morceau : PDF non lus (OMR Audiveris à intégrer), `.mxl` non supporté, reprises/voltas ignorées, accords traités séquentiellement, tempo de référence constant.
+- Mode morceau : import PDF via le **pipeline OMR local outillé** (`tools/qa/`, `docs/16`) — intégration dans l'app en Phase 8 ; `.mxl` non supporté, reprises/voltas ignorées, accords traités séquentiellement, tempo de référence constant.
 - Recherche : premier chargement de l'index ~12 s (caché ensuite) ; correction par lexique hybride intégrée (fautes simples à doubles).
 - Seuils non calibrés sur un panel de musiciens.
 
@@ -325,6 +325,9 @@ OpenCello/
 | 4 | `swiftc ... imslp_test && ./imslp_test` | **56 274 compositeurs** (12,2 s puis 0,4 s), requêtes OK |
 | 5 | `swiftc ... fuzzy_test && ./fuzzy_test` | `appasionato` → 2 ; `alleggro`/`apasionnato` → 0 (avant vocabulaire) |
 | 6 | `python3 tools/qa/analyze_imslp_vocabulary.py` | **54 000 œuvres**, **26 833 mots**, top 4 000 sauvegardés |
+| 7 | `python3 tools/qa/omr_test.py` | **35/35 OK** : rendu 1/1, XSD MusicXML 4.0 conforme (4 documents), round-trip identique, 8 règles de validation, éditions de réparation, fusion 2 pages |
+| 8 | `python3 tools/qa/omr_pipeline.py … --skip-llm` | bout en bout : rendu 1/1, rapport.md OK, Audiveris/PDF2Muse absents détectés proprement |
+| 9 | `swiftc … omr_follower_compat.swift` + MusicXML généré | **parsé par MusicXMLParser** (titre/compositeur/tempo, 9 notes après fusion de liaison), ScoreFollower matche la 1re note |
 
 ---
 
@@ -347,17 +350,47 @@ OpenCello/
 
 ## 12. Prochaines étapes
 
-1. **Intégrer le vocabulaire** (`TitleVocabulary.swift` + lexique noyau + correction) et valider `alleggro` / `apasionnato`.
-2. Règles sonores temps réel B1-B8 + tempéraments/diapason.
-3. Fusion posture × son (C1-C5) dans les alertes et le rapport.
-4. Calibrer les seuils sur 2-3 violoncellistes.
-5. Intégrer Audiveris (PDF → MusicXML), `.mxl`, reprises, accords.
-6. Vue de profil + détection archet/cordes (Phase 4).
-7. Brancher le catalogue d'exercices sur les erreurs.
+1. **Phase 7 (v1.1)** : main gauche (A17-A20), positions/déplacements chiffrés (matrice doigt × position × direction), piqué/glissé au profil, corrections compréhensibles et replays pédagogiques (`docs/10`).
+2. Règles sonores temps réel B3-B8 + tempéraments historiques/diapason.
+3. Fusion posture × son (C1-C7) dans les alertes et le rapport.
+4. Calibrer les seuils sur 2-3 violoncellistes (dont les seuils de déplacement et de glissé parasite — `docs/11`).
+5. Étaler le pipeline OMR (Ollama) sur corpus, comparer Audiveris/PDF2Muse, porter dans l'app (Phase 8) ; `.mxl`, reprises, accords.
+6. Dataset annoté (archet, articulations, **déplacements**) + entraînement YOLO-OBB/Core ML.
 
 ---
 
 ## 13. Mises à jour (à compléter à chaque session)
+
+### 2026-11-03 — Rapports dans l'app, page Profil et séance plein écran (v1.1)
+
+**Objectif** : remplacer les rapports Markdown par des rapports riches dans l'app (façon page de stats HLTV), ajouter une page Profil avec moyennes/tendances, rendre la séance libre réellement plein écran avec feedback de position en temps réel, et passer le projet en mode « dépendances d'abord ».
+
+**Fait** :
+- **Plus aucun `.md` généré** : les rapports vivent dans l'app. Onglet **Rapports** = historique complet + rapport détaillé (score /100, gros chiffres, graphiques note par note, analyse commentée axe par axe avec deltas vs séance précédente, exercices recommandés avec bouton « Voir la fiche », exports PDF/JSON/pack professeur/étude conservés).
+- **Score de séance /100** (décision de conception, formule documentée dans `ReportAnalysis.swift`) : justesse `100·exp(−écart/20)` (0,35), stabilité `100·exp(−stab/12)` (0,20), posture `100·(1−temps en alerte/durée)` (0,25), continuité `% temps sonore` ou `% notes reconnues` (0,20), poids renormalisés sur les composantes mesurées. Composantes affichées dans le rapport (transparence = principe 2).
+- **Page Profil** (remplace Progrès) : radar/spider des compétences (Liveline), anneau de répartition posture, courbe de forme, tendances par métrique avec flèches vs 5 séances précédentes, cumul articulations, totaux (notes, durée moyenne, archet conforme, vibrato), meilleure/pire séance.
+- **Séance libre plein écran** : caméra plein cadre (fini le split), HUD temps réel — jauges de position par repère (nouvelles `LiveRuleStatus` + `liveStatus(for:)` dans `PostureRules`), conseils de correction, hauteur/niveau micro, alertes, timer, bouton plein écran natif, panneau escamotable.
+- **Couche statistique** : `StatsKit` (Accelerate/vDSP : moyenne, écart-type, médiane, pente, moyenne glissante), `ReportAnalysis` (score, commentaires, `ProfileSummary`), champs étendus de `SessionRecord` (HNR, centroïde, RMS, détection, vibrato, articulations…) avec décodage `decodeIfPresent` compatible historique v1.0 (champ `reportMarkdown` conservé en lecture seule).
+- **Règle de travail changée (décision du porteur du projet)** : « dépendances d'abord » — assembler des blocs existants plutôt que réécrire (`AGENTS.md`, `CONTRIBUTING.md`, README, docs/08 mis à jour).
+- **Première dépendance SPM** : **Liveline** (ParthJadhav/liveline-swift v0.7.0, **MIT**, macOS 12+, actif 2026) pour le radar/spider et les anneaux — Swift Charts n'expose pas de radar sur macOS. Ajoutée dans `project.pbxproj` (XCRemoteSwiftPackageReference) et documentée dans `docs/07`.
+- **Outil de démo** `tools/qa/seed_demo_data.swift` : génère 4 semaines de séances réalistes (progression visible, jours difficiles, morceaux, articulations, vibrato, archet) dans `history.json` pour tester l'UI. RNG déterministe. L'historique réel a été **sauvegardé** (`history.backup-*.json` dans Application Support).
+
+**Fichiers** : `StatsKit.swift`, `ReportAnalysis.swift`, `ReportView.swift`, `ProfileView.swift` (nouveaux), `ContentView.swift`, `SessionEngine.swift`, `SessionReport.swift`, `PostureRules.swift`, `ProgressStore.swift`, `ReportsView.swift`, `PieceView.swift`, `ExercisesView.swift` (remaniés), `tools/qa/seed_demo_data.swift`, `tools/qa/v1_main.swift`, `project.pbxproj`, `AGENTS.md`, `BUILD.md`, `README.md`, `CONTRIBUTING.md`, `docs/07`, `docs/08`, `docs/10`.
+
+**Tests** :
+- `xcodebuild` → **BUILD SUCCEEDED**, 0 warning Swift (package Liveline résolu via SPM) ; lancement OK, les 5 onglets parcourus sans crash (Séance/Morceau/Exercices/Rapports/Profil) ;
+- `v1_test` → round-trip OK, **STATS 4.0 / 2.000 / 2.0**, **SCORE 62 Correct**, commentaires + exercices E1-01/E1-03/E5-04, **PROFILE 1/1/62.0/5 tendances**, PDF/pack/export anonymisé OK ;
+- `posture_test`, `mxml_test`, `imslp_test`, `fuzzy_test`, `bow_test`, `phase5_test` → tous conformes aux résultats attendus (aucune régression) ;
+- `seed_demo` → 28 séances écrites, scores 34 → 76 répartis sur 4 semaines.
+
+**Limites / risques** :
+- `vDSP.standardDeviation` n'existe qu'à partir de macOS 15 → écart-type recalculé via `vDSP.mean`/`vDSP.sum` (cible macOS 14 conservée) ;
+- score /100 = convention pédagogique nouvelle, à confronter aux musiciens (seuils exp des formules non calibrés) ;
+- Liveline est une dépendance jeune (28 étoiles) : API vérifiée en compilation, rendu visuel à valider à l'écran ;
+- anciens fichiers `.md` des versions précédentes **supprimés** à la demande du porteur du projet (plus rien n'est généré) ;
+- l'historique de test actuel contient les données de démo (restaurer la sauvegarde `history.backup-*.json` si besoin).
+
+**Suite** : valider visuellement les graphiques sur écran ; calibrer les seuils du score ; brancher les replays pédagogiques (Phase 7) ; enrichir les stats du profil (évolutions par exercice).
 
 ### 2026-11-02 — Codification des règles agents
 
@@ -410,6 +443,118 @@ OpenCello/
 - localisation EN de l'interface **non faite** (aide/documentation en français) ;
 - A14/A15 ne sont pas des alertes temps réel, seulement des indicateurs de rapport.
 **Suite** : dataset annoté (archet/articulations), calibration des seuils, localisation EN, étude pilote.
+
+### 2026-11-03 — Pipeline OMR local : PDF → MusicXML (Ollama, constrained decoding, boucles)
+
+**Objectif** : produire automatiquement le MusicXML d'une partition PDF, 100 % local, avec une IA conditionnée par **constrained decoding** et **plusieurs boucles de contrôle** ; comparer le résultat avec **Audiveris** et **PDF2Muse** (deuxième passe).
+**Fait** :
+- **3 schémas de sortie contrainte** (`tools/qa/omr_schema.json` : transcription de page, document fusionné, éditions de réparation), limités au sous-ensemble supporté par le moteur de grammaire d'Ollama (tout inliné, pas de `$ref`/`oneOf`) ;
+- **boucles d'IA** : T (transcription vision par page + contrôle sémantique + 2ᵉ tentative), fusion **déterministe d'abord** (consolidation LLM en secours uniquement), V (validation déterministe → éditions ciblées contraintes → re-validation, max 3 itérations) ;
+- **conversion déterministe** JSON → MusicXML 4.0 (divisions 48, triolets exacts) + **validation XSD officielle** (`xmllint` ; XSD vendus, imports réécrits en local car `musicxml.org/xsd/*` renvoie 404) + parser inverse pour comparaison ;
+- **passe de comparaison** : Audiveris (AGPL → sous-processus externe, jamais embarqué) et PDF2Muse (MIT) lancés si installés, alignement note à note (`difflib`) et tableau de verdict dans `rapport.md` ;
+- rendu PDF → PNG en Swift/PDFKit (`pdf_render.swift`), fixture PDF générée sans dépendance ;
+- doc de conception `docs/18-omr-local.md` + mises à jour `01`, `07`, `08` (§2.8 ScoreOMR), `10` (Phase 7), `13`, `README`, `BUILD`, `tools/qa/README`.
+**Fichiers** : `tools/qa/{omr_schema.json, omr_pipeline.py, omr_json_to_musicxml.py, omr_test.py, pdf_render.swift, make_test_pdf.py, omr_follower_compat.swift, musicxml_xsd/*}`.
+**Tests** : `omr_test.py` → **35/35 OK** (rendu 1/1 page, XSD conforme sur 4 documents dont voix multiples et reprises/voltas/segno/coda, round-trip identique, 8 règles de validation, éditions de réparation appliquées/rejetées, fusion 2 pages) ; `omr_pipeline.py --skip-llm` bout en bout → rapport correct, outils externes absents détectés proprement ; MusicXML généré **parsé par l'app** (MusicXMLParser : titre/compositeur/tempo, 9 notes après fusion de liaison ; ScoreFollower matche la 1re note) ; API Ollama locale répond (0 modèle installé). Réparation au passage de `musicxml_follower_test.swift` (code top-level interdit en Swift 6.4 → enveloppé dans `@main`) : `mxml_test` repasse **5/5**.
+**Limites / risques** : aucun modèle vision téléchargé → les passes LLM réelles restent à exécuter après `ollama pull` ; « semantic gap » du constrained decoding (Reddy et al., arXiv 2609.23742) → d'où les boucles et la comparaison ; modèles vision faibles sur partitions denses ; Audiveris AGPL reste externe ; reprises/voltas écrites dans le MusicXML mais pas encore suivies par l'app ; `xcodebuild` non exécuté (aucun fichier de l'app modifié — outillage QA uniquement).
+**Suite** : `ollama pull qwen2.5vl:7b` + test réel sur 2-3 partitions ; étalonnage sur corpus (OMR-NED) pour choisir le modèle ; portage Swift (`ScoreOMR`, Phase 7).
+### 2026-11-03 — Conception v1.1 : main gauche, positions, techniques et replays
+
+**Objectif** : documenter les attentes utilisateur pour la suite (v1.1) : suivi des techniques particulières (piqué, glissé), changements de position chiffrés (vitesse, doigts à travailler), corrections compréhensibles, replays pédagogiques citant le moment exact, analyse de la main gauche (angle, pouce, souplesse).
+**Fait** :
+- `docs/05` : nouvelles erreurs **A17-A20** (angle de main, pouce crispé en hypothèse, doigts raides, coude qui ne guide pas le déplacement), **B14-B18** (glissé parasite, arrivée de déplacement fausse, déplacement lent, piqué inégal, coupure pendant le déplacement), **C6-C7** (tension main gauche → glissé ; pouce crispé → son étouffé).
+- `docs/03` : métriques **P11-P14** (angle main, pouce, souplesse des doigts, position sur la touche) + nouvelle section « positions et déplacements » : numéro de position (caméra + son), métriques de shift (durée, portamento, arrivée, direction), **matrice doigt × position × direction** avec l'exemple utilisateur (2e doigt faux en descendant de la 4e vers la 3e).
+- `docs/04` : détection du glissé/portamento (§2.8), déplacements chiffrés (§2.9), piqué dans les articulations (§2.6), arbre de décision étendu, exemple rythmique « blanche pointée » (§2.7).
+- `docs/09` : §7 **Replay pédagogique** (citer mesure/temps, partition annotée, « ce que tu fais » re-synthétisé depuis les stats, « ce que ça devrait être » en synthèse MIDI locale — aucun audio brut) + §8 **formulations compréhensibles** (position + doigt + chiffre + conseil, exemples). *(Implémentation 2026-11-03 : piano-roll reconstruit + synthèse PCM locale, voir l'entrée « Implémentation v1.1 » ci-dessous.)*
+- `docs/06` : exercices **E3-07** (piqué égal), **E4-07/E4-08/E4-09** (déplacements ciblés, glissando contrôlé, pouce/angle de main) ; E4-06 existant = chromatisme lent ; E4-04 lié à B15/B16. *(Correction 2026-11-03 : la numérotation initiale E4-06/E4-07/E4-08 a été décalée pour ne pas écraser « Chromatisme lent » déjà présent dans le catalogue.)*
+- `docs/08` : modules planifiés `LeftHandAnalyzer`, `PositionTracker`, `TechniqueTracker`, `ReplayKit` (§2.8) ; renumérotation du § ScoreOMR en 2.9 et correction du renvoi `docs/16` → `docs/18`.
+- `docs/10` : nouvelle **Phase 7 (v1.1)** avec critère de sortie (l'OMR local reste la Phase 8) ; `PRINCIPE.md` (périmètre, tableau entrée/analyse/sortie).
+**Fichiers** : `PRINCIPE.md`, `docs/03`, `docs/04`, `docs/05`, `docs/06`, `docs/08`, `docs/09`, `docs/10`, `docs/14-journal-de-creation.md`.
+**Tests** : aucun changement de code — tests **non exécutés** (documentation de conception uniquement).
+**Limites / risques** : pouce gauche et numéro de position restent des estimations (caméra frontale) ; distinguer glissé volontaire/parasite exige le contexte de partition ; tous les seuils de déplacement (durée, pente, arrivée) sont des hypothèses à calibrer sur enregistrements réels (`docs/11`).
+**Suite** : implémenter la Phase 7 (code) ; compléter `docs/11-datasets.md` avec un dataset de déplacements/glissés annotés.
+### 2026-11-03 — Position et doigt par note en mode morceau (v1.1)
+
+**Objectif** : documenter l'assignation d'une **position** et d'un **doigt** à chaque note jouée pendant le suivi de partition, en s'appuyant sur le moteur visuel — pour analyser le jeu par doigt sur le répertoire réel et donner des conseils pertinents.
+**Fait** :
+- `docs/13` : nouvelle section **§7 « Position et doigté par note »** (fusion partition + audio + caméra : position de la main P14, doigt presseur = bout de doigt le plus bas/proche du plan des cordes parmi les 4 suivis par Vision Hands, confiance affichée) ; ambiguïtés traitées (corde à vide vs doigté = **choix**, pas erreur ; caméra indisponible → inférence audio seule, confiance réduite) ; étape 8 ajoutée à l'algorithme de suivi ; parcours utilisateur et rapport complétés ; ligne ajoutée au tableau des limites ; « Limites et suite » renuméroté §8.
+- `docs/03` §8.1 : cas « note par note (mode morceau) » ajouté.
+- `docs/08` (`PositionTracker`), `docs/10` (Phase 7, 1er item), `docs/09` §8 (formulation « mesure 23, 2e doigt, 4e position » + conventions), `PRINCIPE.md`, `README.md` : complétés en cohérence.
+- Correction au passage d'un renvoi erroné pré-existant `docs/16` → `docs/18` dans le tableau des limites de `docs/13`.
+**Fichiers** : `docs/13`, `docs/03`, `docs/08`, `docs/09`, `docs/10`, `PRINCIPE.md`, `README.md`, `docs/14-journal-de-creation.md`.
+**Tests** : aucun changement de code — tests **non exécutés** (documentation de conception uniquement).
+**Limites / risques** : l'identité du doigt presseur reste une heuristique (doigts petits à distance de caméra, confiance à afficher) ; estimation dégradée en positions hautes (pouce) ; le MusicXML ne contient généralement pas de doigtés de référence ; à calibrer sur vidéos réelles (`docs/11`).
+**Suite** : implémenter `PositionTracker` en mode morceau (Phase 7) ; dataset annoté position/doigt (vidéos + partitions) pour valider l'heuristique.
+
+### 2026-11-03 — Suppression de l'interdiction de téléchargement des PDF IMSLP
+
+**Objectif** : permettre de tester le pipeline OMR sur de vraies partitions.
+**Fait** : à la demande explicite du porteur du projet, suppression de la règle « ne jamais télécharger les PDF IMSLP » dans `AGENTS.md` (§3 et §7) ; nouvelle règle : téléchargement autorisé via `Special:ImagefromIndex/<index>` avec le cookie de disclaimer, fichiers « Copyright=Public Domain » privilégiés et statut de licence affiché ; création de `tools/qa/imslp_fetch.py` (liste des PDF d'une page d'œuvre avec statut + téléchargement par index) ; mise à jour de `docs/13-mode-morceau.md`.
+**Fichiers** : `AGENTS.md`, `docs/13-mode-morceau.md`, `tools/qa/imslp_fetch.py`.
+**Tests** : `imslp_fetch.py --list` sur la page « Cello Suite No.1 in G major, BWV 1007 » → liste des PDF avec copyrights (certains non-PD identifiés et refusés) ; téléchargement réel à valider.
+**Limites / risques** : le statut domaine public varie selon les juridictions ; l'app devra afficher la licence du fichier choisi.
+**Suite** : intégrer le téléchargement dans le mode morceau (Phase 8) ; étalonner OMR sur ces PDF.
+
+### 2026-11-03 — Implémentation v1.1 (Phase 7) : main gauche, positions, techniques et replays
+
+**Objectif** : implémenter l'intégralité des fonctions v1.1 documentées — main gauche A17-A20, positions/déplacements chiffrés avec position + doigt par note en mode morceau, piqué/glissé au profil, corrections compréhensibles et replays pédagogiques — sans stockage audio/vidéo brut ni nouvelle dépendance.
+**Fait** :
+- **Main gauche** : `HandPoseAnalyzer` (Vision Hands, 2 mains, 21 points) et `LeftHandAnalyzer` (angle P11, souplesse P13, doigt presseur heuristique, pouce A18 en hypothèse, indice de position P14, mobilité du coude A20). `PoseFrame.hands` est rempli même si le corps n'est pas détecté ; `PoseAnalyzer` continue de fonctionner sans main.
+- **Positions et déplacements** : `PositionTracker` (cordes à vide C2/G2/D3/A3, 1re position 2-4-5-7 demi-tons, positions 1-7, candidats audio × caméra × continuité) ; `NotePositionRecord`/`PositionStatsRecord` persistent position, doigt, direction, confiance, glide (durée + pente cents/s) et contour ; agrégats `PositionAnalysis` (pire shift, glissé parasite, justesse par position, durée et pente de transition).
+- **Techniques** : `GlideDetector` (pente continue ≥ 50 cents/s, ≥ 80 ms, ≥ 20 cents) enrichit `NoteEvent` ; `TechniqueTracker` suit les séries piquées (B17) et les glissés volontaires/parasites (B14).
+- **Replays** : `ReplayKit` construit les moments (justesse, rythme, glissé, déplacement, doigté, piqué) et synthétise localement PCM (sinusoïde + harmoniques + ADSR) ; `ReplayView` affiche un piano-roll Canvas avec « Ce que tu as fait / Ce que ça devrait être ». Aucun audio brut n'est stocké.
+- **Intégration** : caméra active en mode morceau, main gauche analysée à chaque frame (morceau et séance libre en posture), assignation position + doigt à chaque note appariée, enregistrement des records dans `SessionReport`/`ProgressStore`, replays live dans `PieceView` (« Revoir ça ») et dans le rapport.
+- **Rapports** : `ReportAnalysis` ajoute les axes main gauche, positions, techniques et les exercices ciblés ; `ReportView`/`ProfileView` affichent les nouvelles sections (dont la matrice doigt × position × direction dans le profil) ; `ReportExporter` ajoute les sections PDF, le pack professeur et des agrégats anonymisés (sans notes ni titres).
+- **Exercices** : E3-07 (piqué égal), E4-07 (déplacements ciblés), E4-08 (glissando contrôlé), E4-09 (pouce/angle de main) → catalogue à **29 fiches** ; `MusicXMLParser` parse `<glissando>`, `<slide>` et `<fingering>`.
+- **Documentation** : `docs/03` (statut implémenté, correction 2e/3e/4e position ≈ 11/14/17 cm, modèle de code), `docs/04`, `docs/05`, `docs/06`, `docs/08`, `docs/09`, `docs/10`, `docs/13`, `docs/17`, `README.md`, `AGENTS.md` (commandes de test) ; entrée de journal.
+**Fichiers** : `OpenCello/HandPoseAnalyzer.swift`, `LeftHandAnalyzer.swift`, `PositionTracker.swift`, `TechniqueTracker.swift`, `ReplayKit.swift`, `ReplayView.swift` (nouveaux) ; `PoseAnalyzer.swift`, `SessionEngine.swift`, `SessionReport.swift`, `PostureRules.swift`, `NoteSegmenter.swift`, `MusicXMLParser.swift`, `ScoreFollower.swift`, `ProgressStore.swift`, `ReportAnalysis.swift`, `ReportView.swift`, `ProfileView.swift`, `ReportExporter.swift`, `ExerciseCatalog.swift`, `PieceView.swift` (étendus) ; `tools/qa/phase7_main.swift` (nouveau) ; `OpenCello.xcodeproj/project.pbxproj` ; docs listés ci-dessus.
+**Tests** :
+- `xcodebuild … build` → **BUILD SUCCEEDED**, aucune warning Swift (seul l'avertissement outil `appintentsmetadataprocessor`).
+- Smoke test : `open build/Build/Products/Debug/OpenCello.app` → processus lancé, puis `osascript … quit` → processus terminé. Aucun test caméra/micro réel dans ce smoke test.
+- `mxml_test` → 5/5 notes appariées, `STATS matched=5/5 inTune=5`.
+- `imslp_test` → Bach 8 résultats, Ševčík 8, Dvořák 8.
+- `fuzzy_test` → « apasionnato Saint Saens » 2 résultats (Op.43/Op.70).
+- `v1_test` → `EXERCISES: 29`, round-trip JSON, score 62, PDF et pack professeur générés, export anonymisé sans titre ; PDF avec les nouvelles sections (main gauche, positions, techniques, replays) converti en PNG et **inspecté visuellement**, mise en page lisible.
+- `bow_test` → angle 30°, support 356 ; `phase5_test` → vibrato 5,00 Hz, 7 articulations, jerk jitter > smooth.
+- `posture_test` → alertes et compteurs A1-A4 conformes.
+- `phase7_test` → `PHASE7: OK` : main gauche angle 55°/presseur 2, position 60 → 4e doigt 4 (confiance 0,87), corde à vide reconnue, glissé 380 ms/38 cents/100 cents/s, piqué régulier et inégal, 5 types de replays, synthèse jouée ≠ corrigée, rapport main/positions/techniques, 29 exercices, persistance + rétro-compatibilité v1.0, MusicXML glissando/fingering/mesure 2.
+- `seed_demo` → 28 séances de démonstration écrites ; **l'historique réel (1 séance) a été restauré** depuis `history.backup-20261103_001458.json`, la version de démo restant dans `history.demo-20261103_154828.json`.
+**Limites / risques** :
+- Aucune validation avec violoncellistes ni vidéo réelle : les seuils A17-A20/B14-B17 restent des valeurs de départ ; la position a une résolution ±1 et le doigt presseur est une heuristique (confiance affichée).
+- Le pouce (A18) reste une hypothèse explicite ; le piqué est une heuristique audio (durée + gap + classification) ; le glissé volontaire dépend du `<glissando>` écrit, absent de beaucoup de fichiers.
+- Le replay utilise un piano-roll reconstruit, pas une portée gravée ; la synthèse PCM n'est pas un enregistrement réel.
+- A17-A20 ne déclenchent aucune alerte temps réel (choix assumé : rapport uniquement).
+**Suite** : valider les seuils sur vidéos/partitions réelles, faire relire les replays par 2-3 violoncellistes, calibrer la position (repères instrument), éventuellement ajouter la portée gravée et un doigté de référence MusicXML ; ne pas toucher au chantier OMR (`docs/18`, Phase 8).
+
+### 2026-11-03 — OMR local : Audiveris d'abord, moteur IMSLP et boucle de réparation monotone
+
+**Objectif** : rendre le pipeline OMR utilisable sur de vraies partitions IMSLP — acquisition par le moteur de l'app, première passe Audiveris, IA uniquement en réparation — et le prouver par des mesures sur une gravure à vérité terrain et sur le vrai Prélude BWV 1007/1.
+**Fait** :
+- **Moteur IMSLP étendu** (`IMSLPClient.swift`) : `listScoreFiles(pageTitle:)` (48 PDF listés sur la page BWV 1007, index `ImagefromIndex` par proximité HTML, statut de copyright par fichier), `downloadScoreFile(index:)` en deux étapes (page `Special:ImagefromIndex` avec cookies `imslpdisclaimeraccepted=yes; redirectPassed=1` → URL miroir dans l'attribut `data-id` du span `#sm_dl_wait`), `downloadURL(fromDownloadPage:)`, `scoreFiles(fromWikitext:html:)`. Session éphémère + `httpShouldSetCookies = false` avec en-tête `Cookie` manuel (sinon Foundation écrase les cookies) ; jumeau Python `imslp_fetch.py` aligné sur le même flux.
+- **Fixture gravée à vérité terrain** : `tools/qa/fixtures/volta_score.ly` + `build_volta_fixture.sh` (LilyPond, outil de développement GPL, jamais distribué) → `build/qa/volta_score.pdf` (voltas 1/2, liaison entre mesures, double-corde) + `volta_ground_truth.json`.
+- **Architecture `--audiveris-first`** : Audiveris (sous-processus externe AGPL, jamais empaqueté) → parser inverse → validation ; 0 erreur bloquante = conversion déterministe, **aucun appel IA** ; erreurs bloquantes = boucle de réparation avec les images de pages jointes (le modèle regarde les mesures fautives) ; Audiveris absent = repli en transcription vision complète.
+- **Correctif `.mxl`** : le dépaquetage écrivait toutes les entrées XML vers le même fichier cible, `META-INF/container.xml` écrasait la partition → document vide. Filtre `META-INF` + un fichier par entrée.
+- **Sémantique des `<backup>`** : le parser inverse en faisait des événements à durée négative, sommés par le validateur (16 fausses `E_DURATION_SUM`) et convertis en `duration ≤ 0` (XSD refusé). Validateur et convertisseur les ignorent désormais, le parser émet `notes: []` + marqueur `backup`, `E_EVENT_EMPTY` les exclut. Sur la page réelle : 16 → **11 erreurs réelles**, XSD conforme.
+- **Boucle monotone (rollback best-of)** : on conserve toujours le document ayant le moins d'erreurs bloquantes ; toute itération qui n'améliore pas strictement est annulée et arrête la boucle. Prompt de réparation durci : représentation explicite du silence (`notes:[{"step":"C","octave":4,"is_rest":true}]`), que le modèle ignorait (il inventait une note).
+- **Contexte** : appels de réparation à `num_ctx=32768` (image pleine page + extrait = 16 997 tokens > 16 384) et extrait plafonné à 30 000 caractères.
+- **Suppression de `rapport.md`** à la demande du porteur : `write_report` supprimé, `main()` réécrit en dispatch `run_audiveris_first` / `run_vision_first`, récit sur la console uniquement.
+**Fichiers** : `OpenCello/IMSLPClient.swift`, `tools/qa/omr_pipeline.py`, `tools/qa/omr_json_to_musicxml.py`, `tools/qa/imslp_fetch.py`, `tools/qa/imslp_download_test.swift`, `tools/qa/pdf_page.swift`, `tools/qa/build_volta_fixture.sh`, `tools/qa/fixtures/volta_score.ly`, `tools/qa/fixtures/volta_ground_truth.json`, `docs/18-omr-local.md`, `docs/07-solutions-open-source.md`, `docs/13-mode-morceau.md`, `tools/qa/README.md`.
+**Tests** :
+- `swiftc -O -o build/qa/imslp_download OpenCello/IMSLPClient.swift OpenCello/TitleVocabulary.swift tools/qa/imslp_download_test.swift && ./build/qa/imslp_download` → 48 PDF listés, `BWV1007.pdf` téléchargé par le moteur (320 283 o, MD5 identique au téléchargement Python).
+- `bash tools/qa/build_volta_fixture.sh` → PDF gravé ; rendu PNG vérifié visuellement (voltas, liaison, double-corde).
+- `python3 tools/qa/omr_pipeline.py build/qa/volta_score.pdf --out build/qa/omr_volta --audiveris-first --no-compare` → 2 erreurs détectées, 1 édition nuisible annulée par rollback, XSD conforme ; `omr_evaluate.py` → **97,6 %** (Audiveris pur 97,6 % ; même réparation sans rollback 92,7 % ; tout vision 14,0 %).
+- `python3 tools/qa/omr_pipeline.py build/qa/bwv1007_p1.pdf --out build/qa/omr_bwv_p1 --audiveris-first --no-compare --dpi 200` → 11 erreurs bloquantes au départ ; itération 1 : 11 éditions → 10 erreurs ; itération 2 sans progrès → rollback ; XSD conforme ; 41 mesures, 611 hauteurs dans le document.
+- `python3 tools/qa/omr_test.py` → **35 OK, 0 échec**.
+- `swiftc -O -o build/qa/follower_compat OpenCello/MusicXMLParser.swift OpenCello/PitchTracker.swift OpenCello/ScoreFollower.swift tools/qa/omr_follower_compat.swift` puis sur les deux sorties → volta 14 notes, BWV 599 notes, `SUIVI: true` (parseur de la phase 7).
+- `xcodebuild -project OpenCello.xcodeproj -scheme OpenCello -configuration Debug -derivedDataPath build build CODE_SIGNING_ALLOWED=NO` → **BUILD SUCCEEDED**, aucune warning Swift (seul l'avertissement outil `appintentsmetadataprocessor`).
+- Smoke test : `open build/Build/Products/Debug/OpenCello.app` puis `osascript … quit` → processus lancé, puis quitté proprement. Aucune interaction UI testée.
+**Limites / risques** :
+- La monotonie porte sur le **nombre** d'erreurs, pas sur la fidélité : sur le Prélude, l'itération acceptée corrige m13/m39 mais ajoute +0,25 temps à huit mesures déjà fausses et crée une erreur en m11 voix 1 (voix non fautive). Prochaine correction : rejeter les éditions hors mesure/voix fautive, ou contrôler la fidélité mesure par mesure.
+- 10 erreurs résiduelles sur la page 1 (m6, m11 v1/v2, m18, m19, m24, m33-36) : relecture humaine obligatoire, faute d'oracle sur une partition réelle.
+- La transcription tout vision reste inutilisable (14 %) ; le mode dégradé ne vaut que pour les numérisations qu'Audiveris refuse.
+- L'UI n'expose pas encore le listing/téléchargement IMSLP (Phase 8).
+- Audiveris (AGPL) et LilyPond (GPL) restent des outils externes de développement, jamais distribués avec l'app.
+**Suite** : durcir la réparation (périmètre des éditions + fidélité par mesure), évaluer le Prélude complet multi-pages, puis exposer IMSLP → OMR dans le mode morceau (Phase 8).
 
 ---
 

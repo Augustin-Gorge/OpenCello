@@ -53,6 +53,10 @@ Extensions spécifiques violoncelle (angles 2D robustes en frontal, vue de profi
 | P8 | **Poignet gauche** | angle main–poignet–avant-bras | poignet cassé (> ~15° de flexion/extension) |
 | P9 | **Smoothness du bras droit** | jerk (dérivée 3e) des trajectoires coude/poignet ; « quantité de mouvement » (SInES) | geste saccadé, verrouillage (Rozé : mode mineur) |
 | P10 | **Verrouillage global** | variance des landmarks tête/buste sur fenêtre | micro-mouvements absents (Rozé) |
+| P11 | **Angle de la main gauche** | déviation radiale/ulnaire : angle ligne avant-bras ↔ axe 3e doigt (21 landmarks main) | main « cassée » sur le côté (> ~15°) |
+| P12 | **Position du pouce gauche** | non visible en vue frontale → **déduite** de P8/P11 + son étouffé (B4) — hypothèse (comme A16) | pouce crispé/verrouillé derrière le manche |
+| P13 | **Souplesse des doigts** | trajectoires des bouts de doigts : vitesse de levée/repose, flexion des IP, jerk | doigts raides, levée excessive, frappe brutale |
+| P14 | **Position de la main sur la touche** | distance poignet/repères de l'instrument → numéro de position estimé (1re → 7e) | position mal calée, déplacement raté |
 
 ## 4. Détection de l'archet et des cordes (la partie difficile)
 
@@ -97,3 +101,51 @@ Zones d'intérêt (définition Purdue) : **zone de jeu** = bande comprise entre 
 | Règles initiales | P1, P3, P4, P5, P6, P7, P8 + smoothness | P9, P10 en V2 |
 | Archet/cordes | V2 (vue profil + LSD) | YOLOv11-OBB Core ML (V4) |
 | Stockage | Stats agrégées (JSON/SQLite), captures JPEG locales | — |
+
+## 8. Main gauche : positions et déplacements (v1.1, implémenté)
+
+Objectif : dire **où** est la main, **comment** elle se déplace et **quels doigts/positions** posent problème — avec des chiffres.
+
+> **Implémentation (3 novembre 2026)** : `HandPoseAnalyzer` (Vision Hands, 2 mains), `LeftHandAnalyzer` (P11-P14, doigt presseur, pouce en hypothèse, mobilité du coude) et `PositionTracker` (candidats corde × position × doigt, fusion audio + caméra + continuité). Les règles A17-A20 alimentent le **rapport uniquement** (pas d'alerte HUD temps réel) ; les seuils sont dans `HandThresholds` par profil.
+
+### 8.1 Estimation du numéro de position
+
+- **Par la caméra** : distance de la main au long de la touche rapportée à des repères calibrés (silhouette de l'instrument, emplacement estimé du chevalet/du sillet, position des épaules du joueur). Sur un 4/4, la 2e position est à ~11 cm du sillet, la 3e à ~14 cm, la 4e à ~17 cm — l'ordre de grandeur est exploitable même avec du bruit.
+- **Par le son** : la note jouée (YIN) + la corde estimée (timbre, ambitus, contexte partition) donnent le doigté probable → la position. Ex. : un mi3 (E3) joué sur la corde de ré implique la **1re position** (1er doigt) ; un do4 (C4) sur la corde de la implique la **2e position** (1er doigt) — la même note sur une autre corde peut correspondre à une autre position, d'où l'intérêt de fusionner avec la caméra.
+- **Note par note (mode morceau, v1.1)** : chaque note appariée par le suivi de partition reçoit une position et un doigt mesurés (moteur visuel + audio, `docs/13` §7) — la matrice doigt × position se remplit ainsi avec le répertoire joué, pas seulement avec des gammes.
+- **Fusion** : l'app combine les deux sources et affiche la position estimée avec une confiance (la caméra tranche quand le son est ambigu : mêmes notes sur cordes différentes).
+
+### 8.2 Métriques d'un déplacement (shift)
+
+Entre deux notes séparées d'un grand intervalle :
+
+| Métrique | Mesure | Ce qu'elle révèle |
+|---|---|---|
+| **Durée de transition** | onset → onset vs durée attendue dans la partition | déplacement lent, hésitant |
+| **Présence de glissé** | pente continue du F0 (cents/s) + bruit de doigt HF pendant la transition | glissé volontaire ou **parasite** (voir `docs/04` §2.8) |
+| **Justesse d'arrivée** | cents du doigt posé vs note cible | doigt mal calé après le déplacement |
+| **Stabilité d'arrivée** | σ(cents) sur la note d'arrivée | doigt qui « cherche » après s'être posé |
+| **Pente du portamento** | cents/s (`glideSlope`) + durée de la transition | déplacement franc vs traîné ; la vitesse en cm/s reste une évolution (calibration instrument) |
+| **Direction** | ascendant / descendant | les descentes sont plus difficiles (la main « tombe ») |
+
+### 8.3 Matrice doigt × position × direction
+
+Le rapport v1.1 agrège les déplacements dans une **matrice** : pour chaque (position d'arrivée, doigt, direction), justesse moyenne et taux de glissé parasite. C'est elle qui produit des constats précis du type :
+
+> « En descendant de la 4e vers la 3e position, ton **2e doigt** arrive en moyenne **38 cents trop haut** (7 cas sur 9), alors que tes montées 1re → 4e sont justes à ±10 cents. Travaille ce passage en isolant la descente. »
+
+Le profil garde ces chiffres session après session → tendance de progrès par position et par doigt (`docs/10`, Phase 7).
+
+### 8.4 Limites à documenter honnêtement
+
+- Le **pouce** est derrière le manche : rarement visible. On le déduit (P12) de l'angle de main, du poignet et du son — signalé comme **hypothèse**, jamais comme certitude.
+- La position estimée a une résolution limitée (~±1 position) ; les « demi-positions » et extensions ne sont pas distinguées au départ.
+- Le glissé volontaire (expressif) ne doit jamais être signalé comme erreur : l'app s'appuie sur la partition (glissando écrit ou contexte) et demande confirmation en cas de doute.
+
+### 8.5 Modèle retenu dans le code
+
+- **Cordes à vide** : C2 (36), G2 (43), D3 (50), A3 (57) ; elles sont un choix légitime (doigt 0) et ne reçoivent **aucune position** (`nil`) : elles n'entrent pas dans la matrice doigt × position et ne sont jamais comptées comme un déplacement.
+- **1re position** : doigts 1-4 à 2, 4, 5 et 7 demi-tons de la corde à vide ; chaque position supérieure décale l'ensemble d'un demi-ton. Ce modèle simple sert de **vraisemblance**, pas de vérité : le score final combine l'audio, la continuité, l'indice caméra (P14) et le doigt presseur.
+- **Confiance** : affichée note par note (0-100 %) dans l'onglet Morceau ; une position indéterminée reste `nil` plutôt que d'inventer une valeur.
+- **Stockage** : `NotePositionRecord` par note (position, doigt, direction, glide, contour de cents) et `PositionStatsRecord` par séance ; le tout est couvert par `phase7_test`.
+- **Replays** : la position/le doigt estimés sont cités dans le replay (`docs/09` §7) et le piano-roll est reconstruit depuis ces statistiques — aucun audio brut n'est conservé.

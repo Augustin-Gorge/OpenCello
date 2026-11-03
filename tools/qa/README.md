@@ -49,22 +49,49 @@ python3 tools/qa/generate_title_vocabulary.py
 Écrit `data/imslp_title_vocabulary.json` (top 4 000 mots) et
 `OpenCello/TitleVocabulary.swift` (lexique noyau + mots fréquents).
 
-## v1.0 : exercices, historique, PDF et seuils
+## v1.0/v1.1 : exercices, historique, PDF et seuils
 
 ```bash
 swiftc -O -o build/qa/v1_test OpenCello/AppSettings.swift OpenCello/ExerciseCatalog.swift \
   OpenCello/ProgressStore.swift OpenCello/ReportExporter.swift OpenCello/NoteFeedback.swift \
-  OpenCello/Articulation.swift tools/qa/v1_main.swift \
-  -framework SwiftUI -framework AppKit -framework PDFKit
+  OpenCello/Articulation.swift OpenCello/StatsKit.swift OpenCello/ReportAnalysis.swift \
+  OpenCello/PostureRules.swift OpenCello/PoseAnalyzer.swift OpenCello/HandPoseAnalyzer.swift \
+  OpenCello/LeftHandAnalyzer.swift OpenCello/PositionTracker.swift OpenCello/ScoreFollower.swift \
+  OpenCello/MusicXMLParser.swift OpenCello/PitchTracker.swift tools/qa/v1_main.swift \
+  -framework SwiftUI -framework AppKit -framework PDFKit -framework Vision
 ./build/qa/v1_test
 
 swiftc -O -o build/qa/posture_test OpenCello/AppSettings.swift OpenCello/PostureRules.swift \
-  OpenCello/PoseAnalyzer.swift tools/qa/posture_main.swift
+  OpenCello/PoseAnalyzer.swift OpenCello/HandPoseAnalyzer.swift OpenCello/LeftHandAnalyzer.swift \
+  tools/qa/posture_main.swift -framework Vision
 ./build/qa/posture_test
 ```
 
-Vérifie : 25 exercices, recommandations, historique JSON, PDF, pack professeur,
-export anonymisé, seuils B1 et seuils de posture par profil (2 alertes max).
+Vérifie : 29 exercices, recommandations, historique JSON, PDF (main gauche,
+positions, techniques, replays), pack professeur, export anonymisé, seuils B1
+et seuils de posture par profil (2 alertes max).
+
+## Phase 7 : main gauche, positions, techniques, replays
+
+```bash
+swiftc -O -o build/qa/phase7_test \
+  OpenCello/LeftHandAnalyzer.swift OpenCello/HandPoseAnalyzer.swift OpenCello/PoseAnalyzer.swift \
+  OpenCello/PositionTracker.swift OpenCello/TechniqueTracker.swift OpenCello/ReplayKit.swift \
+  OpenCello/NoteSegmenter.swift OpenCello/SpectralAnalyzer.swift OpenCello/VibratoAnalyzer.swift \
+  OpenCello/MicrophoneManager.swift OpenCello/PitchTracker.swift \
+  OpenCello/ProgressStore.swift OpenCello/ExerciseCatalog.swift OpenCello/AppSettings.swift \
+  OpenCello/PostureRules.swift OpenCello/NoteFeedback.swift OpenCello/Articulation.swift \
+  OpenCello/StatsKit.swift OpenCello/ReportAnalysis.swift OpenCello/ScoreFollower.swift \
+  OpenCello/MusicXMLParser.swift OpenCello/SessionReport.swift tools/qa/phase7_main.swift \
+  -framework SwiftUI -framework AppKit -framework PDFKit -framework AVFoundation -framework Vision
+./build/qa/phase7_test
+```
+
+Vérifie : main gauche synthétique (angle, doigt presseur, pouce en hypothèse),
+positions 1-7/cordes à vide, agrégats de déplacement, glissé (pente/durée),
+piqué régulier/inégal, 5 types de replays, synthèse PCM, commentaires de
+rapport, 29 exercices, persistance rétro-compatible et parsing MusicXML
+(glissando, doigté, début de mesure).
 
 ## Phases 4-5 : lignes, archet, vibrato, articulations
 
@@ -88,3 +115,66 @@ swift tools/qa/generate_icon.swift
 ```
 
 Régénère `OpenCello/Assets.xcassets/AppIcon.appiconset`.
+
+## OMR local : PDF → MusicXML (docs/18)
+
+```bash
+# Tests complets sans modèle (35 tests : rendu, XSD, round-trip, règles, réparations, fusion)
+python3 tools/qa/omr_test.py
+
+# Pipeline recommandé : Audiveris en première passe, IA en réparation seulement
+python3 tools/qa/omr_pipeline.py partition.pdf --out build/qa/omr_out --audiveris-first
+
+# Tout vision (mode dégradé / étalonnage du modèle) : sans --audiveris-first
+python3 tools/qa/omr_pipeline.py partition.pdf --out build/qa/omr_out
+
+# Rendu + comparaison seulement (sans Ollama)
+python3 tools/qa/omr_pipeline.py partition.pdf --out build/qa/omr_out --skip-llm
+```
+
+Sorties : `score.musicxml` (validé XSD MusicXML 4.0) et `score.json` ; tout le
+récit (erreurs détectées, éditions appliquées, comparaisons) va sur la
+**console** (pas d'artefact rapport.md, supprimé à la demande du porteur).
+
+### Partition gravée à vérité terrain exacte (fixture volta)
+
+```bash
+# Grave tools/qa/fixtures/volta_score.ly (LilyPond, GPL — outil de dev) :
+# muttes de volta 1/2, liaison interne, double-corde reprises + vérité terrain JSON
+bash tools/qa/build_volta_fixture.sh
+python3 tools/qa/omr_evaluate.py build/qa/<sortie>/score.musicxml tools/qa/fixtures/volta_ground_truth.json
+```
+
+Résultats mesurés (2026-11-03) : Audiveris 97,6 % ; boucle de réparation
+monotone → 97,6 % préservés ; transcription tout vision seulement 14 %.
+
+### Extraction d'une page (borne le coût IA)
+
+```bash
+swiftc -O -o build/qa/pdf_page tools/qa/pdf_page.swift
+./build/qa/pdf_page partition.pdf build/qa/page1.pdf 1
+./build/qa/pdf_render build/qa/page1.pdf build/qa/pages_p1 200
+```
+
+### Téléchargement durable via le moteur de l'app (IMSLPClient.swift)
+
+```bash
+# Listing des PDF d'une œuvre + statuts de copyright (Python, QA rapide)
+python3 tools/qa/imslp_fetch.py --page "Cello Suite No.1 in G major, BWV 1007 (Bach, Johann Sebastian)" --list
+python3 tools/qa/imslp_fetch.py --page "…" --index 1298 --out build/qa/score.pdf
+
+# Ou : listing + téléchargement PAR LE MOTEUR DE L'APP (harnais CLI Swift)
+swiftc -O -o build/qa/imslp_download OpenCello/IMSLPClient.swift \
+  OpenCello/TitleVocabulary.swift tools/qa/imslp_download_test.swift
+./build/qa/imslp_download
+# → build/qa/bwv1007_via_moteur.pdf (BWV 1007, Bach-Gesellschaft 1879, domaine public)
+```
+
+Le flux IMSLP (cookies `imslpdisclaimeraccepted=yes` + `redirectPassed=1`, puis
+URL miroir dans l'attribut `data-id` du span `#sm_dl_wait`) vit dans
+`IMSLPClient.swift` : liste `listScoreFiles(pageTitle:)` et
+`downloadScoreFile(index:)`, privilégie les fichiers « Public Domain » et
+affiche le statut à l'utilisateur ; `imslp_fetch.py` est le jumeau Python de test.
+
+La fixture minimale (`make_test_score_pdf.py build/qa/test_score_real.pdf`)
+reste disponible pour un étalonnage sans réseau.

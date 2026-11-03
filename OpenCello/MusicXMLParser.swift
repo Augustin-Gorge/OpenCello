@@ -8,6 +8,12 @@ struct ScoreNote: Identifiable {
     var onsetBeats: Double
     var durationBeats: Double
     var measureIndex: Int
+    var measureStartBeats: Double = 0
+    /// Glissando/portamento écrit dans le MusicXML (technique volontaire).
+    var glissando: Bool = false
+    /// Doigté écrit (`<fingering>`), référence facultative : l'app mesure le
+    /// doigté réel et ne l'impose pas.
+    var fingering: Int? = nil
 }
 
 struct ScorePart: Identifiable {
@@ -64,9 +70,12 @@ final class MusicXMLParser: NSObject, XMLParserDelegate {
         var onset: Int
         var duration: Int
         var measure: Int
+        var measureStart: Int = 0
         var isRest: Bool
         var tieStart: Bool
         var tieStop: Bool
+        var glissando: Bool = false
+        var fingering: Int? = nil
     }
 
     private struct PartAccumulator {
@@ -80,6 +89,7 @@ final class MusicXMLParser: NSObject, XMLParserDelegate {
     private var divisions = 1
     private var currentTime = 0
     private var currentMeasure = 0
+    private var currentMeasureStart = 0
     private var capture: Capture = .none
     private var currentElement = ""
     private var text = ""
@@ -97,6 +107,8 @@ final class MusicXMLParser: NSObject, XMLParserDelegate {
     private var pendingRest = false
     private var pendingTieStart = false
     private var pendingTieStop = false
+    private var pendingGlissando = false
+    private var pendingFingering: Int?
     private var creatorIsComposer = false
     private var lastNoteOnset = 0
     private var failed = false
@@ -121,7 +133,10 @@ final class MusicXMLParser: NSObject, XMLParserDelegate {
                         midi: raw.midi,
                         onsetBeats: Double(raw.onset) / Double(divisions),
                         durationBeats: Double(raw.duration) / Double(divisions),
-                        measureIndex: raw.measure
+                        measureIndex: raw.measure,
+                        measureStartBeats: Double(raw.measureStart) / Double(divisions),
+                        glissando: raw.glissando,
+                        fingering: raw.fingering
                     )
                 }
             return ScorePart(name: accumulator.name, notes: notes)
@@ -183,9 +198,10 @@ final class MusicXMLParser: NSObject, XMLParserDelegate {
 
         case "measure":
             currentMeasure += 1
+            currentMeasureStart = currentTime
 
         case "note":
-            currentNote = RawNote(midi: 0, onset: 0, duration: 0, measure: currentMeasure, isRest: false, tieStart: false, tieStop: false)
+            currentNote = RawNote(midi: 0, onset: 0, duration: 0, measure: currentMeasure, measureStart: currentMeasureStart, isRest: false, tieStart: false, tieStop: false)
             pendingStep = ""
             pendingAlter = 0
             pendingOctave = 4
@@ -195,6 +211,11 @@ final class MusicXMLParser: NSObject, XMLParserDelegate {
             pendingRest = false
             pendingTieStart = false
             pendingTieStop = false
+            pendingGlissando = false
+            pendingFingering = nil
+
+        case "glissando", "slide":
+            pendingGlissando = true
 
         case "rest":
             pendingRest = true
@@ -283,6 +304,9 @@ final class MusicXMLParser: NSObject, XMLParserDelegate {
                 pendingDuration = number
             }
 
+        case "fingering":
+            pendingFingering = Int(value)
+
         case "note":
             finalizeNote()
 
@@ -324,8 +348,11 @@ final class MusicXMLParser: NSObject, XMLParserDelegate {
 
         note.midi = 12 * (pendingOctave + 1) + semitone + pendingAlter
         note.duration = pendingDuration
+        note.measureStart = currentMeasureStart
         note.tieStart = pendingTieStart
         note.tieStop = pendingTieStop
+        note.glissando = pendingGlissando
+        note.fingering = pendingFingering
 
         if currentPartIndex >= 0, currentPartIndex < parts.count {
             parts[currentPartIndex].notes.append(note)

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Cœur déterministe (sans IA) du pipeline OMR d'OpenCello — voir docs/16-omr-local.md.
+"""Cœur déterministe (sans IA) du pipeline OMR d'OpenCello — voir docs/18-omr-local.md.
 
 Trois responsabilités :
 1. conversion score JSON (sortie des modèles, schéma contraint `omr_schema.json`)
@@ -150,7 +150,7 @@ def validate_document(doc):
                 errors.append(_err("erreur", "E_TIME_SIGNATURE", pname, num,
                                    "Signature de temps inconnue pour cette mesure."))
             for event in m.get("events", []):
-                if not event.get("notes"):
+                if not event.get("notes") and not event.get("backup"):
                     errors.append(_err("erreur", "E_EVENT_EMPTY", pname, num,
                                        "Événement sans note."))
                 for note in event.get("notes", []):
@@ -180,10 +180,13 @@ def validate_document(doc):
                     else:
                         errors.append(_err("erreur", "E_TIE", pname, num,
                                            f"Fin de liaison sans début correspondant ({token})."))
-            # Sommes de durées par voix
+            # Sommes de durées par voix (les événements `backup` sont du
+            # repérage d'Audiveris : navigation du curseur, pas de contenu)
             if current_sig:
                 voices = {}
                 for event in m.get("events", []):
+                    if event.get("backup"):
+                        continue
                     voices.setdefault(event.get("voice", 1), 0.0)
                     voices[event.get("voice", 1)] += event.get("duration_beats", 0)
                 for voice, total in sorted(voices.items()):
@@ -357,10 +360,14 @@ def score_to_musicxml(doc, keep_grace=False):
             if tempo and pi == 1 and measure is part["measures"][0]:
                 ET.SubElement(m, "sound", {"tempo": str(int(tempo))})
 
-            # Événements, regroupés par voix (backup/forward entre voix)
+            # Événements, regroupés par voix (backup/forward entre voix) ;
+            # les événements `backup` du parseur retour sont des artefacts de
+            # navigation et ne transcendent jamais en contenu sonore.
             voices = {}
             order = []
             for ev in measure.get("events", []):
+                if ev.get("backup"):
+                    continue
                 v = ev.get("voice", 1)
                 if v not in voices:
                     voices[v] = []
@@ -368,7 +375,7 @@ def score_to_musicxml(doc, keep_grace=False):
                 voices[v].append(ev)
             prev_voice_total = 0
             for vi, voice in enumerate(sorted(order)):
-                if vi > 0:
+                if vi > 0 and prev_voice_total > 0:
                     backup = ET.SubElement(m, "backup")
                     ET.SubElement(backup, "duration").text = str(prev_voice_total)
                 for ev in voices[voice]:
@@ -415,7 +422,7 @@ def score_to_musicxml(doc, keep_grace=False):
                     right = bl
                 return bl
 
-            if measure.get("segno") or (measure.get("coda") and not measure.get("fine")):
+            if measure.get("segno") or measure.get("coda"):
                 bl = barline("left")
                 if measure.get("segno"):
                     ET.SubElement(bl, "segno")
@@ -505,7 +512,6 @@ def musicxml_to_document(xml_text):
                         if t is not None:
                             measure["time_beats"] = int(t.find("beats").text)
                             measure["time_beat_type"] = int(t.find("beat-type").text)
-                            current_time = measure["time_beats"]
                     elif el.tag == "barline":
                         if el.get("location") == "left":
                             if el.find("repeat") is not None and el.find("repeat").get("direction") == "forward":
@@ -534,7 +540,12 @@ def musicxml_to_document(xml_text):
                         if el.get("dalsegno"):
                             measure["ds_al_coda"] = el.get("tocoda") == "yes"
                     elif el.tag == "note":
-                        ev = {"notes": [], "duration_beats": 0.0}
+                        is_chord = el.find("chord") is not None
+                        if is_chord and measure["events"] and not measure["events"][-1].get("backup"):
+                            ev = measure["events"][-1]
+                        else:
+                            ev = {"notes": [], "duration_beats": 0.0}
+                            measure["events"].append(ev)
                         is_rest = el.find("rest") is not None
                         pitch = el.find("pitch")
                         note = {"is_rest": is_rest}
@@ -553,11 +564,10 @@ def musicxml_to_document(xml_text):
                         tie = el.find("tie")
                         if tie is not None:
                             ev["tie_" + tie.get("type")] = True
-                        measure["events"].append(ev)
                     elif el.tag == "backup":
                         dur = el.find("duration")
                         if dur is not None:
-                            ev = {"notes": [{"is_rest": True}], "duration_beats": -round(int(dur.text) / divisions, 4)}
+                            ev = {"notes": [], "duration_beats": -round(int(dur.text) / divisions, 4)}
                             ev["backup"] = True
                             measure["events"].append(ev)
         if part["measures"]:

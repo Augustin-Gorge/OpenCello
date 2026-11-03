@@ -42,6 +42,7 @@ Les participants utilisent leur propre matériel et leur propre violoncelle. Auc
 ## 5. Anonymisation
 
 - L'export « étude » (`Rapports/etude_anonyme_*.json`) supprime identifiants, dates et titres de morceaux.
+- Les agrégats v1.1 (angle de main, taux de détection, secondes par règle A17-A20, nombre de notes situées, déplacements, justesse d'arrivée, régularité du piqué, glissés parasites) sont exportés **sans les notes ni les titres**.
 - Les participants sont identifiés par un code (P01, P02…) conservé séparément.
 - Les fichiers sont stockés localement puis transmis par un canal convenu avec le chercheur.
 

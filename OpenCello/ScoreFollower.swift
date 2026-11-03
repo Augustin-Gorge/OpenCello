@@ -9,6 +9,9 @@ struct FollowFeedback {
     var cents: Double?
     var rhythmMs: Double?
     var measure: Int?
+    var beat: Double?
+    var expectedDurationBeats: Double?
+    var expectedGlissando = false
     var progress: Double = 0
     var message = ""
     var isInTune = false
@@ -73,6 +76,26 @@ final class ScoreFollower {
 
     var noteCount: Int { notes.count }
 
+    func note(at index: Int) -> ScoreNote? {
+        guard notes.indices.contains(index) else { return nil }
+        return notes[index]
+    }
+
+    func notes(around index: Int, radius: Int = 2) -> [ScoreNote] {
+        let lower = max(0, index - radius)
+        let upper = min(notes.count - 1, index + radius)
+        guard lower <= upper else { return [] }
+        return Array(notes[lower...upper])
+    }
+
+    /// Notes voisines avec leur index d'origine (pour les replays).
+    func indexedNotes(around index: Int, radius: Int = 4) -> [(index: Int, note: ScoreNote)] {
+        let lower = max(0, index - radius)
+        let upper = min(notes.count - 1, index + radius)
+        guard lower <= upper else { return [] }
+        return (lower...upper).map { ($0, notes[$0]) }
+    }
+
     func process(midi: Double, onset: TimeInterval) -> FollowFeedback {
         var feedback = FollowFeedback()
         feedback.detectedName = NoteNamer.name(forMidi: Int(midi.rounded()))
@@ -118,6 +141,9 @@ final class ScoreFollower {
         feedback.expectedName = NoteNamer.name(forMidi: expected.midi)
         feedback.cents = cents
         feedback.measure = expected.measureIndex
+        feedback.beat = max(1, expected.onsetBeats - expected.measureStartBeats + 1)
+        feedback.expectedDurationBeats = expected.durationBeats
+        feedback.expectedGlissando = expected.glissando
         feedback.isInTune = abs(cents) <= 25
 
         if anchorActual == nil {

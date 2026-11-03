@@ -86,6 +86,12 @@ enum ReportExporter {
 
         \(postureLines.isEmpty ? "Aucune alerte posture enregistrée." : postureLines)
 
+        \(handLines(record))
+
+        \(positionLines(record))
+
+        \(techniqueLines(record))
+
         ## Points à travailler
 
         - [ ] À compléter avec le professeur.
@@ -129,6 +135,15 @@ enum ReportExporter {
             let bowGoodAngleRatio: Double?
             let bowGoodZoneRatio: Double?
             let piece: AnonymizedPiece?
+            // v1.1 : agrégats seulement, aucune note ni titre de morceau.
+            let handMeanAngleDegrees: Double?
+            let handDetectionRate: Double?
+            let handRuleSeconds: [String: Double]
+            let positionSampleCount: Int
+            let shiftCount: Int
+            let meanShiftArrivalCents: Double?
+            let piqueRegularity: Double?
+            let parasiteGlides: Int
         }
 
         let anonymized: [AnonymizedRecord] = records.map { record in
@@ -157,7 +172,17 @@ enum ReportExporter {
                         meanAbsRhythmMs: $0.meanAbsRhythmMs,
                         outOfScore: $0.outOfScore
                     )
-                }
+                },
+                handMeanAngleDegrees: record.hand?.meanAngleDegrees,
+                handDetectionRate: record.hand?.detectionRate,
+                handRuleSeconds: Dictionary(
+                    uniqueKeysWithValues: (record.hand?.rules ?? []).map { ($0.ruleID, $0.seconds) }
+                ),
+                positionSampleCount: record.positionStats?.samples.count ?? 0,
+                shiftCount: record.positionStats?.shiftCount ?? 0,
+                meanShiftArrivalCents: record.positionStats?.meanArrivalCents,
+                piqueRegularity: record.technique?.piqueRegularity,
+                parasiteGlides: record.technique?.parasiteGlides ?? 0
             )
         }
 
@@ -173,6 +198,70 @@ enum ReportExporter {
         } catch {
             return nil
         }
+    }
+
+    private static func handLines(_ record: SessionRecord) -> String {
+        guard let hand = record.hand, hand.frames > 0 else {
+            return "## Main gauche\n\nAucune donnée main gauche (caméra indisponible ou main non détectée)."
+        }
+        var lines = ["## Main gauche", ""]
+        if let rate = hand.detectionRate {
+            lines.append("- Main détectée : \(Int(rate * 100)) % des frames")
+        }
+        if let angle = hand.meanAngleDegrees {
+            lines.append(String(format: "- Angle main/avant-bras : %.0f° (max %.0f°)", angle, hand.maxAngleDegrees ?? angle))
+        }
+        if let ratio = hand.thumbHypothesisRatio, ratio > 0 {
+            lines.append(String(format: "- Pouce crispé (hypothèse, A18) : %.0f %% des frames", ratio * 100))
+        }
+        for rule in hand.rules where rule.seconds > 1 || rule.occurrences > 0 {
+            let confidence = rule.confidence != nil && !rule.title.lowercased().contains("hypothèse")
+                ? " (\(rule.confidence!))"
+                : ""
+            lines.append(String(format: "- %@ : %.0f s, %d occurrence(s)%@", rule.title, rule.seconds, rule.occurrences, confidence))
+        }
+        return lines.joined(separator: "\n")
+    }
+
+    private static func positionLines(_ record: SessionRecord) -> String {
+        guard let stats = record.positionStats, !stats.samples.isEmpty else {
+            return "## Positions et déplacements\n\nAucune position estimée sur cette séance."
+        }
+        var lines = ["## Positions et déplacements", ""]
+        lines.append("- Notes situées : \(stats.samples.filter { $0.position != nil }.count)/\(stats.samples.count)")
+        lines.append("- Déplacements : \(stats.shiftCount)")
+        if let arrival = stats.meanArrivalCents {
+            lines.append(String(format: "- Justesse d'arrivée moyenne : %+.0f cents", arrival))
+        }
+        if let duration = stats.meanShiftDurationMs {
+            lines.append(String(format: "- Durée moyenne de transition : %.0f ms", duration))
+        }
+        lines.append("- Glissés parasites : \(stats.parasiteGlides) · volontaires : \(stats.voluntaryGlides)")
+        for aggregate in PositionAnalysis.aggregates(from: stats.samples).prefix(5) {
+            let slope = aggregate.meanGlideSlope.map { String(format: ", pente %.0f cents/s", $0) } ?? ""
+            let parasites = aggregate.parasiteRatio.map { String(format: ", parasites %.0f %%", $0 * 100) } ?? ""
+            lines.append(String(format: "- %@ : %d note(s), écart moyen %.0f cents%@%@", aggregate.label, aggregate.count, aggregate.meanAbsCents, slope, parasites))
+        }
+        return lines.joined(separator: "\n")
+    }
+
+    private static func techniqueLines(_ record: SessionRecord) -> String {
+        guard let technique = record.technique else {
+            return "## Techniques particulières\n\nAucune technique particulière détectée."
+        }
+        var lines = ["## Techniques particulières", ""]
+        if technique.piqueNotes > 0 {
+            lines.append("- Piqué : \(technique.piqueNotes) notes, \(technique.piqueUnevenRuns) série(s) inégale(s)")
+            if let regularity = technique.piqueRegularity {
+                lines.append(String(format: "- Régularité des durées : %.0f %%", regularity * 100))
+            }
+        }
+        if technique.glideShifts > 0 {
+            lines.append(String(format: "- Glissés : %d déplacement(s), %.0f ms en moyenne, pente %.0f cents/s",
+                                technique.glideShifts, technique.meanGlideMs ?? 0, technique.meanGlideSlope ?? 0))
+            lines.append("- Volontaires : \(technique.voluntaryGlides) · parasites : \(technique.parasiteGlides)")
+        }
+        return lines.joined(separator: "\n")
     }
 
     static func openFolder() {
@@ -256,6 +345,82 @@ struct ReportPDFView: View {
                             Int(Double(bow.goodZone) / Double(bow.frames) * 100),
                             bow.frames))
                     .font(.system(size: 12))
+            }
+
+            if let hand = record.hand, hand.frames > 0 {
+                Text("Main gauche")
+                    .font(.system(size: 16, weight: .semibold))
+                if let rate = hand.detectionRate {
+                    Text("Main détectée sur \(Int(rate * 100)) % des frames · \(hand.validFrames) frames exploitables")
+                        .font(.system(size: 12))
+                }
+                if let angle = hand.meanAngleDegrees {
+                    Text(String(format: "Angle main/avant-bras : %.0f° en moyenne (max %.0f°)",
+                                angle, hand.maxAngleDegrees ?? angle))
+                        .font(.system(size: 12))
+                }
+                if let ratio = hand.thumbHypothesisRatio, ratio > 0 {
+                    Text(String(format: "Pouce crispé (hypothèse, A18) : %.0f %% des frames", ratio * 100))
+                        .font(.system(size: 12))
+                        .foregroundColor(.orange)
+                }
+                ForEach(hand.rules.filter { $0.seconds > 1 || $0.occurrences > 0 }) { rule in
+                    let confidence = rule.confidence != nil && !rule.title.lowercased().contains("hypothèse")
+                        ? " (\(rule.confidence!))"
+                        : ""
+                    Text(String(format: "%@ : %.0f s · %d occurrence(s)%@",
+                                rule.title, rule.seconds, rule.occurrences, confidence))
+                        .font(.system(size: 11))
+                        .foregroundColor(.gray)
+                }
+            }
+
+            if let stats = record.positionStats, !stats.samples.isEmpty {
+                Text("Positions et déplacements")
+                    .font(.system(size: 16, weight: .semibold))
+                Text("Notes situées : \(stats.samples.filter { $0.position != nil }.count)/\(stats.samples.count) · déplacements : \(stats.shiftCount)")
+                    .font(.system(size: 12))
+                Text(String(format: "Arrivée moyenne : %@ · transition moyenne : %@ · glissés parasites : %d",
+                            stats.meanArrivalCents.map { String(format: "%+.0f cents", $0) } ?? "—",
+                            stats.meanShiftDurationMs.map { String(format: "%.0f ms", $0) } ?? "—",
+                            stats.parasiteGlides))
+                    .font(.system(size: 12))
+                ForEach(PositionAnalysis.aggregates(from: stats.samples).prefix(5)) { aggregate in
+                    Text(String(format: "%@ : %d note(s), écart moyen %.0f cents%@%@",
+                                aggregate.label, aggregate.count, aggregate.meanAbsCents,
+                                aggregate.meanGlideSlope.map { String(format: ", pente %.0f c/s", $0) } ?? "",
+                                aggregate.parasiteRatio.map { String(format: ", parasites %.0f %%", $0 * 100) } ?? ""))
+                        .font(.system(size: 11))
+                        .foregroundColor(.gray)
+                }
+            }
+
+            if let technique = record.technique,
+               technique.piqueNotes > 0 || technique.glideShifts > 0 {
+                Text("Techniques particulières")
+                    .font(.system(size: 16, weight: .semibold))
+                if technique.piqueNotes > 0 {
+                    Text("Piqué : \(technique.piqueNotes) notes · \(technique.piqueUnevenRuns) série(s) inégale(s)")
+                        .font(.system(size: 12))
+                }
+                if technique.glideShifts > 0 {
+                    Text(String(format: "Glissés : %d déplacement(s), %.0f ms en moyenne · pente %.0f cents/s · volontaires %d · parasites %d",
+                                technique.glideShifts, technique.meanGlideMs ?? 0, technique.meanGlideSlope ?? 0,
+                                technique.voluntaryGlides, technique.parasiteGlides))
+                        .font(.system(size: 12))
+                }
+            }
+
+            if let replays = record.replayMoments, !replays.isEmpty {
+                Text("Replays pédagogiques")
+                    .font(.system(size: 16, weight: .semibold))
+                ForEach(replays) { moment in
+                    Text("\(moment.title) — \(moment.detail)")
+                        .font(.system(size: 11))
+                    Text(moment.advice)
+                        .font(.system(size: 10))
+                        .foregroundColor(.gray)
+                }
             }
 
             Divider()

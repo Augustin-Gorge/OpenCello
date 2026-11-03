@@ -1,0 +1,15 @@
+{
+  "originHash" : "81809893f8b3f8ad3dba3b336c63b148c0881267019015ff319c1d06ab4f3853",
+  "pins" : [
+    {
+      "identity" : "liveline-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ParthJadhav/liveline-swift",
+      "state" : {
+        "revision" : "2b57a29bc13d9acb7029f12caa29d6d7ccfda80f",
+        "version" : "0.7.0"
+      }
+    }
+  ],
+  "version" : 3
+}

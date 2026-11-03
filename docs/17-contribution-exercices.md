@@ -1,6 +1,6 @@
 # 17 — Contribuer des exercices
 
-Le catalogue intégré contient 25 fiches. La communauté peut en proposer d'autres.
+Le catalogue intégré contient 29 fiches. La communauté peut en proposer d'autres.
 
 ## 1. Schéma d'une fiche
 

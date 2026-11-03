@@ -2,7 +2,7 @@
 """Génère un PDF minimal (une page A4 avec une fausse portée) sans dépendance externe.
 
 Sert uniquement de fixture pour tester le chemin de rendu (pdf_render.swift)
-du pipeline OMR — voir docs/16-omr-local.md.
+du pipeline OMR — voir docs/18-omr-local.md.
 """
 
 import sys

@@ -10,10 +10,13 @@ enum StatsKit {
         return vDSP.mean(values)
     }
 
-    /// Écart-type (vDSP).
+    /// Écart-type (vDSP), échantillon (n−1).
     static func standardDeviation(_ values: [Double]) -> Double? {
         guard values.count > 1 else { return nil }
-        return vDSP.standardDeviation(values)
+        let mean = vDSP.mean(values)
+        let deviations = values.map { $0 - mean }
+        let variance = vDSP.sum(vDSP.multiply(deviations, deviations)) / Double(values.count - 1)
+        return variance.squareRoot()
     }
 
     /// Médiane (tri local ; vDSP n'expose pas de tri).
@@ -28,22 +31,23 @@ enum StatsKit {
         guard x.count == y.count, x.count > 1 else { return nil }
         let meanX = vDSP.mean(x)
         let meanY = vDSP.mean(y)
-        let dx = vDSP.subtract(x, meanX)
-        let dy = vDSP.subtract(y, meanY)
+        let dx = x.map { $0 - meanX }
+        let dy = y.map { $0 - meanY }
         let numerator = vDSP.dot(dx, dy)
         let denominator = vDSP.dot(dx, dx)
         guard denominator > 0 else { return nil }
         return numerator / denominator
     }
 
-    /// Moyenne glissante (vDSP `windowedSum`), bords répliqués, fenêtre impaire recommandée.
+    /// Moyenne glissante (vDSP_vswsumD), bords répliqués, fenêtre impaire recommandée.
     static func movingAverage(_ values: [Double], window: Int) -> [Double] {
         guard window > 1, values.count >= window else { return values }
         let pad = window / 2
         let padded = Array(repeating: values.first ?? 0, count: pad)
             + values
             + Array(repeating: values.last ?? 0, count: pad)
-        let sums = vDSP.windowedSum(padded, usingWindowSize: window)
+        var sums = [Double](repeating: 0, count: values.count)
+        vDSP_vswsumD(padded, 1, &sums, 1, vDSP_Length(values.count), vDSP_Length(window))
         return sums.map { $0 / Double(window) }
     }
 

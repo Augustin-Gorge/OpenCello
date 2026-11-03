@@ -1,5 +1,5 @@
 {
-  "_doc": "Schémas JSON de sortie contrainte (constrained decoding) pour le pipeline OMR local d'OpenCello. Voir docs/16-omr-local.md. Règle : rester dans le sous-ensemble supporté par le moteur de grammaire d'Ollama (pas de $ref, $defs, oneOf, anyOf, union de types, pattern) — tout est inliné. Les champs optionnels sont simplement absents. Les durées sont en temps (noires), quantifiées ensuite en divisions (1/48) par omr_json_to_musicxml.py.",
+  "_doc": "Schémas JSON de sortie contrainte (constrained decoding) pour le pipeline OMR local d'OpenCello. Voir docs/18-omr-local.md. Règle : rester dans le sous-ensemble supporté par le moteur de grammaire d'Ollama (pas de $ref, $defs, oneOf, anyOf, union de types, pattern) — tout est inliné. Les champs optionnels sont simplement absents. Les durées sont en temps (noires), quantifiées ensuite en divisions (1/48) par omr_json_to_musicxml.py.",
   "page_transcription": {
     "title": "PageTranscription",
     "type": "object",

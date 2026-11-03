@@ -20,8 +20,8 @@ Une application qui se comporte comme un **assistant de travail quotidien**, ins
 
 | Entrée | Analyse | Sortie |
 |---|---|---|
-| Caméra (webcam/iPhone en continuité) | Posture : tête, épaules, dos, bras, poignet, archet, cordes | Alertes légères en temps réel |
-| Micro | Son : intonation, stabilité, timbre, attaques, régularité d'archet | Rapport de session détaillé |
+| Caméra (webcam/iPhone en continuité) | Posture : tête, épaules, dos, bras, poignet, archet, cordes, main gauche (angle, pouce, doigts, positions) | Alertes légères en temps réel |
+| Micro | Son : intonation, stabilité, timbre, attaques, régularité d'archet, déplacements, glissé, piqué | Rapport de session détaillé |
 | Historique | Tendances entre séances | **Exercices recommandés**, objectifs mesurables |
 
 L'application est l'**équivalent open source** des coachs vidéo type *Cellopedia* / *CelloCoach* (studio.com), en ajoutant ce qui manque à ces derniers : l'analyse **automatique, objective et chiffrée** de la posture et du son.
@@ -47,8 +47,12 @@ L'application est l'**équivalent open source** des coachs vidéo type *Celloped
 
 ### Versions suivantes
 - Détection **archet/cordes** par détection d'objets (YOLO-OBB exporté en Core ML, comme le système Purdue) : zone de contact, perpendicularité.
-- **Classification d'articulations** (détaché, legato, martelé, spiccato, staccato, bariolage — approche Dalmazzo & Ramírez), capteurs IMU (Apple Watch).
+- **Classification d'articulations** (détaché, legato, martelé, spiccato, staccato, piqué, bariolage — approche Dalmazzo & Ramírez), capteurs IMU (Apple Watch).
 - Métriques de timbre complètes (raucité : Triratio, HNR, asynchronie harmonique — Rozé et al.), vibrato.
+- **Main gauche** : angle de la main, position du pouce, souplesse des doigts (Vision Hands).
+- **Positions et déplacements chiffrés** : numéro de position, vitesse de déplacement, justesse d'arrivée par doigt et par direction — ex. « ton 2e doigt est faux quand tu redescends de la 4e vers la 3e position » ; en mode morceau, **chaque note jouée reçoit une position et un doigt mesurés par le moteur visuel** (fusion caméra + son, `docs/13` §7).
+- **Techniques particulières suivies dans le profil** : piqué, glissé (en plus du vibrato et des articulations), avec tendance sur plusieurs séances.
+- **Replay pédagogique** : l'app cite le moment exact (mesure, temps, note), montre la partition, montre ce que le musicien a fait et fait entendre ce que ça devrait donner.
 - Mode professeur/élève, exports PDF/JSON, bibliothèque de morceaux.
 
 ## 5. Non-objectifs (pour rester « simple »)

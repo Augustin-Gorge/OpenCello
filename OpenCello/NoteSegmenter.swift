@@ -19,6 +19,13 @@ struct NoteEvent {
     let vibratoRate: Double?
     let vibratoExtent: Double?
 
+    // Phase 7 : glissé/portamento et contour de cents (replay pédagogique).
+    var attackGlideCents: Double? = nil
+    var releaseGlideCents: Double? = nil
+    var glideDuration: Double? = nil
+    var glideSlope: Double? = nil
+    var centsContour: [Double] = []
+
     var duration: TimeInterval { max(0, endTime - startTime) }
 }
 
@@ -168,7 +175,13 @@ final class NoteSegmenter {
             timestamps: segment.times
         )
 
-        return NoteEvent(
+        let glide = GlideDetector.analyzeSegment(midis: segment.midis, times: segment.times)
+        let glideDuration = max(glide.attack?.duration ?? 0, glide.release?.duration ?? 0)
+        let glideSlope = (glide.attack?.duration ?? 0) >= (glide.release?.duration ?? 0)
+            ? glide.attack?.slope
+            : glide.release?.slope
+
+        var event = NoteEvent(
             startTime: segment.startTime,
             endTime: segment.lastTime,
             midi: medianMidi,
@@ -187,6 +200,30 @@ final class NoteSegmenter {
             vibratoRate: vibrato?.rate,
             vibratoExtent: vibrato?.extent
         )
+        event.attackGlideCents = glide.attack?.cents
+        event.releaseGlideCents = glide.release?.cents
+        event.glideDuration = glideDuration > 0 ? glideDuration : nil
+        event.glideSlope = glideDuration > 0 ? glideSlope : nil
+        event.centsContour = Self.contour(segment.midis, reference: medianMidi)
+        return event
+    }
+
+    /// Réduit le contour de hauteur à 8 points (cents relatifs à la note
+    /// médiane) pour un replay léger, sans stocker l'audio.
+    private static func contour(_ midis: [Double], reference: Double) -> [Double] {
+        guard !midis.isEmpty else { return [] }
+        let maxPoints = 8
+        guard midis.count > maxPoints else {
+            return midis.map { ($0 - reference) * 100 }
+        }
+        return (0..<maxPoints).map { index in
+            let position = Double(index) * Double(midis.count - 1) / Double(maxPoints - 1)
+            let lower = Int(position.rounded(.down))
+            let upper = min(midis.count - 1, lower + 1)
+            let fraction = position - Double(lower)
+            let value = midis[lower] * (1 - fraction) + midis[upper] * fraction
+            return (value - reference) * 100
+        }
     }
 
     private func mean(_ values: [Double]) -> Double {

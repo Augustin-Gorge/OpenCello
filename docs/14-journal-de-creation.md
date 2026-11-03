@@ -663,7 +663,7 @@ OpenCello/
 **Fait** :
 - **Doubles cordes / accords** : le MusicXML groupait déjà les `<chord>` au même onset ; `ScoreFollower` calcule maintenant la taille du groupe et renvoie `chordSize`. Le feedback affiche explicitement « Accord de N notes : une seule note mesurée (double corde non séparée) ». L'audio reste **monophonique** (YIN/NoteSegmenter) : l'app ne mesure pas les deux hauteurs simultanément, ne prétend pas le faire, et le total de notes de l'accord reste visible dans les stats.
 - **Pizzicato** : ajout de `Articulation.pizzicato`, heuristique audio (attaque < 25 ms, décroissance rapide, durée 0,3-1,8 s, variation RMS, gap), parsing MusicXML `<pizzicato/>` et `<other-play>pizz.</other-play>`, durée courte dans le replay et **programme General MIDI 45 (Pizzicato Strings)** sur le canal de la note. Le feedback live peut donc afficher « Pizzicato ».
-- **Test 3/4 gauche** : `data/Vidéo 3:4 gauche.mov`, 108 s, 1280×720, 1623 frames à 15 fps. Résultats : corps **100 %**, mains **98,8 %**, angle valide **93 %** (moyenne 17,4°, max 75°). Mais doigt presseur 4 sur **82 %** des frames et pouce surestimé (53,7 %) : le cadrage est excellent, **l'heuristique de doigt est le verrou**. L'annotation manuelle de quelques frames est nécessaire pour la recalibrer.
+- **Test 3/4 gauche** : `data/Vidéo 3:4 gauche.mov`, 108 s, 1280×720, 1623 frames à 15 fps. Résultats : corps **100 %**, mains **98,8 %**, angle valide **93 %** (moyenne 17,4°, max 75°). L'ancienne heuristique (point le plus bas) donnait le 4e doigt 82 % ; la nouvelle choisit le doigt **le plus engagé vers la touche** (point le plus haut) : 1er doigt 1336, 2e 201, 3e 20, 4e 46, pouce 0,7 %. Le pouce n'est plus sur-détecté. Le 1er doigt domine, à confirmer sur une prise multi-positions.
 **Fichiers** : `Articulation.swift`, `MusicXMLParser.swift`, `ScoreFollower.swift`, `ReplayKit.swift`, `tools/qa/phase5_main.swift`, `tools/qa/phase7_main.swift`, `docs/04`, `docs/13`, `docs/19`, `docs/14`.
 **Tests** :
 - `xcodebuild … build` → **BUILD SUCCEEDED**, 0 warning Swift.
@@ -673,7 +673,7 @@ OpenCello/
 **Limites / risques** :
 - Les doubles cordes ne sont **pas** vraiment analysées : une seule F0 ; la seconde note n'est pas contrôlée. Il faudra une détection multi-pitch (pics spectraux/annulation harmonique) et un suivi d'accord.
 - Le pizzicato est une **heuristique** ; il peut être confondu avec un staccato/spiccato très court. L'analyse d'archet n'a pas de sens pendant un pizz : ne pas interpréter « archet non détecté » comme une erreur.
-- Le doigt presseur caméra reste faux sur la prise 3/4 (4e doigt surreprésenté) ; la position exacte dépend encore du `<fingering>` MusicXML ou d'une future calibration.
+- Le doigt presseur caméra est maintenant cohérent avec le doigt visiblement engagé (1er/2e), mais reste une heuristique ; la position exacte dépend encore du `<fingering>` MusicXML pour une certitude.
 **Suite** : annoter 20-30 frames de la prise 3/4 (doigt/position réels) et recalibrer le classifieur ; ajouter multi-pitch + accords ; détection pizzicato dédiée main droite.
 
 ---

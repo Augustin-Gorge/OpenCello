@@ -157,11 +157,13 @@ avant-gauche** est le cadrage de référence ; le face sert de baseline « usage
 réel », le profil/top de contrôle.
 
 La prise **3/4 gauche** (108 s, 1280×720) confirme le cadrage : **100 %** de
-corps, **98,8 %** de mains, **93 %** d'angle valide (moyenne 17,4°). Mais le
-doigt presseur reste bloqué sur le **4e doigt** (82 % des frames) et le pouce
-est sur-détecté : le cadrage est bon, **l'heuristique de doigt est le verrou**
-à corriger avant de valider la position exacte. Une annotation manuelle de
-20-30 frames (doigt et position réels) est nécessaire pour calibrer ce classifieur.
+corps, **98,8 %** de mains, **93 %** d'angle valide (moyenne 17,4°). L'ancienne
+heuristique (point le plus bas) bloquait sur le 4e doigt ; la nouvelle choisit
+le doigt **le plus engagé vers la touche** (point le plus haut dans cette vue) :
+1er doigt 1336 frames, 2e 201, 3e 20, 4e 46, pouce 0,7 %. Le pouce n'est plus
+sur-détecté. Le 1er doigt domine, ce qui reste à confirmer sur une prise
+contenant plusieurs positions ; une annotation de 20-30 frames reste utile
+pour mesurer l'exactitude, pas pour « voir » le doigt.
 
 ## 9. Ce qui reste à faire
 

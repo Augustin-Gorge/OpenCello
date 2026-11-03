@@ -150,17 +150,17 @@ final class LeftHandAnalyzer {
         }
         metrics.fingerSpeedP90 = percentile(speedHistory, 0.90)
 
-        let presser = presserFinger(hand, handSpan: handSpan)
+        let position = positionHint(body: body, handWrist: wrist)
+        metrics.positionHint = position.position
+        metrics.positionHintConfidence = position.confidence
+
+        let presser = presserFinger(hand, handSpan: handSpan, positionHint: position.position)
         metrics.presserFinger = presser.finger
         metrics.presserConfidence = presser.confidence
 
         let thumb = thumbHypothesis(hand, handSpan: handSpan, metrics: metrics)
         metrics.thumbHypothesis = thumb.flagged
         metrics.thumbConfidence = thumb.confidence
-
-        let position = positionHint(body: body, handWrist: wrist)
-        metrics.positionHint = position.position
-        metrics.positionHintConfidence = position.confidence
 
         metrics.flags["A17"] = metrics.valid && (metrics.handAngleDegrees ?? 0) > thresholds.handAngleLimit
         metrics.flags["A18"] = metrics.valid && metrics.thumbHypothesis
@@ -242,7 +242,11 @@ final class LeftHandAnalyzer {
 
     /// Le doigt presseur est le bout le plus bas dans l'image (le plus proche
     /// du plan des cordes), avec une confiance liée à l'écart avec le suivant.
-    private func presserFinger(_ hand: HandFrame, handSpan: Double) -> (finger: Int?, confidence: Double) {
+    private func presserFinger(
+        _ hand: HandFrame,
+        handSpan: Double,
+        positionHint: Int?
+    ) -> (finger: Int?, confidence: Double) {
         let candidates: [(finger: Int, point: CGPoint)] = fingerTips.compactMap { item in
             guard let point = hand.point(item.joint) else { return nil }
             return (item.finger, point)
@@ -250,18 +254,22 @@ final class LeftHandAnalyzer {
         guard candidates.count >= 2 else {
             return (candidates.first?.finger, candidates.isEmpty ? 0 : 0.25)
         }
-        let sorted = candidates.sorted { $0.point.y < $1.point.y }
-        if let thumb = hand.point(.thumbTip),
-           let lowest = sorted.first?.point,
+        // Le doigt qui appuie est celui qui s'étend le plus loin vers la
+        // touche : dans une vue 3/4, c'est le point le plus haut de la main,
+        // pas le plus bas (le 4e doigt est court et tombait toujours en bas).
+        let sorted = candidates.sorted { $0.point.y > $1.point.y }
+        if let hint = positionHint, hint >= 6,
+           let thumb = hand.point(.thumbTip),
+           let lowest = sorted.last?.point,
            thumb.y < lowest.y - handSpan * 0.08 {
-            // En position du pouce, le pouce est posé sur la corde, souvent
-            // plus bas que les doigts : il devient le doigt presseur (5).
+            // Pouce en position haute : il est posé sur la corde, sous les
+            // doigts ; on ne l'accepte que si la main est déjà haut.
             let gap = lowest.y - thumb.y
-            let confidence = min(0.9, max(0.35, gap / max(0.01, handSpan * 0.25)))
+            let confidence = min(0.85, max(0.30, gap / max(0.01, handSpan * 0.25)))
             return (5, confidence)
         }
-        let gap = abs(sorted[1].point.y - sorted[0].point.y)
-        let confidence = min(0.9, max(0.2, gap / max(0.01, handSpan * 0.35)))
+        let gap = abs(sorted[0].point.y - sorted[1].point.y)
+        let confidence = min(0.85, max(0.20, gap / max(0.01, handSpan * 0.35)))
         return (sorted[0].finger, confidence)
     }
 
@@ -276,7 +284,8 @@ final class LeftHandAnalyzer {
         let pinchedThumb = ratio < 0.30
         let stiff = (metrics.fingerSpeedP90 ?? 0) < 0.35
         let broken = (metrics.handAngleDegrees ?? 0) > thresholds.handAngleLimit
-        let flagged = farThumb || pinchedThumb || (broken && stiff)
+        let highPosition = (metrics.positionHint ?? 0) >= 6
+        let flagged = highPosition && (farThumb || pinchedThumb || (broken && stiff))
         let confidence: Double
         if farThumb || pinchedThumb {
             confidence = min(0.65, 0.35 + abs(ratio - 0.6) * 0.4)

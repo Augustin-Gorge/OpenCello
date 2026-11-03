@@ -1,6 +1,7 @@
 import SwiftUI
 import Charts
 import AppKit
+import AVKit
 import Liveline
 
 /// Rapport de séance dans l'app, façon « page de statistiques de joueur » (HLTV) :
@@ -10,6 +11,7 @@ struct ReportView: View {
     @EnvironmentObject private var engine: SessionEngine
     @State private var exportMessage: String?
     @State private var replayMoment: ReplayMoment?
+    @State private var videoToPlay: URL?
     let record: SessionRecord
 
     private var previous: SessionRecord? {
@@ -76,6 +78,23 @@ struct ReportView: View {
         }
         .sheet(item: $replayMoment) { moment in
             ReplayView(moment: moment)
+        }
+        .sheet(isPresented: Binding(
+            get: { videoToPlay != nil },
+            set: { if !$0 { videoToPlay = nil } }
+        )) {
+            if let url = videoToPlay {
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text("Vidéo de la séance").font(.headline)
+                        Spacer()
+                        Button("Fermer") { videoToPlay = nil }
+                    }
+                    VideoPlayer(player: AVPlayer(url: url))
+                        .frame(minWidth: 720, minHeight: 460)
+                }
+                .padding(16)
+            }
         }
     }
 
@@ -610,12 +629,20 @@ struct ReportView: View {
             Text(URL(fileURLWithPath: path).lastPathComponent)
                 .font(.caption)
                 .foregroundStyle(.secondary)
-            Button {
-                NSWorkspace.shared.open(URL(fileURLWithPath: path))
-            } label: {
-                Label("Ouvrir la vidéo", systemImage: "play.rectangle")
+            HStack {
+                Button {
+                    videoToPlay = URL(fileURLWithPath: path)
+                } label: {
+                    Label("Lire dans l'app", systemImage: "play.rectangle")
+                }
+                .buttonStyle(.borderedProminent)
+                Button {
+                    NSWorkspace.shared.open(URL(fileURLWithPath: path))
+                } label: {
+                    Label("Ouvrir dans le lecteur", systemImage: "arrow.up.right.square")
+                }
+                .buttonStyle(.bordered)
             }
-            .buttonStyle(.bordered)
             Text("Enregistrement local opt-in — aucune vidéo n'est envoyée.")
                 .font(.caption2)
                 .foregroundStyle(.secondary)

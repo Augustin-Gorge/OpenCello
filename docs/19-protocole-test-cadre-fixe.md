@@ -16,8 +16,15 @@ utilisateur complet : il isole la chaîne caméra → main gauche → position.
 
 - Caméra : webcam 1280×720 minimum, **sur trépied**, objectif à hauteur du
   clavier/chest, distance **1,5-2 m**, cadrage **paysage**.
+- **Angle recommandé : 3/4 avant-gauche (20-35°)**, pas plein face ni plein
+  profil. Le plein face détecte bien le corps mais le violoncelle masque la
+  main gauche ; le plein profil déforme l'axe main/avant-bras et le pouce.
+  Le 3/4 garde le corps lisible tout en montrant la touche et les doigts.
 - La **main gauche, le manche et une partie de la touche** doivent être visibles
   en permanence ; le visage n'est pas nécessaire (moins de données personnelles).
+- Une **vue de dessus** est excellente pour le contact doigt/corde, mais
+  difficile à filmer et non représentative de l'usage à l'ordinateur : à
+  réserver à une **seconde caméra de calibration** si disponible.
 - Lumière frontale douce, pas de fenêtre en contre-jour ; éviter les manches
   noirs sans texture.
 - Repères posés sur l'instrument (ruban de masquage, retirable) :
@@ -140,6 +147,14 @@ cadrée sur **une seule main gauche** est nécessaire pour le protocole réel.
 Le MusicXML de portée généré par `ReplayStaffXML` a aussi été ouvert dans
 **MuseScore 4** (installation locale) : import et gravure OK, ce qui valide le
 fragment produit avant affichage dans l'app.
+
+Deux prises internes (non publiées) confirment le compromis d'angle : le
+**plein face** détecte bien le corps et les mains, mais le violoncelle masque le
+contact doigt/corde et l'heuristique de doigt presseur se bloque souvent sur le
+4e doigt ; le **profil gauche** montre mieux la touche mais déforme l'angle
+main/avant-bras et fabrique des hypothèses de pouce. Conclusion : le **3/4
+avant-gauche** est le cadrage de référence ; le face sert de baseline « usage
+réel », le profil/top de contrôle.
 
 ## 9. Ce qui reste à faire
 

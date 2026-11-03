@@ -8,3 +8,8 @@ xcuserdata/
 Rapports/
 __pycache__/
 *.pyc
+data/*.mov
+data/*.MOV
+data/*.mp4
+data/*.MP4
+data/*.m4v
